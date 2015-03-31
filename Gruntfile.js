@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                     sourcemap: 'none'
                 },
                 files: {
-                    'styles/main.css': 'styles/main.scss'
+                    'src/styles/main.css': 'src/scss/main.scss'
                 }
             }
         },
@@ -21,11 +21,11 @@ module.exports = function(grunt) {
                 livereload: true
             },
             sass: {
-                files: ['src/styles/*.scss'],
+                files: ['src/scss/*.scss'],
                 tasks: ['sass']
             },
-            js: {
-                files: ['js/*.js']               
+           files: {
+                files: ['src/js/*.js']               
             }
         }
                        });
