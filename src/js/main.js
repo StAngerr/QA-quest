@@ -3,46 +3,56 @@
 		startQuest();
 	});
 })();
-var curStage = 0;
-
-function startQuest() {
-	nextStage(STAGES[curStage]);
-
-	$('.startBtn').hide(0);
-}
-
-
-function nextStage(stage) {
-	var level = $('#mainContent')[0];
-	var door = $('#mainContent > .door')[0];
-
-	$(level).css('background-image', 'url(' + stage.background + ')');
-	$(door).css('background', stage.doorBackground);
-	if( !($('.door:visible').length) ) {
-		$(door).show(0);
-		$(door).on('click', function() {
-			curStage++;
-			nextStage(STAGES[curStage]);
-		});
-	}
-}
-
-
 var next = (function() {
-	var currentStage = 0;
+	var currentStage = -1;
 
 	return function() {
 		/*if there are no more stages show result view*/
-		if(curStage > STAGES.length - 1) {
-			endQuest();
+		if(currentStage >= STAGES.length - 1) {
+			alert('end');
+		//	endQuest();
 			return;
 		}
+		currentStage++;
+
 		var stage = STAGES[currentStage];
 		var level = $('#mainContent')[0];
 		var door = $('#mainContent > .door')[0];
 		/*change backgrounds*/
 		$(level).css('background-image', 'url(' + stage.background + ')');
-		$(door).css('background', stage.doorBackground);
-		/*change positions*/
+		$(door).css('background-image', 'url(' + stage.doorBackground + ')');
+		/*add popups*/
+		$('.popup').remove();
+		if(stage.components.length) {
+			for (var i = 0; i < stage.components.length; i++) getPopups(stage.components[i].tmplName);
+		} 
 	}
 })();
+
+function startQuest() {
+	next();
+	if( !($('.door:visible').length) ) {
+		$('.door').show(0);
+		$('.door').on('click', function() {
+			next();
+		});
+	}
+	$('.startBtn').remove();
+}
+
+function getPopups(popupName) {
+	var templUrl = 'src/templates/' + popupName; 
+
+	$.ajax({
+        url: templUrl,
+        method: 'GET',
+        async: false,
+        success: function(data) {
+        	appendPopups(data);
+        }
+    });
+
+    function appendPopups(content) {
+    	$('#mainContent').append(content);
+    }
+}

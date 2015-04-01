@@ -16,9 +16,6 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            options: {
-                livereload: true
-            },
             css: {
                 options:{
                     livereload: true
