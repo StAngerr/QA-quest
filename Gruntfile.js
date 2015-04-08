@@ -39,6 +39,8 @@ module.exports = function(grunt) {
         }
                        });
     grunt.registerTask('default', [ 'sass', 'watch']);
+    
+    grunt.registerTask('runServ', ['server:connect','watch']);
 };
 
 
