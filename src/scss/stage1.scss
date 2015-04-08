@@ -1,0 +1,56 @@
+
+.stage{
+		background: url('../images/bg.png') no-repeat 0 0;
+	#door{
+		 bottom: 0;
+		 right: 0;
+		 width: 350px; 
+		 display: inline;
+
+	}	
+	.hero {
+		top: 50%;
+		left: 50%;
+		width: 180px;
+		display: inline;
+
+	}
+	.dashboard {
+		top: 50%;
+		left: 10px;
+		width: 100px;
+		display: inline;
+		border: 2px solid red;
+	}
+	
+		li.letters {
+			list-style: none;		
+			width: 50px;
+			height: 50px;
+			display: inline-block;
+			text-align: center;
+			line-height: 20px;
+			padding-top: .5em;
+			background: url('../images/plant011.png') no-repeat 0 0;
+			font-weight: bold;
+			font-size: 20px;
+
+		}
+	
+}
+
+#f1 {
+	input{
+		height: 50px;
+	}
+}
+
+#stage1 {
+	.wrapper {
+		top: 10%;
+		left: 40%;
+		border: 1px solid grey;
+		text-align: center;
+		padding: 1em;
+	}
+}
