@@ -1,56 +1,31 @@
-
-.stage{
-		background: url('../images/bg.png') no-repeat 0 0;
-	#door{
-		 bottom: 0;
-		 right: 0;
-		 width: 350px; 
-		 display: inline;
-
-	}	
-	.hero {
-		top: 50%;
-		left: 50%;
-		width: 180px;
-		display: inline;
-
-	}
-	.dashboard {
-		top: 50%;
-		left: 10px;
-		width: 100px;
-		display: inline;
-		border: 2px solid red;
-	}
-	
-		li.letters {
-			list-style: none;		
-			width: 50px;
-			height: 50px;
-			display: inline-block;
-			text-align: center;
-			line-height: 20px;
-			padding-top: .5em;
-			background: url('../images/plant011.png') no-repeat 0 0;
-			font-weight: bold;
-			font-size: 20px;
-
-		}
-	
-}
-
-#f1 {
-	input{
-		height: 50px;
-	}
-}
-
 #stage1 {
-	.wrapper {
-		top: 10%;
-		left: 40%;
-		border: 1px solid grey;
-		text-align: center;
-		padding: 1em;
+	background: url('../images/stage1Bg.png') no-repeat 0 0;
+	.totalLevel {
+		position: absolute;
+		top: 458px;
+		left: 331px;
+		display: none;
+		background: url("../images/box.png") no-repeat 0 0;
+		width: 74px;
+		height: 108px;
+	}
+	.door {
+		position: absolute;
+		top: 361px;
+		right: 79px;
+		visibility: hidden;
+		background: url("../images/door.png") no-repeat 0 0;
+		width: 249px;
+		height: 296px;
+	}
+	.man {
+		position: absolute;
+		top: 600px;
+		left: 600px;
+		width: 50px;
+		background: #cf0;
+		font-size: 3.5em;
+		height: 250px;
+		border: 2px solid black;
 	}
 }

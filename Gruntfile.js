@@ -17,30 +17,36 @@ module.exports = function(grunt) {
                 }
             }
         },
-        watch: {
-            options: {
-                livereload: true
+         watch: {
+            css: {
+                options:{
+                    livereload: true
+                },
+                files: ['**/*.css','**/*.html']
             },
             sass: {
-                files: ['src/scss/*.scss'],
+                files: ['**/*.scss'],
                 tasks: ['sass']
             },
-           
+           files: {
+                files: ['src/js/*.js']               
+            }
+
         },
         connect: {
             server: {
-                options: {
-                    port: 8000,
-                    keepalive: true,
-                    hostname: 'localhost',
-                    base: './'
-                }
+              options: {
+                port: 9009,
+                base: './',
+                 hostname: 'localhost',
+                livereload: true,
+              }
             }
-        }
-                       });
+        }     
+    });
     grunt.registerTask('default', [ 'sass', 'watch']);
     
-    grunt.registerTask('runServ', ['server:connect','watch']);
+    grunt.registerTask('runServ', ['connect:server','watch']);
 };
 
 
