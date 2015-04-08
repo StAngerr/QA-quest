@@ -20,16 +20,6 @@ var next = (function() {
 		var level = $('#mainContent')[0];
 		clearMainContent();
 		getTemplate(stage.template);
-
-		//var door = $('#mainContent > .door')[0];
-		/*change backgrounds*/
-		//$(level).css('background-image', 'url(' + stage.background + ')');
-		//$(door).css('background-image', 'url(' + stage.doorBackground + ')');
-		/*add popups*/
-		//$('.popup').remove();
-		/*if(stage.components.length) {
-			for (var i = 0; i < stage.components.length; i++) getPopups(stage.components[i].tmplName);
-		} */
 	}
 })();
 
@@ -39,12 +29,6 @@ function clearMainContent() {
 
 function startQuest() {
 	next();
-/*	if( !($('.door:visible').length) ) {
-		$('.door').show(0);
-		$('.door').on('click', function() {
-			next();
-		});
-	}*/
 }
 
 function getTemplate(tmplName) {

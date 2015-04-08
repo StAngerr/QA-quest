@@ -3,7 +3,7 @@
 	.totalLevel {
 		position: absolute;
 		top: 458px;
-		left: 331px;
+		left: 330px;
 		display: none;
 		background: url("../images/box.png") no-repeat 0 0;
 		width: 74px;
@@ -20,12 +20,33 @@
 	}
 	.man {
 		position: absolute;
-		top: 600px;
-		left: 600px;
+		top: 460px;
+		left: 20px;
 		width: 50px;
 		background: #cf0;
 		font-size: 3.5em;
-		height: 250px;
+		height: 200px;
 		border: 2px solid black;
+	}
+}
+.popupWrap {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	background: rgba(154,154,154, 0.7);
+	margin: 0px auto;	
+	.popup {
+		position: relative;
+		z-index: 11;
+		width: 800px;
+		height: 550px;
+		background: #fff;
+		top: 150px;
+		margin: 0 auto;	
+		border: 1px solid #777;
+		border-radius: 6px;
 	}
 }
