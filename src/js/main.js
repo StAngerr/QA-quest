@@ -44,6 +44,6 @@ function getTemplate(tmplName) {
     });
 
     function appendPopups(content) {
-    	$('#mainContent').append(content);
+    	$('#mainContent').prepend(content);
     }
 }
