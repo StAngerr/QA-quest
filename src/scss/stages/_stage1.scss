@@ -27,8 +27,17 @@
 		font-size: 3.5em;
 		height: 200px;
 		border: 2px solid black;
+		z-index: 6;
+	}
+
+	.leafes {
+		position: absolute;
+		top: 440px;
+		left: 310px;
+		z-index: 5;
 	}
 }
+
 .popupWrap {
 	position: fixed;
 	top: 0;
@@ -41,12 +50,28 @@
 	.popup {
 		position: relative;
 		z-index: 11;
-		width: 800px;
-		height: 550px;
+		width: 780px;
+		height: 580px;
 		background: #fff;
 		top: 150px;
 		margin: 0 auto;	
-		border: 1px solid #777;
-		border-radius: 6px;
+		border: 20px solid #145D2F;
+		border-radius: 15px;
+
+		.item {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			width: 44px;
+			height: 44px;
+			border:  none;			
+			outline: none;
+			&.battery {
+				background: url("../images/batteries.jpg") no-repeat 0 0;
+			}
+			&.gun {
+				background: url("../images/gun.jpg") no-repeat 0 0;
+			}
+		}	
 	}
 }

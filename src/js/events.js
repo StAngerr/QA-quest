@@ -1,38 +1,45 @@
 /* Level 1 events */
-function openDoor(event) {
-	moveToDoor();
-}
-
 function moveToDoor() {
 	$('.man').animate({'left' : '750'}, 2000, function() {
 		getTemplate('popup.html');
+		$('.popup').append('<button class="item gun" onclick="sendMain()"></button>');
 	});
 }
-
-function moveToBox() {
-
-}
-
 function sendMain() {
 	$('.popupWrap').remove();
 	$('.door').css('opacity','1');
 	$('.totalLevel').css({'display': 'block', 'opacity':'1'});
-	var myVar = setInterval(function(){ 
-		$('.totalLevel').animate({'opacity': '1'}, 600, function() { $('.totalLevel').animate({'opacity' : '0'},600); } );
-	}, 1230);
+	var myVar = setInterval(function() { 
+		/*remove leafes*/
+		if($('.leafes')) $('.leafes').remove();
+		/*flashing box border animation*/
+		$('.totalLevel').animate({'opacity': '1'}, 400, function() { $('.totalLevel').animate({'opacity' : '0'},400); } );
+	}, 830);
 
 	$('.totalLevel').on('click', function() {
 		clearInterval(myVar);
-		/*man movement*/
-		$('.man').animate({'left' : '450'}, 2000, function() {
-			$('.totalLevel').css({'display': 'block', 'opacity':'1'});
-			getTemplate('popup.html');
-		});
-
+		moveToBox();
 	});
+	addGun();
+}
+
+function moveToBox() {
+	$('.man').animate({'left' : '450'}, 1000, function() {
+		$('.totalLevel').remove();
+		getTemplate('popup.html');
+		$('.popup').append('<button class="item battery" onclick="closePopup()"></button>');
+	});
+}
+
+function addBattaries() {
+	$('.batteries').removeClass('noItem').addClass('activeItem');
+}
+function addGun() {
+	$('.gun').removeClass('noItem').addClass('activeItem');
 }
 
 function closePopup() {
 	$('.popupWrap').remove();
 	$('.totalLevel').css({'opacity':'1'});
+	addBattaries();
 }
