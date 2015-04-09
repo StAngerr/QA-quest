@@ -1,26 +1,9 @@
 
 <section id="stage1" class="stage">
- <!-- the first popUp - TASK!	 -->
-<!-- 	<div id="task1" class="wrapper absolute-pos">
-	<form name="task1" id="f1" >
-		<input type="text" name="task1"  ondrop="drop(event)" ondragover="allowDrop(event)">
-		<button type="submit">Send</button>
-	</form>
-	<div  ><%=stage_content .task1Text%></div>
-	<ul >
-	<% for(var i=0; i< stage_content .letters.length; i++) {%>
-		<li  draggable="true" ondragstart="drag(event)"  class="letters"><%= stage_content .letters[i].toUpperCase() %></li>
-	<% } %>
-	</ul>	
-</div> -->
-
-<!--            -->	
-
-<div class="totalLevel"  onclick="openTotal(event)"></div>
-<div class="door" onclick="openDoor(event)"></div>
-		<div class="man">
-			<p>Ч Є Л</p>
-		</div>
+	<figure class="leafes">
+		<img src="src/images/leafs.png">
+	</figure>
+	<div class="totalLevel"></div>
+	<div class="door" onclick="moveToDoor(event)"></div>
+		<div class="man"><p>Ч Є Л</p></div>
 </section>
-
-

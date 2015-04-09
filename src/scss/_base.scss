@@ -14,10 +14,60 @@ html, body, main {
 }
 
 main {
-    height: 90%;
+    position: relative;
 	display: block;
+    height: 90%;
 }
 
 a {
 	cursor: pointer;
+}
+
+#mainContent { 
+    .inventory {
+        width: 1200px;
+        height: 10%;
+        background: #ccc;
+        margin: 0 auto;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px; 
+        .inventoryWrap {
+            width: 1000px;
+            height: 100%;
+            margin: 0 auto;
+            .itemContainer {
+                box-sizing: border-box;
+                border-radius: 15px;
+                float: left;
+                width: 9%;
+                height: 90%;
+                margin: 5px 7px 0 0;
+                background-color: #fff;
+                
+                &:hover {
+                    border: 2px solid #707070;
+                }
+
+                figure {
+                    margin-top: 15px;
+                }
+                .itemIcon {
+                   box-sizing: border-box;
+                   display: block;
+                   margin: 0 auto;
+                   border: 0px solid #f37736;
+                   transition: opacity .8s;
+                   border-radius: 10px;
+                }
+            }
+        }
+    }
+}
+
+.activeItem {
+    opacity: 1;
+}
+
+.noItem {
+    opacity: 0.3;
 }
