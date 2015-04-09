@@ -72,7 +72,52 @@
 			}
 			&.gun {
 				background: url("../images/gun.jpg") no-repeat 0 0;
+				display: none;
 			}
 		}	
+		#stage1Popup1 {
+			background: #86CB9B;
+			font-size: 20px;
+			height: 100%;
+			padding: 2em;
+			
+
+		.letters {
+			position: relative;
+			display: inline-block;
+			text-align: justify;
+			
+			span {
+				position: absolute;
+				height: 68px;
+				width: 52px;
+				top: 10px;
+				left: 25%;			
+				font-weight: 900;
+				font-size: 2em;
+				color: #145D2F;
+			}
+		}
+		.makeWord {
+			width: 100%;
+			min-height: 100px;
+			margin: 2em auto;
+			border: 20px solid #145D2F;
+			border-radius: 10px;
+			padding: 1em;
+			background: #fff;
+			text-align: center
+		}
+		#sendWord {
+			display: none;
+			width: 100%;
+			padding: 1em;
+			background: #145D2F;
+			border-radius: 10px;
+			color: #fff;
+			font-size: 18px;
+
+		}
+	}
 	}
 }

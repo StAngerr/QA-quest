@@ -1,8 +1,10 @@
 * {
 	margin: 0;
 	padding: 0;
+    box-sizing: border-box;
 }
 html, body, main {
+    font-family: 'Arimo', sans-serif;
     height: 100%;
     width: 100%;
     -webkit-touch-callout: none;
@@ -52,7 +54,7 @@ a {
                     margin-top: 15px;
                 }
                 .itemIcon {
-                   box-sizing: border-box;
+                   
                    display: block;
                    margin: 0 auto;
                    border: 0px solid #f37736;

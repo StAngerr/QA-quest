@@ -22,11 +22,11 @@
 	article {	
 		position: absolute;
 		margin-left: -7em;
-		width: 800px;
-		height: 700px;
+		width: 1000px;
+		height: 800px;
 		bottom: 0;
-		left: 50%;
-		font-size: 350%;
+		left: 40%;
+		font-size: 250%;
   		overflow: hidden;
 		-webkit-transform-origin: 50% 100%;	
 		transform-origin: 50% 100%;
@@ -64,12 +64,7 @@
 	0% { top: 100%; }
 	100% { top: -170%; }
 }
-.parties {
-	width: 1200px;
-	height: 10%;
-	background: yellow;
-	display: none;
-}
+
 	
 
 
