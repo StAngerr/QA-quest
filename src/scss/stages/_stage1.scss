@@ -58,8 +58,8 @@
 		margin: 0 auto;	
 		border: 20px solid #145D2F;
 		border-radius: 15px;
-
-		.item {
+			
+  .item {
 			position: absolute;
 			bottom: 0;
 			right: 0;
@@ -74,7 +74,9 @@
 				background: url("../images/gun.jpg") no-repeat 0 0;
 				display: none;
 			}
+			
 		}	
+		
 		#stage1Popup1 {
 			background: #86CB9B;
 			font-size: 20px;

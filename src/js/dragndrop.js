@@ -28,8 +28,7 @@ function drop(event) {
     var data =  '<figure class="letters" ondragover="nodrop(event)"> '+ event.dataTransfer.getData('text/html') + '</figure>';
     var html =  $(event.target).html();
  	  $('.makeWord').css ('background-color', '#fff');
-    word += that.children().text();
-    console.log(word);
+    word += that.children().text();   
     that.hide();
     counter ++;
     $(event.target).html(html + data); 
