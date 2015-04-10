@@ -7,26 +7,35 @@
 	margin: 1em auto;
 	overflow: hidden;
 
-	button {
+	.startBtn {
 		position: absolute;
 		right: 0;
-		bottom: 0;
 		display: block;
 		width: 100px;
 		height: 100px;
 		margin: auto;
 		z-index: 10;
-		background: blue;
-		color: #eee;
+		background: url('../images/rocket.png')  0 0;
+		color: orange;
+		opacity: .6;
+		span {
+			display: none;
+			font-size: 2em;
+		}
+
+		&:hover span {
+			display: block;
+			opacity:1;
+		}
 	}
 	article {	
 		position: absolute;
 		margin-left: -7em;
-		width: 800px;
-		height: 700px;
+		width: 1000px;
+		height: 800px;
 		bottom: 0;
-		left: 50%;
-		font-size: 350%;
+		left: 40%;
+		font-size: 250%;
   		overflow: hidden;
 		-webkit-transform-origin: 50% 100%;	
 		transform-origin: 50% 100%;
@@ -35,9 +44,9 @@
 	    color: #eee;
 	  	div {
 	  		position: absolute;
-			top: 100%;
-			-webkit-animation: scroll 50s linear 1s infinite;
-			animation: scroll 50s linear 1s infinite;
+				top: 100%;
+				-webkit-animation: scroll 50s linear 1s infinite;
+				animation: scroll 50s linear 1s infinite;
 	  	}
    
 	}
@@ -64,12 +73,7 @@
 	0% { top: 100%; }
 	100% { top: -170%; }
 }
-.parties {
-	width: 1200px;
-	height: 10%;
-	background: yellow;
-	display: none;
-}
+
 	
 
 
