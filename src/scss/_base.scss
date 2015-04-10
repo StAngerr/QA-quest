@@ -4,7 +4,6 @@
     box-sizing: border-box;
 }
 html, body, main {
-    font-family: 'Arimo', sans-serif;
     height: 100%;
     width: 100%;
     -webkit-touch-callout: none;
@@ -14,11 +13,18 @@ html, body, main {
     -ms-user-select: none;
     user-select: none;
 }
+body {
+    font-family: 'Arimo', sans-serif;
+   
+}
 
 main {
     position: relative;
 	display: block;
-    height: 90%;
+    height: 100%;
+    overflow: hidden;
+
+
 }
 
 a {
@@ -33,6 +39,7 @@ a {
         margin: 0 auto;
         border-bottom-right-radius: 10px;
         border-bottom-left-radius: 10px; 
+
         .inventoryWrap {
             width: 1000px;
             height: 100%;

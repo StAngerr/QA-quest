@@ -7,17 +7,26 @@
 	margin: 1em auto;
 	overflow: hidden;
 
-	button {
+	.startBtn {
 		position: absolute;
 		right: 0;
-		bottom: 0;
 		display: block;
 		width: 100px;
 		height: 100px;
 		margin: auto;
 		z-index: 10;
-		background: blue;
-		color: #eee;
+		background: url('../images/rocket.png')  0 0;
+		color: orange;
+		opacity: .6;
+		span {
+			display: none;
+			font-size: 2em;
+		}
+
+		&:hover span {
+			display: block;
+			opacity:1;
+		}
 	}
 	article {	
 		position: absolute;
@@ -35,9 +44,9 @@
 	    color: #eee;
 	  	div {
 	  		position: absolute;
-			top: 100%;
-			-webkit-animation: scroll 50s linear 1s infinite;
-			animation: scroll 50s linear 1s infinite;
+				top: 100%;
+				-webkit-animation: scroll 50s linear 1s infinite;
+				animation: scroll 50s linear 1s infinite;
 	  	}
    
 	}
