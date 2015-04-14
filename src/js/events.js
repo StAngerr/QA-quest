@@ -26,40 +26,46 @@ function sendMain(event) {
 		/*flashing box border animation*/
 		$('.totalLevel').animate({'opacity': '1'}, 400, function() { $('.totalLevel').animate({'opacity' : '0'},400); } );
 	}, 830);
-
 	$('.totalLevel').on('click', function() {
 		clearInterval(myVar);
 		moveToBox();
 	});
-
 	$('.gun').removeClass('noItem').addClass('activeItem');
-			activeItems.push('.gun');
-	
-
-	
-	 //addGun();
+	activeItems.push('.gun');
 }
 
 function moveToBox() {
+	$('.popupWrap').remove();/*!!!*/
 	$('.man').animate({'left' : '450'}, 1000, function() {
 		$('.totalLevel').remove();
 		getTemplate('popup.html');
+		$('.popupWrap').append(' <div id="wade_main_div" width="800" height="600" tabindex="1"></div>');
 		$('.popup').append('<button class="item battery" onclick="closePopup(event)"></button>');
+        $(document).ready(function()	 {
+            wade.init('flow.js');
+        });
 	});
 }
 
-// function addBattaries() {
-// 	$('.batteries').removeClass('noItem').addClass('activeItem');
+function finishGame() {
 
-// }
-// function addGun() {
-// 	$('.gun').removeClass('noItem').addClass('activeItem');
-// }
-// function addOil() {
-// 	$('.oil').removeClass('noItem').addClass('activeItem');
+	 $('#wade_main_div').remove();
+	 $('.popup').append('<h1>game fineshed</h1>');
 
-// }
+}
 
+function addBattaries() {
+	setTimeout(function() {
+		$('.itemContainer').animate({'background-color' : 'red'});
+	}, 1500);
+	$('.batteries').removeClass('noItem').addClass('activeItem');
+}
+function addGun() {
+	setTimeout(function() {
+		$('.itemContainer').animate({'background-color' : 'red'});
+	}, 1500);
+	$('.gun').removeClass('noItem').addClass('activeItem');
+}
 
 function closePopup(event) {
 	$('.popupWrap').remove();
