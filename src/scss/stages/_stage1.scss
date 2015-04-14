@@ -45,21 +45,21 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 10;
-	background: rgba(154,154,154, 0.7);
-	margin: 0px auto;	
+		background: rgba(154,154,154, 0.7);
+	margin: 0px auto;
+	z-index: 10;	
 	.popup {
 		position: relative;
-		z-index: 11;
 		width: 780px;
 		height: 580px;
 		background: #fff;
+		z-index: 11;
 		top: 150px;
 		margin: 0 auto;	
 		border: 20px solid #145D2F;
 		border-radius: 15px;
 			
-  .item {
+  		.item {
 			position: absolute;
 			bottom: 0;
 			right: 0;
@@ -111,7 +111,7 @@
 			text-align: center
 		}
 		#sendWord {
-			display: none;
+			display: block;
 			width: 100%;
 			padding: 1em;
 			background: #145D2F;
