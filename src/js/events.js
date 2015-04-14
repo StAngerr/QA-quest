@@ -1,13 +1,20 @@
 /* Level 1 events */
-function moveToDoor() {
-	$('.man').animate({'left' : '750'}, 2000, function() {
+var activeItems = [];
+function moveToDoor() {	
+	if (!word) {
+		$('.man').animate({'left' : '750'}, 2000, function() {
 		getTemplate('popup.html');
-		$('.popup').append('<button class="item gun" onclick="sendMain()"></button>');
-		//$('.gun').hide();
+		$('.popup').append('<button class="item gun" onclick="sendMain(event)"></button>');
 			appendPopupTask('task1.html');
+			return false;
 	});
+	}	else {
+		localStorage.setItem('active', JSON.stringify(activeItems));
+		next();
+	}	
 }
-function sendMain() {
+
+function sendMain(event) {
 	$('#stage1Popup1').remove();
 	$('.popupWrap').remove();
 
@@ -24,14 +31,20 @@ function sendMain() {
 		clearInterval(myVar);
 		moveToBox();
 	});
-	addGun();
+
+	$('.gun').removeClass('noItem').addClass('activeItem');
+			activeItems.push('.gun');
+	
+
+	
+	 //addGun();
 }
 
 function moveToBox() {
 	$('.man').animate({'left' : '450'}, 1000, function() {
 		$('.totalLevel').remove();
 		getTemplate('popup.html');
-		$('.popup').append('<button class="item battery" onclick="closePopup()"></button>');
+		$('.popup').append('<button class="item battery" onclick="closePopup(event)"></button>');
 	});
 }
 
@@ -43,9 +56,24 @@ function addGun() {
 	setTimeout($('.itemContainer').animate({'background-color' : 'red'}, 1500);
 	$('.gun').removeClass('noItem').addClass('activeItem');
 }
+// function addBattaries() {
+// 	$('.batteries').removeClass('noItem').addClass('activeItem');
 
-function closePopup() {
+// }
+// function addGun() {
+// 	$('.gun').removeClass('noItem').addClass('activeItem');
+// }
+// function addOil() {
+// 	$('.oil').removeClass('noItem').addClass('activeItem');
+
+// }
+
+
+function closePopup(event) {
 	$('.popupWrap').remove();
 	$('.totalLevel').css({'opacity':'1'});
-	addBattaries();
+	//addBattaries()
+	$('.batteries').removeClass('noItem').addClass('activeItem');
+		activeItems.push('.batteries');
+	
 }

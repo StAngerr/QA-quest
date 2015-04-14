@@ -1,12 +1,29 @@
+ // function to get current stage
+
+ $( document ).ready(function() {
+    if(!localStorage.getItem('currentStage')) {
+    	return false;
+    } else {
+    	if(localStorage.getItem('active')) {
+    		var activeitems = JSON.parse(localStorage.getItem('active'));
+    		$.each(activeitems, function(index){
+    				$(activeitems[index]).removeClass('noItem').addClass('activeItem');
+    		});
+    	}
+    	clearMainContent();
+    	getTemplate(STAGES[localStorage.getItem('currentStage')].template);
+    }
+  });
+
 (function() {
 	$('.startBtn').on('click', function(){
 		startQuest();
 	});
-
 })();
-var next = (function() {
-	var currentStage = -1;
 
+
+var currentStage = -1;
+var next = (function() {
 	return function() {
 		/*if there are no more stages show result view*/
 		if(currentStage >= STAGES.length - 1) {
@@ -15,6 +32,9 @@ var next = (function() {
 			return;
 		}
 		currentStage++;
+
+		// localstorage
+		localStorage.setItem("currentStage", currentStage);
 
 		var stage = STAGES[currentStage];
 		var level = $('#mainContent')[0];
@@ -47,3 +67,6 @@ function getTemplate(tmplName) {
     	$('#mainContent').prepend(content);
     }
 }
+
+
+

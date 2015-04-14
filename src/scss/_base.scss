@@ -39,7 +39,6 @@ a {
         margin: 0 auto;
         border-bottom-right-radius: 10px;
         border-bottom-left-radius: 10px; 
-
         .inventoryWrap {
             width: 1000px;
             height: 100%;
@@ -71,12 +70,14 @@ a {
             }
         }
     }
+
 }
 
-.activeItem {
+ .activeItem {
     opacity: 1;
 }
 
 .noItem {
     opacity: 0.3;
 }
+
