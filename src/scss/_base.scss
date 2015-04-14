@@ -1,6 +1,7 @@
 * {
 	margin: 0;
 	padding: 0;
+    box-sizing: border-box;
 }
 html, body, main {
     height: 100%;
@@ -12,11 +13,18 @@ html, body, main {
     -ms-user-select: none;
     user-select: none;
 }
+body {
+    font-family: 'Arimo', sans-serif;
+   
+}
 
 main {
     position: relative;
 	display: block;
-    height: 90%;
+    height: 100%;
+    overflow: hidden;
+
+
 }
 
 a {
@@ -31,6 +39,7 @@ a {
         margin: 0 auto;
         border-bottom-right-radius: 10px;
         border-bottom-left-radius: 10px; 
+
         .inventoryWrap {
             width: 1000px;
             height: 100%;
@@ -52,7 +61,7 @@ a {
                     margin-top: 15px;
                 }
                 .itemIcon {
-                   box-sizing: border-box;
+                   
                    display: block;
                    margin: 0 auto;
                    border: 0px solid #f37736;

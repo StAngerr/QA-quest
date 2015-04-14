@@ -3,10 +3,14 @@ function moveToDoor() {
 	$('.man').animate({'left' : '750'}, 2000, function() {
 		getTemplate('popup.html');
 		$('.popup').append('<button class="item gun" onclick="sendMain()"></button>');
+		//$('.gun').hide();
+			appendPopupTask('task1.html');
 	});
 }
 function sendMain() {
+	$('#stage1Popup1').remove();
 	$('.popupWrap').remove();
+
 	$('.door').css('opacity','1');
 	$('.totalLevel').css({'display': 'block', 'opacity':'1'});
 	var myVar = setInterval(function() { 
