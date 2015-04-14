@@ -10,7 +10,12 @@
 		transform: perspective(300px) rotateX(35deg);
 
  }
-	.tbl, .tbl td  {border:1px solid #82817D;}
+	.tbl, .tbl td  {
+		border: 1px solid #82817D;
+	}
+	.newGameB {
+		visibility: hidden;
+	}
 	.oil {
 		position: absolute;
 		top: 509px;
