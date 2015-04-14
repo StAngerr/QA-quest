@@ -41,9 +41,10 @@ function moveToBox() {
 		getTemplate('popup.html');
 		$('.popupWrap').append(' <div id="wade_main_div" width="800" height="600" tabindex="1"></div>');
 		$('.popup').append('<button class="item battery" onclick="closePopup(event)"></button>');
-        $(document).ready(function()	 {
+    
             wade.init('flow.js');
-        });
+
+     
 	});
 }
 
@@ -73,5 +74,6 @@ function closePopup(event) {
 	//addBattaries()
 	$('.batteries').removeClass('noItem').addClass('activeItem');
 		activeItems.push('.batteries');
+
 	
 }

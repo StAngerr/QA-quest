@@ -292,6 +292,7 @@ App = function() {
                 // go back to the main menu after 1 second
                 setTimeout(function() {
                   wade.clearScene();
+                  wade.stop();
                   finishGame();
                 }, 1000);
             }
