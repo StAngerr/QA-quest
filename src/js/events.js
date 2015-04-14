@@ -32,9 +32,11 @@ function moveToBox() {
 }
 
 function addBattaries() {
+	setTimeout($('.itemContainer').animate({'background-color' : 'red'}, 1500, function() {});
 	$('.batteries').removeClass('noItem').addClass('activeItem');
 }
 function addGun() {
+	setTimeout($('.itemContainer').animate({'background-color' : 'red'}, 1500);
 	$('.gun').removeClass('noItem').addClass('activeItem');
 }
 
