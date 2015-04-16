@@ -49,10 +49,8 @@ function moveToBox() {
 }
 
 function finishGame() {
-
 	 $('#wade_main_div').remove();
 	 $('.popup').append('<h1>game fineshed</h1>');
-
 }
 
 function addBattaries() {
