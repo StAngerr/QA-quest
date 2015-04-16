@@ -8,7 +8,7 @@ var STAGES = [
 		components : []
 	},
 	{
-		background : '',
+		template : 'stage3.html',
 		components : []
 	},
 	{

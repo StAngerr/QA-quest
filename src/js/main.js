@@ -22,7 +22,7 @@
 })();
 
 
-var currentStage = -1;
+var currentStage = localStorage.getItem("currentStage") || -1;
 var next = (function() {
 	return function() {
 		/*if there are no more stages show result view*/
