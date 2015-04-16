@@ -19,7 +19,7 @@ function sendMain(event) {
 	$('.popupWrap').remove();
 
 	$('.door').css('opacity','1');
-	$('.totalLevel').css({'display': 'block', 'opacity':'1'});
+	$('.totalLevel').css({'display': 'block', 'opacity' : '1'});
 	var myVar = setInterval(function() { 
 		/*remove leafes*/
 		if($('.leafes')) $('.leafes').remove();
@@ -39,12 +39,9 @@ function moveToBox() {
 	$('.man').animate({'left' : '450'}, 1000, function() {
 		$('.totalLevel').remove();
 		getTemplate('popup.html');
-		$('.popupWrap').append(' <div id="wade_main_div" width="800" height="600" tabindex="1"></div>');
-		$('.popup').append('<button class="item battery" onclick="closePopup(event)"></button>');
-    
-            wade.init('flow.js');
-
-     
+		$('.popupWrap').append(' </*div*/ id="wade_main_div" width="800" height="600" tabindex="1"></div>');
+		$('.popup').append('<button class="item battery" onclick="closePopup(event)"></button>');  
+            wade.init('flow.js');  
 	});
 }
 
@@ -75,3 +72,26 @@ function closePopup(event) {
 
 	
 }
+
+
+/*Stage 2*/
+
+
+/*flashlight*/
+function turnOffTheLight() {
+	$('html').addClass('lightOff');		
+	$('body').addClass('flashLight');
+	$('body').append('<div class="flashLightShadow"></div>');
+}
+
+/*    Move events to flash light*/
+function addFlashLightEvents() {
+    $(document).mousemove(function(e) {
+        $('body').css({'-webkit-clip-path' : 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'});
+        $('.flashLightShadow').css({'top': (e.pageY - 100) + 'px', 'left' : (e.pageX + 102) + 'px'});
+    });
+}
+function removeFlashLightEvents() {
+     $(document).off('mousemove');
+}
+/*    s*/

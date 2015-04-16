@@ -23,22 +23,39 @@
 		visibility: hidden;
 		width: 48px;
 		height: 48px;
-
 	}
-
-	.lid {
-		position: absolute;
-		right: 340px;
-		bottom: 150px;
-		
-		background: url('../images/lid.jpeg') no-repeat -10px 0 ;
-		width: 350px;
-		height: 300px;
-		-webkit-transform-origin: 50% 100%;	
-		transform-origin: 50% 100%;
-		-webkit-transform: perspective(200px) rotateX(35deg);	
-		transform: perspective(200px) rotateX(35deg);
-	}
-
 
 }
+
+.lightOff {
+	background-color: #000;
+	overflow: hidden;
+}
+.flashLight {
+	background-color: #fff;
+	-webkit-clip-path: circle(100px at 50% 50%);
+}
+.flashLightShadow {
+	position:absolute;
+	top: 0;
+	left: 0; 
+	width: 210px;
+	height: 210px; 
+	background: transperent;
+	border-radius: 100px;
+	box-shadow: -205px -5px  30px rgba(204,204,204,0.6);
+}
+.lid {
+	position: absolute;
+	right: 340px;
+	bottom: 150px;	
+	background: url('../images/lid.jpeg') no-repeat -10px 0 ;
+	width: 350px;
+	height: 300px;
+	-webkit-transform-origin: 50% 100%;	
+	transform-origin: 50% 100%;
+	-webkit-transform: perspective(200px) rotateX(35deg);	
+	transform: perspective(200px) rotateX(35deg);
+}
+
+

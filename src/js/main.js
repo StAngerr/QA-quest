@@ -12,11 +12,14 @@
     	}
     	clearMainContent();
     	getTemplate(STAGES[localStorage.getItem('currentStage')].template);
+        /*       flashlight*/
+        turnOffTheLight();
+        addFlashLightEvents();
     }
   });
 
 (function() {
-	$('.startBtn').on('click', function(){
+	$('.startBtn').on('click', function() {
 		startQuest();
 	});
 })();
@@ -32,7 +35,6 @@ var next = (function() {
 			return;
 		}
 		currentStage++;
-
 		// localstorage
 		localStorage.setItem("currentStage", currentStage);
 
@@ -67,6 +69,5 @@ function getTemplate(tmplName) {
     	$('#mainContent').prepend(content);
     }
 }
-
 
 
