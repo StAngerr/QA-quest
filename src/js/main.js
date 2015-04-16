@@ -14,11 +14,8 @@
     	getTemplate(STAGES[localStorage.getItem('currentStage')].template);
         /*       flashlight*/
         turnOffTheLight();
-        $(document).mousemove(function(e) {
-            $('body').css({'-webkit-clip-path' : 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'});
-            $('.MEGA1').css({'top': (e.pageY - 400) + 'px', 'left' : (e.pageX - 105) + 'px'});
-        });
-}
+        addFlashLightEvents();
+    }
   });
 
 (function() {
@@ -72,6 +69,5 @@ function getTemplate(tmplName) {
     	$('#mainContent').prepend(content);
     }
 }
-
 
 

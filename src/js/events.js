@@ -11,23 +11,7 @@ function moveToDoor() {
 	}	else {
 		localStorage.setItem('active', JSON.stringify(activeItems));
 		next();
-
 	}	
-}
-/*flashlight*/
-function turnOffTheLight() {
-	$('html').css({
-		'background-color' : '#000'
-	});
-
-/*	$('body').css({
-		'background-color' : '#fff',
-		'-webkit-clip-path': 'circle(100px at 50% 50%)'
-	});*/
-
-	$('body').addClass('MEGA');
-	$('body').append('<div style="position:absolute; top: 0; left: 0; width: 10px; height: 10px;" class="MEGA1"></div>');
-
 }
 
 function sendMain(event) {
@@ -88,3 +72,26 @@ function closePopup(event) {
 
 	
 }
+
+
+/*Stage 2*/
+
+
+/*flashlight*/
+function turnOffTheLight() {
+	$('html').addClass('lightOff');		
+	$('body').addClass('flashLight');
+	$('body').append('<div class="flashLightShadow"></div>');
+}
+
+/*    Move events to flash light*/
+function addFlashLightEvents() {
+    $(document).mousemove(function(e) {
+        $('body').css({'-webkit-clip-path' : 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'});
+        $('.flashLightShadow').css({'top': (e.pageY - 100) + 'px', 'left' : (e.pageX + 102) + 'px'});
+    });
+}
+function removeFlashLightEvents() {
+     $(document).off('mousemove');
+}
+/*    s*/

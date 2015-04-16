@@ -26,39 +26,36 @@
 	}
 
 }
-.MEGA {
+
+.lightOff {
+	background-color: #000;
+	overflow: hidden;
+}
+.flashLight {
 	background-color: #fff;
 	-webkit-clip-path: circle(100px at 50% 50%);
 }
-
-.MEGA1::before {
-	content: '';
-	display: block;
+.flashLightShadow {
+	position:absolute;
+	top: 0;
+	left: 0; 
+	width: 210px;
+	height: 210px; 
+	background: transperent;
+	border-radius: 100px;
+	box-shadow: -205px -5px  30px rgba(204,204,204,0.6);
+}
+.lid {
 	position: absolute;
-	border-radius: 50%;
-	background: transparent;
-	width: 240px;
-	height: 240px;
-	box-shadow: inset 101px 0px 50px #000000;
-	box-shadow: -30px 300px  30px rgba(0,0,0,0.7);  
-	
-	border: 10px solid transperent;
+	right: 340px;
+	bottom: 150px;	
+	background: url('../images/lid.jpeg') no-repeat -10px 0 ;
+	width: 350px;
+	height: 300px;
+	-webkit-transform-origin: 50% 100%;	
+	transform-origin: 50% 100%;
+	-webkit-transform: perspective(200px) rotateX(35deg);	
+	transform: perspective(200px) rotateX(35deg);
 }
 
-	.lid {
-		position: absolute;
-		right: 340px;
-		bottom: 150px;
-		
-		background: url('../images/lid.jpeg') no-repeat -10px 0 ;
-		width: 350px;
-		height: 300px;
-		-webkit-transform-origin: 50% 100%;	
-		transform-origin: 50% 100%;
-		-webkit-transform: perspective(200px) rotateX(35deg);	
-		transform: perspective(200px) rotateX(35deg);
-	}
-
-
-}
 
