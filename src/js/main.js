@@ -12,11 +12,17 @@
     	}
     	clearMainContent();
     	getTemplate(STAGES[localStorage.getItem('currentStage')].template);
-    }
+        /*       flashlight*/
+        turnOffTheLight();
+        $(document).mousemove(function(e) {
+            $('body').css({'-webkit-clip-path' : 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'});
+            $('.MEGA1').css({'top': (e.pageY - 400) + 'px', 'left' : (e.pageX - 105) + 'px'});
+        });
+}
   });
 
 (function() {
-	$('.startBtn').on('click', function(){
+	$('.startBtn').on('click', function() {
 		startQuest();
 	});
 })();
@@ -32,7 +38,6 @@ var next = (function() {
 			return;
 		}
 		currentStage++;
-
 		// localstorage
 		localStorage.setItem("currentStage", currentStage);
 
