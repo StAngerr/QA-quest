@@ -8,7 +8,7 @@ function moveToDoor() {
 			appendPopupTask('task1.html');
 			return false;
 	});
-	}	else {
+	} else {
 		localStorage.setItem('active', JSON.stringify(activeItems));
 		next();
 	}	
@@ -39,7 +39,7 @@ function moveToBox() {
 	$('.man').animate({'left' : '450'}, 1000, function() {
 		$('.totalLevel').remove();
 		getTemplate('popup.html');
-		$('.popupWrap').append(' </*div*/ id="wade_main_div" width="800" height="600" tabindex="1"></div>');
+		$('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>');
 		$('.popup').append('<button class="item battery" onclick="closePopup(event)"></button>');  
             wade.init('flow.js');  
 	});
@@ -93,5 +93,8 @@ function addFlashLightEvents() {
 }
 function removeFlashLightEvents() {
      $(document).off('mousemove');
+     	$('html').removeClass('lightOff');		
+	$('body').removeClass('flashLight');
+	$('.flashLightShadow').remove();
 }
 /*    s*/

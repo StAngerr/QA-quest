@@ -1,6 +1,11 @@
  // function to get current stage
 
  $( document ).ready(function() {
+/*start btn event*/
+    $('.startBtn').on('click', function() {
+        startQuest();
+    });
+
     if(!localStorage.getItem('currentStage')) {
     	return false;
     } else {
@@ -13,20 +18,17 @@
     	clearMainContent();
     	getTemplate(STAGES[localStorage.getItem('currentStage')].template);
         /*       flashlight*/
-        turnOffTheLight();
-        addFlashLightEvents();
+        /*turn on flashlight only if its second stage*/
+        if (localStorage.getItem('currentStage') == 1) {
+            turnOffTheLight();
+            addFlashLightEvents();
+        }
     }
   });
 
-(function() {
-	$('.startBtn').on('click', function() {
-		startQuest();
-	});
-})();
 
-
-var currentStage = localStorage.getItem("currentStage") || -1;
 var next = (function() {
+    var currentStage = localStorage.getItem("currentStage") || -1;
 	return function() {
 		/*if there are no more stages show result view*/
 		if(currentStage >= STAGES.length - 1) {
