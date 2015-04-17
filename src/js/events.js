@@ -112,4 +112,3 @@ function addOil() {
     $('#stage2').append('<div class="lid" onclick="next();"></div>');
 
 }
-
