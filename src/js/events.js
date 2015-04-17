@@ -71,9 +71,7 @@ function closePopup(event) {
 	$('.totalLevel').css({'opacity':'1'});
 	//addBattaries()
 	$('.batteries').removeClass('noItem').addClass('activeItem');
-		activeItems.push('.batteries');
-
-	
+		activeItems.push('.batteries');	
 }
 
 

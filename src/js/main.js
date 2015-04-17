@@ -79,8 +79,6 @@ function getTemplate(tmplName) {
 
 var lvls = [];
 
-
-
 var Quest = function() {
 
     this.startQuest = function() {
@@ -102,7 +100,6 @@ var Quest = function() {
     }
 
     this.finishQuest = function() {
-
     }
 };
 
@@ -110,26 +107,25 @@ var Stage = function(templ) {
     this.templateUrl = templ;
 
     this.openStage = function() {
-        getTmpl(this.templateUrl);
+        this.getTmpl(this.templateUrl);
     };
-
     this.initEvents;
-
-    function getTmpl(tmplName) {
+    this.getTmpl = function(tmplName, direction, dataToTempl) {
         $.ajax({
             url: 'src/templates/' + tmplName,
             method: 'GET',
             async: false,
             success: function( data ) {
-                $('#mainContent').prepend(data);
+                var target = direction || '#mainContent';
+                var content = dataToTempl ? _.template(data, dataToTempl) : data;
+                $(target).prepend(content);
             }
         });
     };
 };
 
-
+/* Stage 1 */
 var stage1 = new Stage('stage1.html');
-
 
 stage1.initEvents = function() {
     $('.door').on('click', function() {
@@ -138,19 +134,65 @@ stage1.initEvents = function() {
 };
 
 
-stage1.moveToDoor = function() { 
+stage1.moveToDoor = function() {
+    var stage_content = {
+            taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
+            letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
+    }; 
     if (!word) {
         $('.man').animate({'left' : '750'}, 2000, function() {
-        getTemplate('popup.html');
-        $('.popup').append('<button class="item gun" onclick="sendMain(event)"></button>');
-            appendPopupTask('task1.html');
-            return false;
+            stage1.getTmpl('popup.html');
+            $('.popup').append('<button class="item gun"> </button>');
+            stage1.getTmpl('task1.html','.popup', stage_content);
+            $('.item.gun').on('click', sendDnDWord);
+
+            return false;  /* what for ???/*/
         });
     } else {
         //localStorage.setItem('active', JSON.stringify(activeItems));
         //next();
-    }   
+    }
+
+    function sendDnDWord(event) {
+        $('#stage1Popup1').remove();
+        $('.popupWrap').remove();
+
+        $('.door').css('opacity','1');
+        $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
+        var myVar = setInterval(function() { 
+            /*remove leafes*/
+            if($('.leafes')) $('.leafes').remove();
+            /*flashing box border animation*/
+            $('.totalLevel').animate({'opacity': '1'}, 400, function() { $('.totalLevel').animate({'opacity' : '0'},400); } );
+        }, 830);
+        $('.totalLevel').on('click', function() {
+            clearInterval(myVar);
+            moveToBox();
+        });
+        $('.gun').removeClass('noItem').addClass('activeItem');
+        activeItems.push('.gun');
+    }
+
+    function moveToBox() {
+        $('.popupWrap').remove();/*!!!*/
+        $('.man').animate({'left' : '450'}, 1000, function() {
+            $('.totalLevel').remove();
+            getTemplate('popup.html');
+            $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
+            $('.popup').append('<button class="item battery"></button>');  
+            wade.init('flow.js');
+            $('.popup').on('click',closePopup);  
+        });
+    }
+    function closePopup(event) {
+        $('.popupWrap').remove();
+        $('.totalLevel').css({'opacity':'1'});
+        $('.batteries').removeClass('noItem').addClass('activeItem');
+        activeItems.push('.batteries'); 
+    }
+   
 };
 
 
 lvls.push(stage1);
+/*     - - -- - - - - - - -- -*/

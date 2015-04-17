@@ -8,19 +8,14 @@ var word = '';
 var that;
 var counter = 0 ;
 
-
-
 function drag(event) {    	
         event.dataTransfer.setData('text/html', $(event.target).html()); 
         that = $(event.target);       
         return false;
 }
 
-
 function allowDrop(event) {
     event.preventDefault();
-    
-
 }
 
 function drop(event) {
@@ -48,8 +43,6 @@ function over(event) {
 	 event.preventDefault();
 	 that.css('opacity', '0.5');     
      return false;
-	
-	
 }
 
 function leave(event) {
@@ -74,10 +67,9 @@ function appendPopupTask (name) {
     });
 }
 
- function up() {
-    console.log (word.length, word);
+ function up() {   /*   WTF ???? */
 	if (word === 'ecmascript'.toUpperCase()) {
-			alert (word);	
+		alert (word);	
 	}
 	$('.gun').show();
 }
