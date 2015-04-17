@@ -1,5 +1,7 @@
 /* Level 1 events */
 var activeItems = [];
+
+
 function moveToDoor() {	
 	if (!word) {
 		$('.man').animate({'left' : '750'}, 2000, function() {
@@ -11,6 +13,7 @@ function moveToDoor() {
 	} else {
 		localStorage.setItem('active', JSON.stringify(activeItems));
 		next();
+
 	}	
 }
 
@@ -98,3 +101,15 @@ function removeFlashLightEvents() {
 	$('.flashLightShadow').remove();
 }
 /*    s*/
+
+function addOil() {
+    var activeItems = JSON.parse(localStorage.getItem('active'));
+    $('.oil').removeClass('noItem').addClass('activeItem');
+    activeItems.push('.oil');
+    localStorage.setItem('active', JSON.stringify(activeItems));
+    $('button.oil').hide();
+    $('#crossZero').remove();
+    $('#stage2').append('<div class="lid" onclick="next();"></div>');
+
+}
+

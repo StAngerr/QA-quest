@@ -365,16 +365,3 @@ function reset() {
     }
     t--;
 }
-
-
-function addOil() {
-    var activeItems = JSON.parse(localStorage.getItem('active'));
-    $('.oil').removeClass('noItem').addClass('activeItem');
-    activeItems.push('.oil');
-    localStorage.setItem('active', JSON.stringify(activeItems));
-    $('button.oil').hide();
-    $('#crossZero').remove();
-    console.log(currentStage);
-    $('#stage2').append('<div class="lid" onclick="next();"></div>');
-
-}
