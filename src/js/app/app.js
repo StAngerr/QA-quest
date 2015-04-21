@@ -4,7 +4,8 @@ requirejs.config({
     paths: {
         app: 'app',
         jquery: 'lib/jquery',
-        underscore: 'lib/underscore'
+        underscore: 'lib/underscore',
+        wade: 'lib/wade'
     }
 });
 

@@ -6,5 +6,4 @@ define(function (require) {
     $('.startBtn').on('click', function() {
         quest.startQuest();
     });
-
 });

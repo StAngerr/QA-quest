@@ -2,10 +2,10 @@ define(function(require) {
     var Stage = require('src/js/app/Stage.js');
     var stage1 = new Stage('stage1.html');
     var $ = require('jquery');
-    var wade = require('src/js/app/lib/wade.js');
-    var word = '';
+    var wade = require('wade');
+    var word = 0; /* temp variable just to access  to stage 2*/
     var that;
-    var counter = 0 ;
+    var counter = 0;
     stage1.initEvents = function() {
         $('.door').on('click', function() {
             stage1.moveToDoor();
@@ -17,7 +17,7 @@ define(function(require) {
                 taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
                 letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         }; 
-        var word = null; /* DELETE AFTER|\!!!!*/
+       
         if (!word) {
             $('.man').animate({'left' : '750'}, 2000, function() {
                 stage1.getTmpl('popup.html');
@@ -38,12 +38,10 @@ define(function(require) {
                 };
             });
         } else {
+            /*  $('#mainModule').trigger('main:stageFinished');*/
         }
 
         function showWord() {  
-            if (word === 'ecmascript'.toUpperCase()) {
-                alert (word);   
-            }
             $('.gun').show();
         };
 
@@ -74,7 +72,7 @@ define(function(require) {
                 $('.popup').append('<button class="item battery"></button>');  
                 wade.init('src/js/app/flow.js');
                 $('.popup').on('click', closePopup); 
-                 $('.popup').on('flowGameFinished', finishFlowGame); 
+                $('.popup').on('flowGameFinished', finishFlowGame); 
             });
         };
 
@@ -125,7 +123,7 @@ define(function(require) {
                 $('#sendWord').show();
                 return false;
             }       
-        }
+        };
        
     };
    return stage1;

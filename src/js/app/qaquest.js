@@ -17,7 +17,7 @@ define(function(require) {
             stage ? currentStage = stage : currentStage++;
             localStorage.setItem("currentStage", currentStage);
 
-            clearMainContent();       
+            clearMainContent();     
             var st1 = lvls[0];
             st1.openStage();
             st1.initEvents();   
@@ -29,8 +29,8 @@ define(function(require) {
     };
 
     function clearMainContent() {
-    $('#mainContent').children().first().remove();
-}
+        $('#mainContent').children().first().remove();
+    };
 
     return Quest;
 });
