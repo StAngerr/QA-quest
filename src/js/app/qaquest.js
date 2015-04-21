@@ -18,9 +18,13 @@ define(function(require) {
             localStorage.setItem("currentStage", currentStage);
 
             clearMainContent();     
-            var st1 = lvls[0];
-            st1.openStage();
-            st1.initEvents();   
+            //var st1 = lvls[0];
+            var st2 = lvls[1];
+            
+            // st1.openStage();
+            // st1.initEvents();
+            st2.openStage();
+            st2.initEvents();   
         }
 
         this.finishQuest = function() {
