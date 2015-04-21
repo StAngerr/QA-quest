@@ -10,3 +10,38 @@
 		height: 700px;
 	}
 }
+
+
+
+/* Sticks game "Bashe" */
+
+#stickGameWrapp {
+	width: 100%;
+	height: 100%;
+	.sticksSection {
+		position: absolute;
+		height: 100%;
+		width: 40%;
+		top: 0;
+		left: 30%;
+		border-right: 1px solid #ccc;
+	}
+
+	.playerPlace {
+		border-right: 1px solid #ccc;
+		position: absolute;
+		height: 100%;
+		width: 30%;
+		top: 0;
+		left: 0;
+	}
+
+	.cpuPlace {
+		position: absolute;
+		height: 100%;
+		width: 30%;
+		top: 0;
+		right: 0;
+		
+	}
+}
