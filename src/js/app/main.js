@@ -3,7 +3,7 @@ define(function (require) {
 	var quest = new Quest();
 	var $ = require('jquery');
 
-    $('.startBtn').on('click',function() {
+    $('.startBtn').on('click', function() {
         quest.startQuest();
     });
 

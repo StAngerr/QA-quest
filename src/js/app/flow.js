@@ -1,7 +1,9 @@
 define(function(require) {
-
 App = function() {
+    var $ = require('jquery');
     var Sprite = require('lib/wade_src/sprite');
+    var SceneObject = require('lib/wade_src/sceneObject');
+    var TextSprite = require('lib/wade_src/textSprite');
 	var gameState;
 	var colors = ['', 'green', 'red', 'blue', 'yellow', 'orange', 'purple'];
 	var lines = [];
@@ -296,13 +298,12 @@ App = function() {
                 setTimeout(function() {
                   wade.clearScene();
                   wade.stop();
-                  finishGame();
+                  $('.popup').trigger('flowGameFinished');
                 }, 1000);
             }
         }
 
     };
 };
-
     return App;
 });

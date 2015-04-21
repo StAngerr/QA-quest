@@ -67,9 +67,3 @@ function appendPopupTask (name) {
     });
 }
 
- function up() {   /*   WTF ???? */
-	if (word === 'ecmascript'.toUpperCase()) {
-		alert (word);	
-	}
-	$('.gun').show();
-}

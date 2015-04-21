@@ -24,6 +24,7 @@ define(function(require) {
         }
 
         this.finishQuest = function() {
+            
         }
     };
 
