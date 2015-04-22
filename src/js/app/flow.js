@@ -278,7 +278,6 @@ App = function() {
                     }
                 }
             }
-
             // all good, let's add a new point
             points.push(gridCoords);
             gridLines[gridCoords.x][gridCoords.y] = currentLineId;
@@ -302,7 +301,6 @@ App = function() {
                 }, 1000);
             }
         }
-
     };
 };
     return App;

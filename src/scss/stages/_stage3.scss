@@ -25,8 +25,11 @@
 		top: 0;
 		left: 30%;
 		border-right: 1px solid #ccc;
+		
 	}
-
+	.playerName {
+		text-align: center;
+	}
 	.playerPlace {
 		border-right: 1px solid #ccc;
 		position: absolute;
@@ -34,6 +37,35 @@
 		width: 30%;
 		top: 0;
 		left: 0;
+		.pickStick {
+			width: 60px;
+			height: 60px;
+			border: none;
+			background: #cf0;
+			font-size: 1.9em;
+			font-weight: bold;
+			&:first-child {
+				background: #000;
+			}
+			&:last-child {
+				background: #ccc;
+			}
+
+			&:hover {
+				background: #dadada;
+				font-size: 2.9em;
+			}
+/* button states */
+			&.disabled {
+				opacity: 0.5;
+				&:hover {
+					background: #cf0;
+					font-size: 1.9em;
+				}
+			}
+
+		}
+		
 	}
 
 	.cpuPlace {
@@ -44,4 +76,29 @@
 		right: 0;
 		
 	}
+
+	.stick {
+		width: 5px;
+		height: 30px;
+		background: #000;
+		margin: 5px;
+		float: left;
+		
+		&:nth-child(2n) {
+			background: orange;
+		}
+	}
+	.pickedSticks {
+		position: absolute;
+		bottom: 150px;
+		left: 0;
+		background: red;
+		width: 100%;
+		height: 30%;
+	}
+
+
+
+
+	
 }
