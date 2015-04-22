@@ -18,54 +18,114 @@
 #stickGameWrapp {
 	width: 100%;
 	height: 100%;
-	.sticksSection {
+	background: #F0FFF3;
+	.mainSection {
 		position: absolute;
 		height: 100%;
 		width: 40%;
 		top: 0;
 		left: 30%;
-		border-right: 1px solid #ccc;
+		border-right: 10px solid #145D2F;
 		
-	}
-	.playerName {
-		text-align: center;
-	}
-	.playerPlace {
-		border-right: 1px solid #ccc;
-		position: absolute;
-		height: 100%;
-		width: 30%;
-		top: 0;
-		left: 0;
-		.pickStick {
-			width: 60px;
-			height: 60px;
-			border: none;
-			background: #cf0;
-			font-size: 1.9em;
-			font-weight: bold;
-			&:first-child {
-				background: #000;
-			}
-			&:last-child {
-				background: #ccc;
+		.rules {
+			height: 20%;
+			padding: 0 10%;
+			margin-bottom: 5%;
+			border-bottom: 10px solid #145D2F;
+		}
+		.logSection {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 40%;
+			border-top: 5px solid #145D2F;
+			
+			.title {
+				text-align: center;
+				font-size: 1.5em;
+				color: #5D8102;
+				height: 20%;
 			}
 
-			&:hover {
-				background: #dadada;
-				font-size: 2.9em;
-			}
-/* button states */
-			&.disabled {
-				opacity: 0.5;
-				&:hover {
-					background: #cf0;
-					font-size: 1.9em;
+			.logs {
+				height: 80%;
+				width: 100%;
+				overflow-y: scroll;				
+				.singleLog {					
+					.logPlayer {
+						color: #02A91B;
+						text-transform: uppercase;
+					}
+					.logComputer {
+						color: #A9022C;
+						text-transform: uppercase;
+					}
 				}
 			}
 
 		}
 		
+	}
+	.playerName {
+		height: 20%;
+		text-align: center;
+		color: #5D8102;
+		border-bottom: 10px solid #145D2F;
+	}
+	.playerPlace {
+		border-right: 10px solid #145D2F;
+		position: absolute;
+		height: 100%;
+		width: 30%;
+		top: 0;
+		left: 0;
+		transition: background .4s;
+		.controls {
+			text-align: center;
+			color: #5D8102;
+			margin-top: 5%;
+			.pickStick {
+				width: 60px;
+				height: 60px;
+				border: none;
+				background: #5B790F;
+				color: #E6FFA6;
+				font-size: 1.9em;
+				font-weight: bold;
+				border-radius: 50%;
+				transition: background .3s, color .2s;
+				outline: none;
+				&:hover {
+					background: #E6FFA6;
+					color: #5B790F;
+				}
+	/* button states */
+				&.disabled {
+					opacity: 0.5;
+					&:hover {
+						background: #5B790F;
+						font-size: 1.9em;
+						color: #E6FFA6;
+					}
+				}
+
+			}
+		}
+		
+	}
+
+	.sticksSection {
+		width: 80%;
+		height: 30%;
+		margin: 0 auto;
+		border: 5px solid #145D2F;
+		
+		.title {
+			text-align: center;
+			font-size: 1.5em;
+			color: #5D8102;
+		}
 	}
 
 	.cpuPlace {
@@ -74,6 +134,7 @@
 		width: 30%;
 		top: 0;
 		right: 0;
+		transition: background .4s;
 		
 	}
 
@@ -92,11 +153,17 @@
 		position: absolute;
 		bottom: 150px;
 		left: 0;
-		background: red;
 		width: 100%;
 		height: 30%;
 	}
+	
+	.activePlayer {
+		background: #FFCEA7;
+	}
 
+	.activeCpu {
+		background: #FFA2A2;
+	}
 
 
 
