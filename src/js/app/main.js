@@ -54,18 +54,20 @@ function StickGame() {
 
 	currentGame.nextPick = function() {		
 		if( !(checkGameStatus()) ) {
-			currentGame.finishGame();
+			$('.pickStick').addClass('disabled') /*DELETE*/
+			$('.pickStick').removeAttr('disabled'); /* REMOVE IT*/
+ 			currentGame.finishGame();
 			return;
 		}
 		if(currentGame.whoseTurn == 'computer') {
 			currentGame.computerPicks();
-			
 		}
 	};
 
 	currentGame.finishGame = function() {
 		var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
-		alert(winner + ' won!');	
+		printWhoWon(winner);
+		
 	};
 
 	currentGame.playerPicks = function(event) {
@@ -74,8 +76,8 @@ function StickGame() {
 			logPick(currentGame.whoseTurn, sticks);
 			currentGame.firstPlayer.sticks += pickSticks(sticks);
 			changeTurn();
+			changeBtnState(); /*DELETE*/
 			currentGame.nextPick();
-			//changeBtnState();
 		} else {
 			alert('not enough sticks left');
 		}
@@ -85,9 +87,19 @@ function StickGame() {
 		var max = 3;
 		var min = 1;
 		var sticks = Math.floor(Math.random() * max) + min;
-		/*loop  util computer will find need count of sticks*/
-		while(!canPick(sticks)) {
-			sticks = Math.floor(Math.random() * max--) + min;
+		/*a little bit intellect  for computer. if left less than 3 sticks take them all*/
+		var sticksLeft = $('#stickGameWrapp  .sticksSection  .stick').length;
+		if(sticksLeft <= 3) {
+			sticks = sticksLeft;
+		} else if(sticksLeft <= 6) {
+			switch(sticksLeft) {
+				case 6:
+					sticks = 2;
+					break;
+				case 5: 
+					sticks = 1;
+					break;
+			}
 		}
 		/* little pause when compute picks*/
 		var compPickDelay = setTimeout(function() {
@@ -96,16 +108,17 @@ function StickGame() {
 			changeTurn();
 			currentGame.nextPick();
 			clearTimeout(compPickDelay);
+			changeBtnState(); /*DELETE*/
 		}, 1000);
 	};
 		/* this function checks if is it a game end*/
 	function checkGameStatus() {  
-		var sticksLeft = $('.stick').length;
+		var sticksLeft = $('#stickGameWrapp  .sticksSection  .stick').length;/* here must be strict path to sticks */
 		if(sticksLeft) {
 			return true;
 		}
 		return false;
-	}
+	};
 
 	function changeBtnState() {
 		var buttons = $('.pickStick');
@@ -122,17 +135,15 @@ function StickGame() {
 	function changeTurn() {
 		if(currentGame.whoseTurn == 'player') {
 			currentGame.whoseTurn = currentGame.secondPlayer.name;
-			changeBtnState(); /*DELETE*/
 			visualizeTurn();	
 		} else {
 			currentGame.whoseTurn = currentGame.firstPlayer.name;
-			changeBtnState(); /*DELETE*/
 			visualizeTurn();
 		}
 	};
 
 	function canPick(sticksCount) {
-		var sticksLeft = $('.stick').length;
+		var sticksLeft = $('#stickGameWrapp  .sticksSection  .stick').length;/* here must be strict path to sticks */
 		
 		if(sticksCount <= sticksLeft) {
 			return true;
@@ -144,8 +155,9 @@ function StickGame() {
 		var sticksLeft = $('.stick');
 
 		for (var i = sticksCount; i >= 1; i--) {
-			$(sticksLeft[i - 1]).remove();
-			console.log('deleted')
+			var curStick = $(sticksLeft[i - 1]);
+			$(curStick).remove();
+			addStickBlock(currentGame.whoseTurn, curStick);
 		}
 		return sticksCount;
 	};
@@ -162,10 +174,19 @@ function StickGame() {
 
 	function logPick(player, sticks) {
 		var who = (player == 'player') ? 'Player' : 'Computer';
-		var message ='<p class="singleLog"><span class="log' + who + '">' + player + '</span> took ' + sticks + ' sticks.</p>'
+		var message ='<p class="singleLog"><span class="log' + who + '">' + player + '</span> took ' + sticks + ((sticks == 1) ? ' stick' : ' sticks') + '.</p>'
 		$('.logs').append(message);
-	}
+	};
 
+	function addStickBlock(player, stick) {
+		var where = (player == 'player') ? '.playerPlace' : '.cpuPlace';
+		$(where + ' > .pickedSticks').append(stick);
+	};
+
+	function printWhoWon(winner) {
+		$('.sticksSection > *').remove();
+		$('.sticksSection').append('<h1>' + winner  + ' won! </h1>')
+	}
 }; 
 
 
