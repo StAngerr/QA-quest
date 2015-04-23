@@ -1,15 +1,30 @@
+
 #stage3 {
-	background: url('http://images.clipartpanda.com/winding-river-clipart-river-view-15852540.jpg') no-repeat 0 0;
+		background: url('http://images.clipartpanda.com/winding-river-clipart-river-view-15852540.jpg') no-repeat 0 0;
+
 	
-	.bubbles {
-		position: absolute;
-		top: 0;
-		left: 5%;
-		border: 1px solid grey;
-		width: 500px;
-		height: 700px;
+	.popupWrap {
+		.bubbles-popup {	
+		top: 10px;	
+		width: 457px;
+		height: 735px;
+
+		
+		div#wade_main_div {
+			top: -5px;
+			left: -92px;
+		max-width: 600px;			
+			max-height: 700px;
+			
+			canvas {
+				max-width: 500px;
+				max-height: 700px;
+			}
+		}
 	}
 }
+	}
+	
 
 
 

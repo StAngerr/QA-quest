@@ -47,6 +47,15 @@
          $('body').css({'-webkit-clip-path': 'none'});
     };
 
+     function removeFlashLightEvents() {
+         $(document).off('mousemove');
+         $('html').removeClass('lightOff');
+        $('body').css({'-webkit-clip-path': 'none' });
+         $('body').removeClass('flashLight');
+         $('.flashLightShadow').remove();
+     }
+
+
      /*functions and variables to play cross-zero game*/
     var x = "src/images/x.gif";
     var oz = "src/images/o.gif";
@@ -345,7 +354,28 @@
              $('.newGameB').css('visibility', 'visible');
          }
      }
+<<<<<<< HEAD
     var counter = 0;
+=======
+       var counter = 0;
+     function playAgain() {
+       
+         if (all == 2) {
+             reset();
+         } else if (all == 3) {
+             counter++;
+             if (counter >= 1) { // CHANGE IT THEN!
+                 $('.newGameB').css('visibility', 'hidden');
+               
+                 $('.oil').css('visibility', 'visible');
+                 return false;
+             }
+             
+             reset();
+             
+
+         }
+>>>>>>> df182acdfe6333c0e52a1c43afe047f3a3931ebb
 
     function playAgain() {
         if (all == 2) {
