@@ -81,7 +81,10 @@ function Wade()
         <li> <b>input</b>: <i>boolean</i> - Whether to activate input or not. Defaults to true.</li></ul>
      */
     this.init = function(appScript, appData, options)
-	{
+	{  
+        /*   OUR CUSTOM CODE TO SWITCH DETECT WHAT GAME SHOULD BE UPLOADED*/
+        (appScript.indexOf("flow") > -1) ? App = require('flow') : App = require('bubbles')
+        /* ---------------------------------------*/
         options = options || {};
         var forceReload = options.forceReload;
         var updateCallback = options.updateCallback;
