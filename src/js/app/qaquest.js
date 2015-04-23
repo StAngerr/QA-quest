@@ -16,6 +16,7 @@ define(function(require) {
 
         quest.nextStage = function(stageFromLS) {  
             var stageObj = {};
+            
             (parseInt(stageFromLS)) ? quest.currentStage = stageFromLS : quest.currentStage++;
             writeStageToLS(quest.currentStage);
             clearMainContent();           
