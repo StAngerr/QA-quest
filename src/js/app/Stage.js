@@ -4,12 +4,12 @@ define(function(require) {
 
     var Stage = function(templ) {
         this.templateUrl = templ;
+        this.initEvents;
+        this.finishStage;
 
         this.openStage = function() {
             this.getTmpl(this.templateUrl);
-        };
-        this.initEvents;
-        this.finish;
+        };    
 
         this.getTmpl = function(tmplName, direction, dataToTempl) {
             $.ajax({
@@ -22,9 +22,7 @@ define(function(require) {
                     $(target).prepend(content);
                 }
             });
-        };
-         
+        };       
     };
-
     return Stage;   
 });

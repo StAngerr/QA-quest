@@ -7,106 +7,106 @@
     /*turn off the light */
         turnOffTheLight();
         addFlashLightEvents();
-
     /*start to play cross-zero*/
-         $('.field').on('click', function (event) {
-             event.stopPropagation();
-             yourChoice($(this).attr('name'));
-         });
-         $('.newGameB').on('click', playAgain);
-         $('.oil').on('click', addOil);
+        $('.field').on('click', function (event) {
+            event.stopPropagation();
+            yourChoice($(this).attr('name'));
+        });
+        $('.newGameB').on('click', playAgain);
+        $('.oil').on('click', addOil);
      }
 
+    stage2.finishStage = function() {
+        removeFlashLightEvents();
+        $('#mainContent').trigger('main:stageFinished');
+    };
 
-     function turnOffTheLight() {
-             $('html').addClass('lightOff');
-             $('body').addClass('flashLight');
-             $('body').append('<div class="flashLightShadow"></div>');
-         }
-         /*    Move events to flash light*/
-     function addFlashLightEvents() {
-         $(document).mousemove(function (e) {
-             $('body').css({
+    function turnOffTheLight() {
+         $('html').addClass('lightOff');
+         $('body').addClass('flashLight');
+         $('body').append('<div class="flashLightShadow"></div>');
+     };
+     /*    Move events to flash light*/
+    function addFlashLightEvents() {
+        $(document).mousemove(function (e) {
+                $('body').css({
                  '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
-             });
-             $('.flashLightShadow').css({
-                 'top': (e.pageY - 100) + 'px',
-                 'left': (e.pageX + 102) + 'px'
-             });
-         });
-     }
+            });
+            $('.flashLightShadow').css({
+                'top': (e.pageY - 100) + 'px',
+                'left': (e.pageX + 102) + 'px'
+            });
+        });
+    };
 
-     function removeFlashLightEvents() {
-         $(document).off('mousemove');
-         $('html').removeClass('lightOff');
-       
-         $('body').removeClass('flashLight');
-         $('.flashLightShadow').remove();
-     }
+    function removeFlashLightEvents() {
+        $(document).off('mousemove');
+        $('html').removeClass('lightOff');
+        $('body').removeClass('flashLight');
+        $('.flashLightShadow').remove();
+         $('body').css({'-webkit-clip-path': 'none'});
+    };
 
      /*functions and variables to play cross-zero game*/
-
-     var x = "src/images/x.gif";
-     var oz = "src/images/o.gif";
-     var blank = "src/images/z.gif";
-     var pause = 0;
-     var all = 0;
-     var a = 0;
-     var b = 0;
-     var c = 0;
-     var d = 0;
-     var e = 0;
-     var f = 0;
-     var g = 0;
-     var h = 0;
-     var i = 0;
-     var j = 0;
-     var k = 0;
-     var l = 0;
-     var m = 0;
-     var n = 0;
-     var o = 0;
-     var p = 0;
-     var temp = "";
-     var ok = 0;
-     var cf = 0;
-     var choice = 16;
-     var aRandomNumber = 0;
-     var comp = 0;
-     var t = 0;
-     var wn = 0;
-     var ls = 0;
-     var ts = 0;
-
+    var x = "src/images/x.gif";
+    var oz = "src/images/o.gif";
+    var blank = "src/images/z.gif";
+    var pause = 0;
+    var all = 0;
+    var a = 0;
+    var b = 0;
+    var c = 0;
+    var d = 0;
+    var e = 0;
+    var f = 0;
+    var g = 0;
+    var h = 0;
+    var i = 0;
+    var j = 0;
+    var k = 0;
+    var l = 0;
+    var m = 0;
+    var n = 0;
+    var o = 0;
+    var p = 0;
+    var temp = "";
+    var ok = 0;
+    var cf = 0;
+    var choice = 16;
+    var aRandomNumber = 0;
+    var comp = 0;
+    var t = 0;
+    var wn = 0;
+    var ls = 0;
+    var ts = 0;
      // logic to know who is winner
      // 1 - X; 2 - 0; 3 - tip
+    function logicOne() {
+         if ((a == 1) && (b == 1) && (c == 1) && (d == 1)) all = 1;
+         if ((a == 1) && (f == 1) && (k == 1) && (p == 1)) all = 1;
+         if ((a == 1) && (e == 1) && (i == 1) && (m == 1)) all = 1;
+         if ((b == 1) && (f == 1) && (j == 1) && (n == 1)) all = 1;
+         if ((c == 1) && (g == 1) && (k == 1) && (o == 1)) all = 1;
+         if ((d == 1) && (h == 1) && (l == 1) && (p == 1)) all = 1;
+         if ((e == 1) && (f == 1) && (g == 1) && (h == 1)) all = 1;
+         if ((g == 1) && (i == 1) && (k == 1) && (l == 1)) all = 1;
+         if ((m == 1) && (n == 1) && (o == 1) && (p == 1)) all = 1;
+         if ((m == 1) && (j == 1) && (g == 1) && (d == 1)) all = 1;
+         //
+         if ((a == 2) && (b == 2) && (c == 2) && (d == 2)) all = 2;
+         if ((a == 2) && (f == 2) && (k == 2) && (p == 2)) all = 2;
+         if ((a == 2) && (e == 2) && (i == 2) && (m == 2)) all = 2;
+         if ((b == 2) && (f == 2) && (j == 2) && (n == 2)) all = 2;
+         if ((c == 2) && (g == 2) && (k == 2) && (o == 2)) all = 2;
+         if ((d == 2) && (h == 2) && (l == 2) && (p == 2)) all = 2;
+         if ((e == 2) && (f == 2) && (g == 2) && (h == 2)) all = 2;
+         if ((g == 2) && (i == 2) && (k == 2) && (l == 2)) all = 2;
+         if ((m == 2) && (n == 2) && (o == 2) && (p == 2)) all = 2;
+         if ((m == 2) && (j == 2) && (g == 2) && (d == 2)) all = 2;
 
-     function logicOne() {
-             if ((a == 1) && (b == 1) && (c == 1) && (d == 1)) all = 1;
-             if ((a == 1) && (f == 1) && (k == 1) && (p == 1)) all = 1;
-             if ((a == 1) && (e == 1) && (i == 1) && (m == 1)) all = 1;
-             if ((b == 1) && (f == 1) && (j == 1) && (n == 1)) all = 1;
-             if ((c == 1) && (g == 1) && (k == 1) && (o == 1)) all = 1;
-             if ((d == 1) && (h == 1) && (l == 1) && (p == 1)) all = 1;
-             if ((e == 1) && (f == 1) && (g == 1) && (h == 1)) all = 1;
-             if ((g == 1) && (i == 1) && (k == 1) && (l == 1)) all = 1;
-             if ((m == 1) && (n == 1) && (o == 1) && (p == 1)) all = 1;
-             if ((m == 1) && (j == 1) && (g == 1) && (d == 1)) all = 1;
-             //
-             if ((a == 2) && (b == 2) && (c == 2) && (d == 2)) all = 2;
-             if ((a == 2) && (f == 2) && (k == 2) && (p == 2)) all = 2;
-             if ((a == 2) && (e == 2) && (i == 2) && (m == 2)) all = 2;
-             if ((b == 2) && (f == 2) && (j == 2) && (n == 2)) all = 2;
-             if ((c == 2) && (g == 2) && (k == 2) && (o == 2)) all = 2;
-             if ((d == 2) && (h == 2) && (l == 2) && (p == 2)) all = 2;
-             if ((e == 2) && (f == 2) && (g == 2) && (h == 2)) all = 2;
-             if ((g == 2) && (i == 2) && (k == 2) && (l == 2)) all = 2;
-             if ((m == 2) && (n == 2) && (o == 2) && (p == 2)) all = 2;
-             if ((m == 2) && (j == 2) && (g == 2) && (d == 2)) all = 2;
+         if ((a != 0) && (b != 0) && (c != 0) && (d != 0) && (e != 0) && (f != 0) && (g != 0) && (h != 0) && (i != 0) && (j != 0) && (k != 0) && (l != 0) && (m != 0) && (n != 0) && (o != 0) && (p != 0) && (all == 0)) all = 3;
 
-             if ((a != 0) && (b != 0) && (c != 0) && (d != 0) && (e != 0) && (f != 0) && (g != 0) && (h != 0) && (i != 0) && (j != 0) && (k != 0) && (l != 0) && (m != 0) && (n != 0) && (o != 0) && (p != 0) && (all == 0)) all = 3;
-
-         }
+     }
          // logic for AI move
      function logicTwo() {
              if ((a == 2) && (b == 2) && (c == 0) && (d == 2) && (temp == "")) temp = "C";
@@ -344,28 +344,23 @@
          } else if (all == 2 || all == 3) {
              $('.newGameB').css('visibility', 'visible');
          }
-
      }
-       var counter = 0;
-     function playAgain() {
-       
-         if (all == 2) {
-             reset();
-         } else if (all == 3) {
-             counter++;
-             if (counter >= 3) {
-                 $('.newGameB').css('visibility', 'hidden');
-                // $('#stage2').append('<button class="oil"></button>')
-                 $('.oil').css('visibility', 'visible');
-                 return false;
-             }
-             
-             reset();
-             
+    var counter = 0;
 
-         }
-
-     }
+    function playAgain() {
+        if (all == 2) {
+            reset();
+        } else if (all == 3) {
+            counter++;
+            if (counter >= 3) {
+                $('.newGameB').css('visibility', 'hidden');
+            // $('#stage2').append('<button class="oil"></button>')
+                $('.oil').css('visibility', 'visible');
+                return false;
+        }
+         reset();
+        }
+    }
 
      function reset() {
          $('.newGameB').css('visibility', 'hidden');
@@ -415,22 +410,13 @@
          }
          t--;
      }
-
      // end of game
-
-     function addOil() {
-        
+     function addOil() {        
         $('.oil').removeClass('noItem').addClass('activeItem');
         $('button.oil').hide();
         $('#crossZero').remove();
         $('#stage2').append('<div class="lid"></div>');
-        $('.lid').on ('click', function(){
-           
-            removeFlashLightEvents();
-             stage2.finish();
-        })
-
+        $('.lid').on ('click', stage2.finishStage);
     }
-
-     return stage2;
+    return stage2;
  });

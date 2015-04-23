@@ -2,13 +2,16 @@ define(function (require) {
 	var Quest = require('src/js/app/qaquest.js');
 	var quest = new Quest();
 	var $ = require('jquery');
-	
-    
-  var currentStage = localStorage.getItem("currentStage");
-   (currentStage)? quest.nextStage(currentStage): $('.startBtn').on('click', function() {
-        quest.startQuest();
-    });
 
+	( checkLS() ) ? quest.startQuest() : $('.startBtn').on('click', quest.startQuest);
+
+	function checkLS() {
+		if(localStorage.getItem("currentStage")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 });
 
 

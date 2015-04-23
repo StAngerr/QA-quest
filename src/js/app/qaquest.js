@@ -1,36 +1,41 @@
-var lvls = [];
 define(function(require) {
-    var lvls = require('./levels.js'); 
-     var $ = require('jquery');
-    var Quest = function() {
-       
-        this.startQuest = function() {            
-            this.nextStage();
-        }
+    var allStages = require('./levels.js'); 
+    var $ = require('jquery');
 
-        this.nextStage = function(stage) {  
-            var currentStage = localStorage.getItem("currentStage")|| -1;
+    var Quest = function() {         
+        var quest = this;
 
-/*            if(currentStage >= STAGES.length - 1) {
-                return;
-            }*/
-            stage ? currentStage = stage : currentStage++;
-            localStorage.setItem("currentStage", currentStage);
+        quest.currentStage = 0;
+
+        quest.startQuest = function() {         
+            initMainModuleEvents();   
+            quest.nextStage( getStageFromLS() );
+        };
+
+        quest.nextStage = function(stageFromLS) {  
+            var stageObj = {};
+            (parseInt(stageFromLS)) ? quest.currentStage = stageFromLS : quest.currentStage++;
+            writeStageToLS(quest.currentStage);
             clearMainContent();           
-            var st = lvls[currentStage];           
-            st.openStage();
-            st.initEvents(); 
-            var that = this;
-            $('#mainContent').on('dragon', function() {
-                $('body > *').remove();
-                $('body').css('background','#cf0');
-                alert(this + 'i become a dragon');
-            });
-            st.finish = function () {
-                that.nextStage();
-            }             
-        }        
-    };
+            stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array hase zero index*/         
+            stageObj.openStage();
+            stageObj.initEvents();          
+        };
+
+        function writeStageToLS(stage) {
+            localStorage.setItem("currentStage", stage);
+        };
+
+        function getStageFromLS() {
+           return parseInt(localStorage.getItem("currentStage"), 10) || 0;
+        };
+
+        function initMainModuleEvents() {
+            var module = $('#mainContent');
+
+            $(module).on('main:stageFinished', quest.nextStage);
+        };        
+    };   
 
     function clearMainContent() {
         $('#mainContent').children().first().remove();
