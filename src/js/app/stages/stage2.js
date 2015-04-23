@@ -14,7 +14,7 @@
         });
         $('.newGameB').on('click', playAgain);
         $('.oil').on('click', addOil);
-     }
+     };
 
     stage2.finishStage = function() {
         removeFlashLightEvents();
@@ -53,7 +53,7 @@
         $('body').css({'-webkit-clip-path': 'none' });
          $('body').removeClass('flashLight');
          $('.flashLightShadow').remove();
-     }
+     };
 
 
      /*functions and variables to play cross-zero game*/
@@ -354,9 +354,9 @@
              $('.newGameB').css('visibility', 'visible');
          }
      }
-<<<<<<< HEAD
+
     var counter = 0;
-=======
+
        var counter = 0;
      function playAgain() {
        
@@ -375,8 +375,8 @@
              
 
          }
->>>>>>> df182acdfe6333c0e52a1c43afe047f3a3931ebb
 
+     }
     function playAgain() {
         if (all == 2) {
             reset();
@@ -442,7 +442,7 @@
      }
      // end of game
      function addOil() {        
-        $('.oil').removeClass('noItem').addClass('activeItem');
+        $('#inventory').trigger('inventory:addOil');
         $('button.oil').hide();
         $('#crossZero').remove();
         $('#stage2').append('<div class="lid"></div>');

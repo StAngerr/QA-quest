@@ -1,6 +1,5 @@
 define(function(require) {
     var _ = require('underscore');
-    
 
     var Stage = function(templ) {
         this.templateUrl = templ;

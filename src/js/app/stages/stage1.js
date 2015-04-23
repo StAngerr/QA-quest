@@ -66,7 +66,7 @@ define(function(require) {
             clearInterval(myVar);
             moveToBox();
         });
-        $('.gun').removeClass('noItem').addClass('activeItem');
+        $('#inventory').trigger('inventory:addGun');
     };
 
     function moveToBox() {
@@ -90,7 +90,7 @@ define(function(require) {
     function closePopup(event) {
         $('.popupWrap').remove();
         $('.totalLevel').css({'opacity':'1'});
-        $('.batteries').removeClass('noItem').addClass('activeItem');
+        $('#inventory').trigger('inventory:addBatteries');
     };
 
     function allowDrop(event) {

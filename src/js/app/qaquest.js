@@ -1,14 +1,16 @@
 define(function(require) {
-    var allStages = require('./levels.js'); 
     var $ = require('jquery');
+    var allStages = require('./levels.js'); 
+    var Invetory = require('./inventory.js');
 
     var Quest = function() {         
         var quest = this;
-
         quest.currentStage = 0;
+        quest.inventory = new Invetory();
 
         quest.startQuest = function() {         
-            initMainModuleEvents();   
+            initMainModuleEvents();
+            initInventoryModuleEvents();   
             quest.nextStage( getStageFromLS() );
         };
 
@@ -34,6 +36,14 @@ define(function(require) {
             var module = $('#mainContent');
 
             $(module).on('main:stageFinished', quest.nextStage);
+        };
+
+        function initInventoryModuleEvents() {
+            var module = $('#inventory');
+
+            $(module).on('inventory:addBatteries', quest.inventory.activateBatteries);
+            $(module).on('inventory:addGun', quest.inventory.activateGun);
+            $(module).on('inventory:addOil', quest.inventory.activateOil);
         };        
     };   
 
