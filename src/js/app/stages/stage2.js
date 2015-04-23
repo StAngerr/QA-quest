@@ -39,7 +39,7 @@
      function removeFlashLightEvents() {
          $(document).off('mousemove');
          $('html').removeClass('lightOff');
-       
+        $('body').css({'-webkit-clip-path': 'none' });
          $('body').removeClass('flashLight');
          $('.flashLightShadow').remove();
      }
@@ -353,9 +353,9 @@
              reset();
          } else if (all == 3) {
              counter++;
-             if (counter >= 3) {
+             if (counter >= 1) { // CHANGE IT THEN!
                  $('.newGameB').css('visibility', 'hidden');
-                // $('#stage2').append('<button class="oil"></button>')
+               
                  $('.oil').css('visibility', 'visible');
                  return false;
              }

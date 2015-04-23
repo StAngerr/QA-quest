@@ -11,8 +11,9 @@ define(function(require) {
 
     	 function bubbleStart() { 
     						$('.popupWrap').remove();/*!!!*/ 
-    						stage3.getTmpl('popup.html');        
-                $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
+    						stage3.getTmpl('popup.html','#stage3'); 
+    						$('.popup').addClass('bubbles-popup')      
+                $('.popup').append('<div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div>'); /* set sizes*/
                 wade.init('src/js/app/lib/wade_src/bubbles.js');
                 
            
@@ -80,9 +81,10 @@ function StickGame() {
 	currentGame.finishGame = function() {
 		var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
 		printWhoWon(winner);
+		/*CHECK WHO IS WINNER*/
 		setTimeout(function(){
 			 bubbleStart();
-		}, 3000)
+		}, 3000);
 		
 	};
 
