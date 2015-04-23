@@ -11,7 +11,9 @@
     var InputManager = require('lib/wade_src/inputManager');
     var Sprite = require('lib/wade_src/sprite');
     var Wade_drawFunctions = require('lib/wade_src/drawFunctions');
+    var SceneObject = require('lib/wade_src/sceneObject');
     var App = require('flow');
+
 function Wade()
 {
     var version = '2.1';

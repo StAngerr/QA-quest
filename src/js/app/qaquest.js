@@ -2,34 +2,30 @@ var lvls = [];
 define(function(require) {
     var lvls = require('./levels.js'); 
     var STAGES = require('./stagesObj.js');  
-
+     
     var Quest = function() {
-
-        this.startQuest = function() {
+       
+        this.startQuest = function() {            
             this.nextStage();
         }
 
-        this.nextStage = function(stage) {
-            var currentStage = localStorage.getItem("currentStage") || -1;
+        this.nextStage = function(stage) {  
+              var currentStage = localStorage.getItem("currentStage")|| -1;
             if(currentStage >= STAGES.length - 1) {
                 return;
             }
             stage ? currentStage = stage : currentStage++;
             localStorage.setItem("currentStage", currentStage);
-
-            clearMainContent();     
-            //var st1 = lvls[0];
-            var st2 = lvls[1];
-            
-            // st1.openStage();
-            // st1.initEvents();
-            st2.openStage();
-            st2.initEvents();   
-        }
-
-        this.finishQuest = function() {
-            
-        }
+            clearMainContent();           
+            var st = lvls[currentStage];           
+            st.openStage();
+            st.initEvents(); 
+            var that = this;
+            st.finish = function () {
+                
+                that.nextStage();
+            }             
+        }        
     };
 
     function clearMainContent() {

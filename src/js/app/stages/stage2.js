@@ -39,6 +39,7 @@
      function removeFlashLightEvents() {
          $(document).off('mousemove');
          $('html').removeClass('lightOff');
+       
          $('body').removeClass('flashLight');
          $('.flashLightShadow').remove();
      }
@@ -286,9 +287,10 @@
              checkSpace();
              if (ok == 1) {
                  document.images[chName].src = x;
-             }
-             if (ok == 0) taken();
+            }
              process();
+             if (ok == 0) taken();
+            
              if ((all == 0) && (pause == 0)) myChoice();
          }
      }
@@ -338,7 +340,6 @@
          logicOne();
          if (all == 1) {
              $('.newGameB').css('visibility', 'hidden');
-             //$('#stage2').append('<button class="oil" ></button>')
              $('.oil').css('visibility', 'visible');
          } else if (all == 2 || all == 3) {
              $('.newGameB').css('visibility', 'visible');
@@ -423,6 +424,11 @@
         $('button.oil').hide();
         $('#crossZero').remove();
         $('#stage2').append('<div class="lid"></div>');
+        $('.lid').on ('click', function(){
+           
+            removeFlashLightEvents();
+             stage2.finish();
+        })
 
     }
 

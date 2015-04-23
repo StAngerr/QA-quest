@@ -1,5 +1,5 @@
 define(function(require) {
-    var Stage = require('src/js/app/Stage.js');
+    var Stage = require('src/js/app/Stage.js');    
     var stage1 = new Stage('stage1.html');
     var $ = require('jquery');
     var wade = require('wade');
@@ -39,6 +39,10 @@ define(function(require) {
             });
         } else {
             /*  $('#mainModule').trigger('main:stageFinished');*/
+
+             stage1.finish()
+
+
         }
 
         function showWord() {  
@@ -85,7 +89,7 @@ define(function(require) {
             $('.popupWrap').remove();
             $('.totalLevel').css({'opacity':'1'});
             $('.batteries').removeClass('noItem').addClass('activeItem');
-            activeItems.push('.batteries'); 
+            //activeItems.push('.batteries'); 
         };
 
         function allowDrop(event) {
