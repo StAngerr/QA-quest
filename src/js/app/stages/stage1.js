@@ -38,7 +38,7 @@ define(function(require) {
                 };
             });
         } else {
-            /*  $('#mainModule').trigger('main:stageFinished');*/
+             $('#mainContent').trigger('dragon');
 
              stage1.finish()
 
