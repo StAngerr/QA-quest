@@ -3,8 +3,7 @@
      var stage2 = new Stage('stage2Tmpl.html');
      var $ = require('jquery');
 
-     stage2.initEvents = function () {
-         addOil();
+     stage2.initEvents = function () {        
     /*turn off the light */
         turnOffTheLight();
         addFlashLightEvents();
@@ -209,81 +208,97 @@
              ok = 1;
              if (cf == 0) a = 1;
              if (cf == 1) a = 2;
+             return true;
          }
          if ((temp == "B") && (b == 0)) {
              ok = 1;
              if (cf == 0) b = 1;
              if (cf == 1) b = 2;
+             return true;
          }
          if ((temp == "C") && (c == 0)) {
              ok = 1;
              if (cf == 0) c = 1;
              if (cf == 1) c = 2;
+             return true;
          }
          if ((temp == "D") && (d == 0)) {
              ok = 1;
              if (cf == 0) d = 1;
              if (cf == 1) d = 2;
+             return true;
          }
          if ((temp == "E") && (e == 0)) {
              ok = 1;
              if (cf == 0) e = 1;
              if (cf == 1) e = 2;
+             return true;
          }
          if ((temp == "F") && (f == 0)) {
              ok = 1;
              if (cf == 0) f = 1;
              if (cf == 1) f = 2;
+             return true;
          }
          if ((temp == "G") && (g == 0)) {
              ok = 1;
              if (cf == 0) g = 1;
              if (cf == 1) g = 2;
+             return true;
          }
          if ((temp == "H") && (h == 0)) {
              ok = 1;
              if (cf == 0) h = 1;
              if (cf == 1) h = 2;
+             return true;
          }
          if ((temp == "I") && (i == 0)) {
              ok = 1;
              if (cf == 0) i = 1;
              if (cf == 1) i = 2;
+             return true;
          }
          if ((temp == "J") && (j == 0)) {
              ok = 1;
              if (cf == 0) j = 1;
              if (cf == 1) j = 2;
+             return true;
          }
          if ((temp == "K") && (k == 0)) {
              ok = 1;
              if (cf == 0) k = 1;
              if (cf == 1) k = 2;
+             return true;
          }
          if ((temp == "L") && (l == 0)) {
              ok = 1;
              if (cf == 0) l = 1;
              if (cf == 1) l = 2;
+             return true;
          }
          if ((temp == "M") && (m == 0)) {
              ok = 1;
              if (cf == 0) m = 1;
              if (cf == 1) m = 2;
+             return true;
          }
          if ((temp == "N") && (n == 0)) {
              ok = 1;
              if (cf == 0) n = 1;
              if (cf == 1) n = 2;
+             return true;
          }
          if ((temp == "O") && (o == 0)) {
              ok = 1;
              if (cf == 0) o = 1;
              if (cf == 1) o = 2;
+             return true;
          }
          if ((temp == "P") && (p == 0)) {
              ok = 1;
              if (cf == 0) p = 1;
              if (cf == 1) p = 2;
+             return true;
          }
      }
 
@@ -301,7 +316,12 @@
              process();
              if (ok == 0) taken();
             
-             if ((all == 0) && (pause == 0)) myChoice();
+             if ((all == 0) && (pause == 0)) {
+                setTimeout(function(){
+                    myChoice();
+                }, 500);
+                
+            }
          }
      }
 
@@ -355,10 +375,10 @@
              $('.newGameB').css('visibility', 'visible');
          }
      }
+       
 
     var counter = 0;
 
-       var counter = 0;
      function playAgain() {
        
          if (all == 2) {
@@ -378,23 +398,14 @@
          }
 
      }
-    function playAgain() {
-        if (all == 2) {
-            reset();
-        } else if (all == 3) {
-            counter++;
-            if (counter >= 3) {
-                $('.newGameB').css('visibility', 'hidden');
-            // $('#stage2').append('<button class="oil"></button>')
-                $('.oil').css('visibility', 'visible');
-                return false;
-        }
-         reset();
-        }
-    }
+    
 
-     function reset() {
-         $('.newGameB').css('visibility', 'hidden');
+     function reset() {        
+        var fields = $('img.field');
+        fields.each( function(index){
+            $(this).attr('src', blank)
+        });
+        $('.newGameB').css('visibility', 'hidden');
 
          all = 0;
          a = 0;
@@ -419,22 +430,8 @@
          choice = 16;
          aRandomNumber = 0;
          comp = 0;
-         document.images.A.src = blank;
-         document.images.B.src = blank;
-         document.images.C.src = blank;
-         document.images.D.src = blank;
-         document.images.E.src = blank;
-         document.images.F.src = blank;
-         document.images.G.src = blank;
-         document.images.H.src = blank;
-         document.images.I.src = blank;
-         document.images.J.src = blank;
-         document.images.K.src = blank;
-         document.images.L.src = blank;
-         document.images.M.src = blank;
-         document.images.N.src = blank;
-         document.images.O.src = blank;
-         document.images.P.src = blank;
+        
+         
          if (t == 0) {
              t = 2;
              myChoice();

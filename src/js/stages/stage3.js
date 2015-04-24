@@ -19,7 +19,7 @@ define(function(require) {
 		stage3.getTmpl('popupFrameTmpl.html','#stage3'); 
 		$('.popup').addClass('bubbles-popup')      
         $('.popup').append('<div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div>'); /* set sizes*/
-        wade.init('src/js/app/lib/wade_src/bubbles.js');      
+        wade.init('src/js/lib/wade_src/bubbles.js');      
     };
 
 	function StickGame() {

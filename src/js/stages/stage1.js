@@ -76,7 +76,7 @@ define(function(require) {
             stage1.getTmpl('popupFrameTmpl.html');
             $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
             $('.popup').append('<button class="item battery"></button>');  
-            wade.init('src/js/app/flow.js');
+            wade.init('src/js/flow.js');
             $('.popup').on('click', closePopup); 
             $('.popup').on('flowGameFinished', finishFlowGame); 
         });
