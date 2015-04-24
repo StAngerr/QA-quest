@@ -1,6 +1,6 @@
 define(function(require) {
     var Stage = require('src/js/app/Stage.js');    
-    var stage1 = new Stage('stage1.html');
+    var stage1 = new Stage('stage1Tmpl.html');
     var $ = require('jquery');
     var wade = require('wade');
     var word = 0; /* temp variable just to access  to stage 2*/
@@ -21,9 +21,9 @@ define(function(require) {
        
         if (!word) {
             $('.man').animate({'left' : '750'}, 2000, function() {
-                stage1.getTmpl('popup.html');
+                stage1.getTmpl('popupFrameTmpl.html');
                 $('.popup').append('<button class="item gun"> </button>');
-                stage1.getTmpl('task1.html','.popup', stage_content);
+                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
                 $('.item.gun').on('click', sendDnDWord);
                 $('#sendWord').on('click', showWord);
                 /*Drag n drop*/
@@ -44,7 +44,7 @@ define(function(require) {
     };
 
     stage1.finishStage = function() {
-        $('#mainContent').trigger('main:stageFinished');
+        $('#mainSection').trigger('main:stageFinished');
     }
 
     function showWord() {  
@@ -73,7 +73,7 @@ define(function(require) {
         $('.popupWrap').remove();/*!!!*/
         $('.man').animate({'left' : '450'}, 1000, function() {
             $('.totalLevel').remove();
-            stage1.getTmpl('popup.html');
+            stage1.getTmpl('popupFrameTmpl.html');
             $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
             $('.popup').append('<button class="item battery"></button>');  
             wade.init('src/js/app/flow.js');
@@ -118,7 +118,7 @@ define(function(require) {
 
     function drop(event) {
         event.preventDefault();
-        var data =  '<figure class="letters" ondragover="nodrop(event)"> '+ event.dataTransfer.getData('text/html') + '</figure>';
+        var data =  '<figure class="letters" ondragover="nodrop(event)"> ' + event.dataTransfer.getData('text/html') + '</figure>';
         var html =  $(event.target).html();
         $('.makeWord').css ('background-color', '#fff');
         word += that.children().text();   

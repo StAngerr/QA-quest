@@ -34,7 +34,7 @@ define(function(require) {
         };
 
         function initMainModuleEvents() {
-            var module = $('#mainContent');
+            var module = $('#mainSection');
 
             $(module).on('main:stageFinished', quest.nextStage);
         };
@@ -49,7 +49,7 @@ define(function(require) {
     };   
 
     function clearMainContent() {
-        $('#mainContent').children().first().remove();
+        $('#mainContent > *').remove();
     };
 
     return Quest;

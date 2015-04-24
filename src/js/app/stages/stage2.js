@@ -1,9 +1,10 @@
  define(function (require) {
      var Stage = require('src/js/app/Stage.js');
-     var stage2 = new Stage('stage2.html');
+     var stage2 = new Stage('stage2Tmpl.html');
      var $ = require('jquery');
 
      stage2.initEvents = function () {
+         addOil();
     /*turn off the light */
         turnOffTheLight();
         addFlashLightEvents();
@@ -18,7 +19,7 @@
 
     stage2.finishStage = function() {
         removeFlashLightEvents();
-        $('#mainContent').trigger('main:stageFinished');
+        $('#mainSection').trigger('main:stageFinished');
     };
 
     function turnOffTheLight() {
@@ -29,8 +30,8 @@
      /*    Move events to flash light*/
     function addFlashLightEvents() {
         $(document).mousemove(function (e) {
-                $('body').css({
-                 '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
+            $('body').css({
+                '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
             });
             $('.flashLightShadow').css({
                 'top': (e.pageY - 100) + 'px',
@@ -44,15 +45,15 @@
         $('html').removeClass('lightOff');
         $('body').removeClass('flashLight');
         $('.flashLightShadow').remove();
-         $('body').css({'-webkit-clip-path': 'none'});
+        $('body').css({'-webkit-clip-path': 'none'});
     };
 
      function removeFlashLightEvents() {
-         $(document).off('mousemove');
-         $('html').removeClass('lightOff');
+        $(document).off('mousemove');
+        $('html').removeClass('lightOff');
         $('body').css({'-webkit-clip-path': 'none' });
-         $('body').removeClass('flashLight');
-         $('.flashLightShadow').remove();
+        $('body').removeClass('flashLight');
+        $('.flashLightShadow').remove();
      };
 
 
@@ -444,7 +445,7 @@
      function addOil() {        
         $('#inventory').trigger('inventory:addOil');
         $('button.oil').hide();
-        $('#crossZero').remove();
+        $('#ticTacToe').remove();
         $('#stage2').append('<div class="lid"></div>');
         $('.lid').on ('click', stage2.finishStage);
     }

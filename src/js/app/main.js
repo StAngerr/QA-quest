@@ -4,7 +4,6 @@ define(function (require) {
 	var $ = require('jquery');
 
 	( checkLS() ) ? quest.startQuest() : $('.startBtn').on('click', quest.startQuest);
-
 	function checkLS() {
 		if(localStorage.getItem("currentStage")) {
 			return true;

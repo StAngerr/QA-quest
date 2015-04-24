@@ -1,14 +1,13 @@
 define(function(require) {
     var Stage = require('src/js/app/Stage.js');    
-    var stage3 = new Stage('stage3.html');
+    var stage3 = new Stage('stage3Tmpl.html');
     var $ = require('jquery');
     var wade = require('wade');
 
-
     stage3.initEvents = function() {
     	/* it temporarily until standard control is not define*/
-        stage3.getTmpl('popup.html');
-        stage3.getTmpl('sticksGameTmpl.html','.popup');
+        stage3.getTmpl('popupFrameTmpl.html');
+        stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
         var newGame = new StickGame();
 		newGame.startGame();
 		$('.pickStick').on('click', newGame.playerPicks);
@@ -17,7 +16,7 @@ define(function(require) {
 
 	function bubbleStart() { 
 		$('.popupWrap').remove();/*!!!*/ 
-		stage3.getTmpl('popup.html','#stage3'); 
+		stage3.getTmpl('popupFrameTmpl.html','#stage3'); 
 		$('.popup').addClass('bubbles-popup')      
         $('.popup').append('<div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div>'); /* set sizes*/
         wade.init('src/js/app/lib/wade_src/bubbles.js');      
@@ -182,7 +181,7 @@ define(function(require) {
 		function printWhoWon(winner) {
 			$('.sticksSection > *').remove();
 			$('.sticksSection').append('<h1>' + winner  + ' won! </h1>')
-		}
+		};
 	};
     return stage3;
 });
