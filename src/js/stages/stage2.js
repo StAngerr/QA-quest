@@ -1,5 +1,5 @@
  define(function (require) {
-     var Stage = require('src/js/app/Stage.js');
+     var Stage = require('src/js/Stage.js');
      var stage2 = new Stage('stage2Tmpl.html');
      var $ = require('jquery');
 
