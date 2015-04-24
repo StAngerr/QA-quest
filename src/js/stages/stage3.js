@@ -82,16 +82,16 @@ define(function(require) {
 				sticks = sticksLeft;
 			} else if(sticksLeft <= 6) {
 				switch(sticksLeft) {
-					case 6:
-						sticks = 2;
-						break;
-					case 5: 
+					case 8: 
 						sticks = 1;
 						break;
 					case 7:
 						sticks = 3;
 						break;
-					case 8: 
+					case 6:
+						sticks = 2;
+						break;
+					case 5: 
 						sticks = 1;
 						break;
 				}
