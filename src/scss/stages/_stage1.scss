@@ -1,10 +1,10 @@
 
 #stage1 {
-	background: url('../images/stage1Bg.png') no-repeat 0 0;
+	background: url('../images/stage1Bg.jpg') no-repeat 0 0;
 	.totalLevel {
 		position: absolute;
-		top: 458px;
-		left: 330px;
+		top: 434px;
+		left: 398px;
 		display: none;
 		background: url("../images/box.png") no-repeat 0 0;
 		width: 74px;
@@ -14,14 +14,14 @@
 		position: absolute;
 		top: 361px;
 		right: 79px;
-		opacity: 0;
+		opacity: 1;
 		background: url("../images/door.png") no-repeat 0 0;
 		width: 249px;
 		height: 296px;
 	}
 	.man {
 		position: absolute;
-		top: 460px;
+		top: 370px;
 		left: 20px;
 		width: 50px;
 		background: #cf0;
@@ -33,8 +33,8 @@
 
 	.leafes {
 		position: absolute;
-		top: 440px;
-		left: 310px;
+		top: 360px;
+		left: 380px;
 		z-index: 5;
 	}
 }

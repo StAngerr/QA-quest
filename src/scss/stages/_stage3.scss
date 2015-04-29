@@ -1,13 +1,15 @@
 
 #stage3 {
-		background: url('http://images.clipartpanda.com/winding-river-clipart-river-view-15852540.jpg') no-repeat 0 0;
+		background: url('../images/stage3Bg.jpg') no-repeat 0 0;
 
 	
-	.popupWrap {
+	
 		.bubbles-popup {	
-		top: 10px;	
-		width: 457px;
-		height: 735px;
+			position: absolute;
+			top: 50px;	
+			left: 684px;
+			width: 457px;
+			height: 735px;
 
 		
 		div#wade_main_div {
@@ -23,7 +25,7 @@
 		}
 	}
 }
-	}
+	
 	
 
 

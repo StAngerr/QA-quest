@@ -54,7 +54,7 @@ define(function(require) {
     function sendDnDWord(event) {
         $('#stage1Popup1').remove();
         $('.popupWrap').remove();
-        $('.door').css('opacity','1');
+        $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
         var myVar = setInterval(function() { 
             /*remove leafes*/
