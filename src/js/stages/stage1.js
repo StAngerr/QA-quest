@@ -50,7 +50,7 @@ define(function(require) {
         } else {
             stage1.finishStage();
         }
-    }
+    };
 
     stage1.finishStage = function() {
         $('#mainSection').trigger('main:stageFinished');
@@ -147,7 +147,7 @@ define(function(require) {
     function changeManState() {
         (manState == 'stand') ? manState = 'moving' : manState = 'stand';
     };
-    
+
    return stage1;
 });
 

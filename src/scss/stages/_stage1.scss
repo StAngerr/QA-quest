@@ -3,8 +3,8 @@
 	background: url('../images/stage1Bg.jpg') no-repeat 0 0;
 	.totalLevel {
 		position: absolute;
-		top: 438px;
-		left: 407px;
+		top: 437px;
+		left: 411px;
 		display: none;
 		background: url("../images/box.png") no-repeat 0 0;
 		width: 74px;
@@ -21,7 +21,7 @@
 	}
 	.man {
 		position: absolute;
-		top: 370px;
+		top: 425px;
 		left: 20px;
 		width: 50px;
 		background: #cf0;
@@ -29,6 +29,16 @@
 		height: 200px;
 		border: 2px solid black;
 		z-index: 6;
+	}
+
+	.tree {
+		position: absolute;
+		top: 503px;
+		left: 15px;
+		width: 279px;
+		height: 235px;
+		background: url("../images/Tree_small.png") no-repeat 0 0;
+		z-index: 7;
 	}
 
 	.leafes {
