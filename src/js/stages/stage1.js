@@ -3,49 +3,50 @@ define(function(require) {
     var stage1 = new Stage('stage1Tmpl.html');
     var $ = require('jquery');
     var wade = require('wade');
+    var wordGameStatus = 'unfinished';
+    var manState = 'stand';
+    var flowGameStatus = 'unfinished';
     var word = 0; /* temp variable just to access  to stage 2*/
     var that;
     var counter = 0;
 
     stage1.initEvents = function() {
-        $('.door').on('click', function() {
-            stage1.moveToDoor();
+        $('.door').on('click', function(event) {
+            (manState == 'stand' && wordGameStatus == 'unfinished') ? stage1.moveToDoor() :  stage1.finishStage;
         });
     };
 
     stage1.moveToDoor = function() {
+        changeManState()     
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         }; 
-       
-        if (!word) {
-            $('.man').animate({'left' : '750'}, 2000, function() {
-                stage1.getTmpl('popupFrameTmpl.html');
-                $('.popup').append('<button class="item gun"> </button>');
-                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
-                $('.item.gun').on('click', sendDnDWord);
-                $('#sendWord').on('click', showWord);
-                /*Drag n drop*/
-                var leafes = $('.letters');
-                var wordSpot = $('.makeWord')[0];
-                $('.letters').attr("draggable","true");
-                wordSpot.addEventListener('dragover', allowDrop);
-                wordSpot.addEventListener('drop', drop);
-                for (var i = 0; i < leafes.length; i++) {
-                    leafes[i].addEventListener("dragstart", drag);
-                    leafes[i].addEventListener("dragover", over);
-                    leafes[i].addEventListener("dragleave", leave);
-                };
-            });
-        } else {
-            stage1.finishStage();
-        }       
+
+        $('.man').animate({'left' : '750'}, 2000, function() {
+            stage1.getTmpl('popupFrameTmpl.html');
+            $('.popup').append('<button class="item gun"> </button>');
+            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
+            $('.item.gun').on('click', sendDnDWord);
+            $('#sendWord').on('click', showWord);
+            /*Drag n drop*/
+            var leafes = $('.letters');
+            var wordSpot = $('.makeWord')[0];
+            $('.letters').attr("draggable","true");
+            wordSpot.addEventListener('dragover', allowDrop);
+            wordSpot.addEventListener('drop', drop);
+            for (var i = 0; i < leafes.length; i++) {
+                leafes[i].addEventListener("dragstart", drag);
+                leafes[i].addEventListener("dragover", over);
+                leafes[i].addEventListener("dragleave", leave);
+            };
+            changeManState();
+        });   
     };
 
     stage1.finishStage = function() {
         $('#mainSection').trigger('main:stageFinished');
-    }
+    };
 
     function showWord() {  
         $('.gun').show();
@@ -64,12 +65,14 @@ define(function(require) {
         }, 830);
         $('.totalLevel').on('click', function() {
             clearInterval(myVar);
-            moveToBox();
+           if(manState == 'stand' && flowGameStatus == 'unfinished') moveToBox();
         });
         $('#inventory').trigger('inventory:addGun');
+        wordGameStatus = 'finished';
     };
 
     function moveToBox() {
+        changeManState();
         $('.popupWrap').remove();/*!!!*/
         $('.man').animate({'left' : '450'}, 1000, function() {
             $('.totalLevel').remove();
@@ -79,12 +82,14 @@ define(function(require) {
             wade.init('src/js/flow.js');
             $('.popup').on('click', closePopup); 
             $('.popup').on('flowGameFinished', finishFlowGame); 
+            changeManState();
         });
     };
 
     function finishFlowGame() {
          $('#wade_main_div').remove();
          $('.popup').append('<h1>game fineshed</h1>');
+         flowGameStatus = 'finished';
     };
 
     function closePopup(event) {
@@ -130,6 +135,10 @@ define(function(require) {
             return false;
         }       
     };
+
+    function changeManState() {
+        (manState == 'stand') ? manState = 'moving' : manState = 'stand';
+    }
    return stage1;
 });
 
