@@ -20,7 +20,7 @@ define(function(require) {
             (parseInt(stageFromLS)) ? quest.currentStage = stageFromLS : quest.currentStage++;
             writeStageToLS(quest.currentStage);
             clearMainContent();           
-            stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array hase zero index*/         
+            stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array has zero index*/         
             stageObj.openStage();
             stageObj.initEvents();          
         };

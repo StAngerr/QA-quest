@@ -210,8 +210,7 @@ App = function() {
             if (!gridCoords.valid || !currentLineId) {
                 currentLineId = 0;
                 return;
-            }
-
+            }            
             // have we moved to a new cell at all?
             var points = lines[currentLineId].points;
             if (points[points.length - 1].x == gridCoords.x && points[points.length - 1].y == gridCoords.y) {
