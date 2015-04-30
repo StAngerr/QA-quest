@@ -8,6 +8,9 @@ define(function (require) {
 		if(localStorage.getItem("currentStage")) {
 			return true;
 		} else {
+			setTimeout(function(){
+				quest.startQuest();
+			}, 20000);
 			return false;
 		}
 	}
