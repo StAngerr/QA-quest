@@ -8,17 +8,19 @@
 			position: absolute;
 			top: 50px;	
 			left: 684px;
-			width: 457px;
+			width: 500px;
 			height: 735px;
 
 		
 		div#wade_main_div {
 			top: -5px;
 			left: -92px;
-		max-width: 600px;			
+			max-width:500px;
+			width: 500px;			
 			max-height: 700px;
 			
 			canvas {
+				position: absolute;
 				max-width: 500px;
 				max-height: 700px;
 			}

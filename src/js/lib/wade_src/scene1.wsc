@@ -3,8 +3,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 21.440000000000026,
-				"y": 15.950000000000019
+				"x": 312.39000000000004,
+				"y": -77.66
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -19,7 +19,7 @@
 					},
 					"layer": 5,
 					"size": {
-						"x": 1200.6725893522596,
+						"x": 508.91035296411434,
 						"y": 800
 					},
 					"autoResize": false,
@@ -48,7 +48,7 @@
 			},
 			"properties": {},
 			"functions": {
-				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n            player.getSprite().setSize(34, 100);\r\n            \r\nvar platformsMove = [];\r\nvar temp = wade.getObjectsInArea(1)\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() != 'ground') {\r\n       clearInterval(temp[index].moveInterval);\r\n            temp[index].move();\r\n           \r\n    \r\n      \r\n  }\r\n})\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (Math.max(player.getPosition().x-60, 123), player.getPosition().y, 200);\r\n    \r\n} else if (code === 39) {\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo ((Math.min(player.getPosition().x+60 , 500)), player.getPosition().y, 200);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\nelse {\r\n    return false\r\n    \r\n}\r\n\r\n    \r\n\r\n\r\n\r\n\r\n\n}",
+				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n            player.getSprite().setSize(34, 100);\r\n            \r\nvar platformsMove = [];\r\nvar temp = wade.getObjectsInArea(1)\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() != 'ground') {\r\n       clearInterval(temp[index].moveInterval);\r\n            temp[index].move();\r\n           \r\n    \r\n      \r\n  }\r\n})\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (Math.max(player.getPosition().x-60, -170), player.getPosition().y, 200);\r\n    \r\n} else if (code === 39) {\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo ((Math.min(player.getPosition().x+60 , 700)), player.getPosition().y, 200);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\nelse {\r\n    return false\r\n    \r\n}\r\n\r\n    \r\n\r\n\r\n\r\n\r\n\n}",
 				"onAddToScene": "function (data)\n{\n}",
 				"onFocus": "function (data)\n{\n}",
 				"onUpdate": "function (data)\n{\n}",
@@ -125,12 +125,12 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 588.0058108800307,
-						"y": 19.920858966594746
+						"x": 1200,
+						"y": 15.431113225828103
 					},
 					"autoResize": false,
 					"visible": false,
-					"image": "bubble.png",
+					"image": "",
 					"name": "",
 					"drawModifiers": [],
 					"properties": {}
@@ -214,8 +214,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 52.8900000000001,
-				"y": 64.2899999999998
+				"x": 149.03000000000011,
+				"y": 145.2499999999998
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -398,7 +398,7 @@
 			"functions": {
 				"onMoveComplete": "function (data)\n{if(this.direction === \"left\") {\n    this.getSprite().playAnimation('idleLeft');\n} else {\n     this.getSprite().playAnimation('idleRight');\n}\n}",
 				"onUpdate": "function (data)\n{// keep hero on the screen\n\nthis.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  \n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        break;\n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        \n        var depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y);\n       \n        if (depth > 20) {\n            continue;\n        }\n        \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), 118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n\n\n\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
-				"jump": "function (data)\n{var x = Math.round(this.getPosition().x);\nif(( x >= 410 &&this.direction == 'right') || (x <= 213 && this.direction == 'left')) {\n    return false;\n\n}\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (200*(this.direction =='right' ? 1 : -1)), y: -500};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
+				"jump": "function (data)\n{var x = Math.round(this.getPosition().x);\nif(( x >= 610 &&this.direction == 'right') || (x <= 0 && this.direction == 'left')) {\n    return false;\n\n}\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -500};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
 				"onFocus": "function (data)\n{ //   moving bubbles \nvar interval;\nvar movePlatforms = wade.getSceneObject('hero').getSprite().getOverlappingObjects();\nconsole.log(movePlatforms);\n$.each (movePlatforms, function(i) {\n    if (movePlatforms[i].getName() == \"ground\") return false;\n    else {\n        var that = movePlatforms[i].getPosition();\n        if (that.y <= -250) {\n            movePlatforms[i].moveTo(that.x, 450);\n            return false;\n        }\n        interval = setInterval(function() {\n              movePlatforms[i].moveTo(that.x + ((Math.random()>0.5)?-1:2), that.y - 2);\n        }, 1000);\n    }\n});\n}",
 				"onRemoveFromScene": "function (data)\n{\n}"
 			}
@@ -406,8 +406,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 420.2149999999998,
-				"y": 233.73499999999993
+				"x": 407.5649999999998,
+				"y": 266.62499999999994
 			},
 			"rotation": 0,
 			"behaviors": [],
