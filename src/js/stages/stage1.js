@@ -12,18 +12,24 @@ define(function(require) {
 
     stage1.initEvents = function() {
         $('.door').on('click', function(event) {
-            (manState == 'stand' && wordGameStatus == 'unfinished') ? stage1.moveToDoor() :  stage1.finishStage;
+            if(manState == 'stand') stage1.moveToDoor();
         });
     };
 
     stage1.moveToDoor = function() {
-        changeManState()     
+        changeManState(); 
+        if($('.man').css('left') !== '750px') {
+            $('.man').animate({'left' : '750'}, 2000, openWordGame);
+        } else {
+            openWordGame();
+        }  
+    };
+    function openWordGame() {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         }; 
-
-        $('.man').animate({'left' : '750'}, 2000, function() {
+        if(wordGameStatus == 'unfinished') {
             stage1.getTmpl('popupFrameTmpl.html');
             $('.popup').append('<button class="item gun"> </button>');
             stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
@@ -41,8 +47,10 @@ define(function(require) {
                 leafes[i].addEventListener("dragleave", leave);
             };
             changeManState();
-        });   
-    };
+        } else {
+            stage1.finishStage();
+        }
+    }
 
     stage1.finishStage = function() {
         $('#mainSection').trigger('main:stageFinished');
@@ -138,7 +146,8 @@ define(function(require) {
 
     function changeManState() {
         (manState == 'stand') ? manState = 'moving' : manState = 'stand';
-    }
+    };
+    
    return stage1;
 });
 
