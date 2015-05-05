@@ -42,15 +42,30 @@ define(function(require) {
             $('.letters').attr("draggable","true");
             wordSpot.addEventListener('dragover', allowDrop);
             wordSpot.addEventListener('drop', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if ( $(event.target)[0].className != "makeWord") {
+                     that.css('opacity', '1'); 
+                    return false;
+                }
                 counter++;
                 drop(event);                
-                word += that.children().text();               
+                word += that.children().text();
+                return false;               
             });
             fieldToDrop.addEventListener('dragover', allowDrop);
             fieldToDrop.addEventListener('drop', function(event){
+                event.preventDefault();
+                event.stopPropagation();
+                 if ( $(event.target)[0].className != "all-letters") {
+                     that.css('opacity', '1'); 
+                    return false;
+
+                }
                 counter --;
                 drop(event);                      
                 word =  $('.makeWord').children().children(1).text();             
+                return false;           
             });
               
             for (var i = 0; i < leafes.length; i++) {
@@ -120,6 +135,7 @@ define(function(require) {
 
     function allowDrop(event) {
         event.preventDefault();
+        return false;
     };
 
     function drag(event) {      
@@ -143,17 +159,25 @@ define(function(require) {
 
     function drop(event) {
         event.preventDefault();
+        event.stopPropagation();       
         var data =  '<figure class="letters" draggable="true"> ' + event.dataTransfer.getData('text/html') + '</figure>';
         var html =  $(event.target).html();
-        $('.makeWord').css ('background-color', '#fff');           
-        that.remove();
-        $(event.target).html(html + data); 
+        $('.makeWord').css ('background-color', '#fff');          
+       if( $(event.target)[0].nodeName == 'SPAN' || $(event.target)[0].nodeName == 'FIGURE' ) {
+            that.css('opacity', '1');  
+            return false;
+        }
+
+
+       $(event.target).html(html + data); 
+            that.remove(); 
          var leafes = $('.letters');
           for (var i = 0; i < leafes.length; i++) {
                 leafes[i].addEventListener("dragstart", drag);
                 leafes[i].addEventListener("dragover", over);
                 leafes[i].addEventListener("dragleave", leave);
             };
+        
         if (counter === 10) {          
             $('#sendWord').show();
             return false;

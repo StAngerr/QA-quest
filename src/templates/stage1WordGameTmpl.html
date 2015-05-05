@@ -5,8 +5,8 @@
 	<div class="all-letters">
 		<% for(var i=0; i < letters.length; i++) {%>
 			<figure class="letters" class="letters"> 
-				<img alt="letter" src="src/images/leaf.png">
-				<span><%= letters[i].toUpperCase() %></span>
+				<img alt="letter" src="src/images/leaf.png" draggable="false">
+				<span draggable="false"><%= letters[i].toUpperCase() %></span>
 			</figure>
 		<%}%>	
 	</div>
