@@ -6,7 +6,7 @@ define(function(require) {
     var wordGameStatus = 'unfinished';
     var manState = 'stand';
     var flowGameStatus = 'unfinished';
-    var word = 0; /* temp variable just to access  to stage 2*/
+    var word = ''; /* temp variable just to access  to stage 2*/
     var that;
     var counter = 0;
 
@@ -38,9 +38,21 @@ define(function(require) {
             /*Drag n drop*/
             var leafes = $('.letters');
             var wordSpot = $('.makeWord')[0];
+            var fieldToDrop = $('.all-letters')[0];
             $('.letters').attr("draggable","true");
             wordSpot.addEventListener('dragover', allowDrop);
-            wordSpot.addEventListener('drop', drop);
+            wordSpot.addEventListener('drop', function(event) {
+                counter++;
+                drop(event);                
+                word += that.children().text();               
+            });
+            fieldToDrop.addEventListener('dragover', allowDrop);
+            fieldToDrop.addEventListener('drop', function(event){
+                counter --;
+                drop(event);                      
+                word =  $('.makeWord').children().children(1).text();             
+            });
+              
             for (var i = 0; i < leafes.length; i++) {
                 leafes[i].addEventListener("dragstart", drag);
                 leafes[i].addEventListener("dragover", over);
@@ -112,7 +124,7 @@ define(function(require) {
 
     function drag(event) {      
         event.dataTransfer.setData('text/html', $(event.target).html()); 
-        that = $(event.target);       
+        that = $(event.target);          
         return false;
     };
 
@@ -131,14 +143,18 @@ define(function(require) {
 
     function drop(event) {
         event.preventDefault();
-        var data =  '<figure class="letters" ondragover="nodrop(event)"> ' + event.dataTransfer.getData('text/html') + '</figure>';
+        var data =  '<figure class="letters" draggable="true"> ' + event.dataTransfer.getData('text/html') + '</figure>';
         var html =  $(event.target).html();
-        $('.makeWord').css ('background-color', '#fff');
-        word += that.children().text();   
-        that.hide();
-        counter ++;
+        $('.makeWord').css ('background-color', '#fff');           
+        that.remove();
         $(event.target).html(html + data); 
-        if (counter === 10) {
+         var leafes = $('.letters');
+          for (var i = 0; i < leafes.length; i++) {
+                leafes[i].addEventListener("dragstart", drag);
+                leafes[i].addEventListener("dragover", over);
+                leafes[i].addEventListener("dragleave", leave);
+            };
+        if (counter === 10) {          
             $('#sendWord').show();
             return false;
         }       
@@ -150,5 +166,3 @@ define(function(require) {
 
    return stage1;
 });
-
- 

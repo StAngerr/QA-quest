@@ -2,10 +2,14 @@
 	<p class="task-description"><%=taskDescription%></p>	
 	<div class="makeWord" ></div>
 	<button id="sendWord" type="submit">Send</button>
+	<div class="all-letters">
 		<% for(var i=0; i < letters.length; i++) {%>
 			<figure class="letters" class="letters"> 
 				<img alt="letter" src="src/images/leaf.png">
 				<span><%= letters[i].toUpperCase() %></span>
 			</figure>
 		<%}%>	
+	</div>
+
+		
 </div>
