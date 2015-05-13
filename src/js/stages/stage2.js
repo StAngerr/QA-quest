@@ -5,8 +5,8 @@
 
      stage2.initEvents = function () {        
     /*turn off the light */
-        turnOffTheLight();
-        addFlashLightEvents();
+       // turnOffTheLight();
+       // addFlashLightEvents();
     /*start to play cross-zero*/
         $('.field').on('click', function (event) {
             event.stopPropagation();

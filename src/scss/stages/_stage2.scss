@@ -1,17 +1,20 @@
 #stage2 {
-	background: url('http://www.wondermondo.com/Images/NAmerica/LesserAntilles/Aruba/GuadirikiriCave2.jpg') no-repeat 0 0;
+	background: url('../images/stage2Bg.jpg') no-repeat 0 0;
  #ticTacToe {
 	 	position: absolute;
-	 	right: 300px;
+	 	right: 85px;
 	 	bottom: 100px;
 	 	-webkit-transform-origin: 50% 100%;	
 		transform-origin: 50% 100%;
-		-webkit-transform: perspective(300px) rotateX(35deg);	
-		transform: perspective(300px) rotateX(35deg);
+		-webkit-transform: perspective(550px)  rotateY(330deg) rotateX(25deg);	
+		//transform: perspective(400px)  rotateY(45deg);
 
  }
 	.tbl, .tbl td  {
 		border: 1px solid #82817D;
+		img {
+			max-width: 30px;
+		}
 	}
 	.newGameB {
 		visibility: hidden;
