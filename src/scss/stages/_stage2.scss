@@ -1,19 +1,46 @@
 #stage2 {
-	background: url('../images/stage2Bg.jpg') no-repeat 0 0;
+	background: url('../images/stage2.jpg') no-repeat 0 0;
+
+	.stone {
+		position: absolute;
+		top: 555px;
+		right: 0;
+		width: 255px;
+		height: 255px;
+		background: url("../images/stone.png") no-repeat 0 0;
+		
+	}
  #ticTacToe {
-	 	position: absolute;
-	 	right: 85px;
+ 	 	position: absolute;
+ 	 	background: url('../images/Game_2screen_stone_grid.png') no-repeat 0 0;
+	 	right: 90px;
 	 	bottom: 100px;
+	 	width: 155px;
 	 	-webkit-transform-origin: 50% 100%;	
 		transform-origin: 50% 100%;
 		-webkit-transform: perspective(550px)  rotateY(330deg) rotateX(25deg);	
-		//transform: perspective(400px)  rotateY(45deg);
+		transform: perspective(550px)  rotateY(330deg) rotateX(25deg);
 
  }
-	.tbl, .tbl td  {
-		border: 1px solid #82817D;
-		img {
-			max-width: 30px;
+ .tic {
+ 	background: url('../images/x.png') no-repeat 0 0;
+ }
+ .toe {
+ 	background: url('../images/o.png') no-repeat 0 0;
+ }
+	.tbl {
+		position: relative;
+			width: 150px;
+			right: -3px;
+			top: 4px;
+			transform: rotateY(-25deg) rotateX(30deg);
+			
+
+		td  {
+					
+			width: 30px;
+			height: 30px;
+				
 		}
 	}
 	.newGameB {
@@ -21,7 +48,8 @@
 	}
 	.oil {
 		position: absolute;
-		top: 509px;
+		top: 535px;
+		right: 125px;
 		background: url('../images/oil.jpeg') no-repeat 0 0;
 		visibility: hidden;
 		width: 48px;
@@ -47,18 +75,6 @@
 	background: transperent;
 	border-radius: 100px;
 	box-shadow: -205px -5px  30px rgba(204,204,204,0.6);
-}
-.lid {
-	position: absolute;
-	right: 340px;
-	bottom: 150px;	
-	background: url('../images/lid.jpeg') no-repeat -10px 0 ;
-	width: 350px;
-	height: 300px;
-	-webkit-transform-origin: 50% 100%;	
-	transform-origin: 50% 100%;
-	-webkit-transform: perspective(200px) rotateX(35deg);	
-	transform: perspective(200px) rotateX(35deg);
 }
 
 

@@ -5,12 +5,12 @@
 
      stage2.initEvents = function () {        
     /*turn off the light */
-       // turnOffTheLight();
-       // addFlashLightEvents();
+       turnOffTheLight();
+       addFlashLightEvents();
     /*start to play cross-zero*/
         $('.field').on('click', function (event) {
             event.stopPropagation();
-            yourChoice($(this).attr('name'));
+            yourChoice($(this).attr('id'));
         });
         $('.newGameB').on('click', playAgain);
         $('.oil').on('click', addOil);
@@ -57,9 +57,9 @@
 
 
      /*functions and variables to play cross-zero game*/
-    var x = "src/images/x.gif";
-    var oz = "src/images/o.gif";
-    var blank = "src/images/z.gif";
+    var x = "src/images/x.png";
+    var oz = "src/images/o.png";
+    var blank = "src/images/z.png";
     var pause = 0;
     var all = 0;
     var a = 0;
@@ -303,6 +303,7 @@
      }
 
      function yourChoice(chName) {
+      
          pause = 0;
          if (all != 0) ended();
          if (all == 0) {
@@ -311,7 +312,8 @@
              temp = chName;
              checkSpace();
              if (ok == 1) {
-                 document.images[chName].src = x;
+                  $('#'+chName).addClass('tic');
+                // document.images[chName].src = x;
             }
              process();
              if (ok == 0) taken();
@@ -357,7 +359,7 @@
              if (comp == 16) temp = "P";
              checkSpace();
          }
-         document.images[temp].src = oz;
+         $('#' + temp).addClass('toe');
          process();
      }
 
@@ -371,12 +373,13 @@
          if (all == 1) {
              $('.newGameB').css('visibility', 'hidden');
              $('.oil').css('visibility', 'visible');
+                $('#ticTacToe').remove();
          } else if (all == 2 || all == 3) {
              $('.newGameB').css('visibility', 'visible');
          }
      }
        
-
+  
     var counter = 0;
 
      function playAgain() {
@@ -387,8 +390,9 @@
              counter++;
              if (counter >= 1) { // CHANGE IT THEN!
                  $('.newGameB').css('visibility', 'hidden');
-               
+                  $('#ticTacToe').remove();
                  $('.oil').css('visibility', 'visible');
+
                  return false;
              }
              
@@ -401,9 +405,10 @@
     
 
      function reset() {        
-        var fields = $('img.field');
+        var fields = $('.field');
         fields.each( function(index){
-            $(this).attr('src', blank)
+            $(this).removeClass('toe');
+            $(this).removeClass('tic');
         });
         $('.newGameB').css('visibility', 'hidden');
 
@@ -443,8 +448,8 @@
         $('#inventory').trigger('inventory:addOil');
         $('button.oil').hide();
         $('#ticTacToe').remove();
-        $('#stage2').append('<div class="lid"></div>');
-        $('.lid').on ('click', stage2.finishStage);
-    }
+        $('.stone').remove();
+       setTimeout(stage2.finishStage, 2000);
+           }
     return stage2;
  });
