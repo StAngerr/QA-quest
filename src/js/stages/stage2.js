@@ -59,7 +59,6 @@
      /*functions and variables to play cross-zero game*/
     var x = "src/images/x.png";
     var oz = "src/images/o.png";
-    var blank = "src/images/z.png";
     var pause = 0;
     var all = 0;
     var a = 0;
