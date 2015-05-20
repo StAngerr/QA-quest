@@ -2,18 +2,23 @@ define(function (require) {
 	var Quest = require('src/js/qaquest.js');
 	var quest = new Quest();
 	var $ = require('jquery');
+	var t;
 
-	( checkLS() ) ? quest.startQuest() : $('.startBtn').on('click', quest.startQuest);
+	( checkLS() ) ? quest.startQuest() : $('.startBtn').on('click', function (){
+		clearTimeout(t);
+		quest.startQuest()
+	});
 	function checkLS() {
 		if(localStorage.getItem("currentStage")) {
 			return true;
 		} else {
-			setTimeout(function(){
+			t = setTimeout(function(){
 				quest.startQuest();
 			}, 20000);
 			return false;
 		}
 	}
+	
 });
 
 

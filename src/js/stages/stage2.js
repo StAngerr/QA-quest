@@ -5,8 +5,8 @@
 
      stage2.initEvents = function () {        
     /*turn off the light */
-       turnOffTheLight();
-       addFlashLightEvents();
+       // turnOffTheLight();
+       // addFlashLightEvents();
     /*start to play cross-zero*/
         $('.field').on('click', function (event) {
             event.stopPropagation();
@@ -56,7 +56,7 @@
      };
 
 
-     /*functions and variables to play cross-zero game*/
+     /*functions and variables to play tictictoe game*/
     var x = "src/images/x.png";
     var oz = "src/images/o.png";
     var pause = 0;
@@ -88,7 +88,7 @@
     var ls = 0;
     var ts = 0;
      // logic to know who is winner
-     // 1 - X; 2 - 0; 3 - tip
+     // 1 - X; 2 - 0; 3 - noone
     function logicOne() {
          if ((a == 1) && (b == 1) && (c == 1) && (d == 1)) all = 1;
          if ((a == 1) && (f == 1) && (k == 1) && (p == 1)) all = 1;
@@ -300,29 +300,30 @@
              return true;
          }
      }
-
+  
      function yourChoice(chName) {
-      
-         pause = 0;
-         if (all != 0) ended();
-         if (all == 0) {
+       
+        pause = 0;
+        if (all != 0) ended();
+        if (all == 0) {
              cf = 0;
              ok = 0;
              temp = chName;
              checkSpace();
-             if (ok == 1) {
+            if (ok == 1) {
                   $('#'+chName).addClass('tic');
-                // document.images[chName].src = x;
+                
             }
              process();
              if (ok == 0) taken();
             
              if ((all == 0) && (pause == 0)) {
-                setTimeout(function(){
+                 setTimeout(function(){
                     myChoice();
                 }, 500);
                 
             }
+            
          }
      }
 
@@ -331,6 +332,7 @@
      }
 
      function myChoice() {
+      
          temp = "";
          ok = 0;
          cf = 1;
@@ -368,14 +370,20 @@
      }
 
      function process() {
+        // CHANGE IT THEN!
+
          logicOne();
          if (all == 1) {
              $('.newGameB').css('visibility', 'hidden');
              $('.oil').css('visibility', 'visible');
                 $('#ticTacToe').remove();
          } else if (all == 2 || all == 3) {
-             $('.newGameB').css('visibility', 'visible');
+             //$('.newGameB').css('visibility', 'visible');
+              $('.newGameB').css('visibility', 'hidden');
+             $('.oil').css('visibility', 'visible');
+                $('#ticTacToe').remove();
          }
+
      }
        
   
@@ -387,7 +395,8 @@
              reset();
          } else if (all == 3) {
              counter++;
-             if (counter >= 1) { // CHANGE IT THEN!
+             // CHANGE IT THEN!
+             if (counter >= 1) { 
                  $('.newGameB').css('visibility', 'hidden');
                   $('#ticTacToe').remove();
                  $('.oil').css('visibility', 'visible');
@@ -448,7 +457,7 @@
         $('button.oil').hide();
         $('#ticTacToe').remove();
         $('.stone').remove();
-       setTimeout(stage2.finishStage, 2000);
-           }
+        stage2.finishStage()
+    }
     return stage2;
  });
