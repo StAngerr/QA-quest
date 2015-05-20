@@ -55,7 +55,8 @@ define(function(require) {
 			printWhoWon(winner);
 			/*CHECK WHO IS WINNER*/
 			setTimeout(function(){
-				 bubbleStart();
+				 //bubbleStart();
+				  $('#mainSection').trigger('main:stageFinished');
 			}, 1500);
 		};
 

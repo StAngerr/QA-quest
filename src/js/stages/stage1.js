@@ -24,6 +24,7 @@ define(function(require) {
             openWordGame();
         }  
     };
+
     function openWordGame() {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
