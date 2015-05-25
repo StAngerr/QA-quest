@@ -2,13 +2,32 @@
      var Stage = require('src/js/Stage.js');
      var stage2 = new Stage('stage2Tmpl.html');
      var $ = require('jquery');
-
-     stage2.initEvents = function () {        
+     var canPlay = false;
+     stage2.initEvents = function () {
+     /* set hero to the right position*/   
+        var heroPosition = {
+          left : '20px',
+          top:'575px',
+          height: '150px'
+        };
+        $('#hero').css( heroPosition );
+        $('#hero').show();
+       
     /*turn off the light */
        // turnOffTheLight();
        // addFlashLightEvents();
+    /*
+    start move user click on pictures
+      */ 
+     $('.choosePic').on ('click', function() {
+         $('.man').animate({'left' : '450'}, 1000);
+        canPlay = true;
+        $('#ticTacToe').show();
+     });
     /*start to play cross-zero*/
         $('.field').on('click', function (event) {
+            $('.man').animate({'left' : '750'}, 1000);           
+            if(!canPlay) return false;
             event.stopPropagation();
             yourChoice($(this).attr('id'));
         });

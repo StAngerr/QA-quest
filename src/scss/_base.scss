@@ -33,6 +33,9 @@ a {
 }
 
 #mainSection { 
+    position:relative;
+    max-width: 1200px;
+    margin: 0 auto;
 
     #mainContent {
         width: 1200px;
@@ -40,6 +43,18 @@ a {
         margin: 0 auto;
     }
 
+   .man {
+        display: none;
+        position: absolute;
+        top: 450px;
+        left: 10px;
+        width: 50px;
+        background: #cf0;
+        font-size: 2.5em;
+        height: 200px;
+        border: 2px solid black;
+        z-index: 6;
+    }
     #inventory {
         width: 1200px;
         height: 10%;

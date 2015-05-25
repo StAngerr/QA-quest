@@ -1,6 +1,14 @@
 #stage2 {
 	background: url('../images/stage2Bg.jpg') no-repeat 0 0;
-
+	
+	.choosePic {
+		position: absolute;
+		top: 440px;
+		left: 250px;
+		width: 375px;
+		height: 100px;
+		
+	}
 	.stone {
 		position: absolute;
 		top: 555px;
@@ -12,6 +20,7 @@
 	}
  #ticTacToe {
  	 	position: absolute;
+ 	 	display: none;
  	 	background: url('../images/Game_2screen_stone_grid.png') no-repeat 0 0;
 	 	right: 90px;
 	 	bottom: 100px;
@@ -76,5 +85,3 @@
 	border-radius: 100px;
 	box-shadow: -205px -5px  30px rgba(204,204,204,0.6);
 }
-
-

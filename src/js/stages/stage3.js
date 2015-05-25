@@ -6,20 +6,36 @@ define(function(require) {
 
     stage3.initEvents = function() {
     	/* it temporarily until standard control is not define*/
-        stage3.getTmpl('popupFrameTmpl.html');
-        stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
-        var newGame = new StickGame();
-		newGame.startGame();
-		$('.pickStick').on('click', newGame.playerPicks);
+    		var heroChange = {
+          left : '40px',
+          top:'530px',
+          height: '130px'
+        };
+        $('#hero').css( heroChange );
+        $('#hero').show();
+        $('#stage3').on('click', function(e){
+        	var x = e.pageX;
+          var y = e.pageY;
+
+          if(x <= 811 ) return false;
+
+          $('.man').animate({'left' : '285'}, 1300, function() {
+          	stage3.getTmpl('popupFrameTmpl.html');
+       			stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
+       			var newGame = new StickGame();
+						newGame.startGame();
+						$('.pickStick').on('click', newGame.playerPicks);
+          });         	
+        });
+       
 		/*------------------------------------------*/
     };
 
-	function bubbleStart() { 
+	function bubbleStart() {
+
 		$('.popupWrap').remove();/*!!!*/ 
-		// stage3.getTmpl('popupFrameTmpl.html','#stage3'); 
-		// $('.popup').addClass('bubbles-popup')      
-        $('#stage3').append('<div class="bubbles-popup"><div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div></div>'); /* set sizes*/
-        wade.init('src/js/lib/wade_src/bubbles.js');      
+		  $('#stage3').append('<div class="bubbles-popup"><div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div></div>'); /* set sizes*/
+       wade.init('src/js/lib/wade_src/bubbles.js');      
     };
 
 	function StickGame() {

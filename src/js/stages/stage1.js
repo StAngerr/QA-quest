@@ -11,6 +11,7 @@ define(function(require) {
     var counter = 0;
 
     stage1.initEvents = function() {
+        $('#hero').show();
         $('.door').on('click', function(event) {
             if(manState == 'stand') stage1.moveToDoor();
         });
