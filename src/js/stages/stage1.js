@@ -77,8 +77,11 @@ define(function(require) {
         $('#mainSection').trigger('main:stageFinished');
     };
 
-    function showWord() {  
-        $('.gun').show();
+    function showWord() { 
+        $('#stage1Popup1').remove();
+        $('.gun').show();      
+
+        
     };
 
     function sendDnDWord(event) {
@@ -116,9 +119,9 @@ define(function(require) {
     };
 
     function finishFlowGame() {
-         $('#wade_main_div').remove();
-         $('.popup').append('<h1>game fineshed</h1>');
-         flowGameStatus = 'finished';
+        $('#wade_main_div').remove();
+        $('.item.battery').show();
+        flowGameStatus = 'finished';
     };
 
     function closePopup(event) {

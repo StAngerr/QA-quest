@@ -61,18 +61,35 @@
 			
   		.item {
 			position: absolute;
-			bottom: 0;
-			right: 0;
+			top: 40%;
+			left:40%;
 			width: 44px;
 			height: 44px;
 			border:  none;			
 			outline: none;
 			&.battery {
 				background: url("../images/batteries.jpg") no-repeat 0 0;
+				background-size: cover;
+				display: none;
+				animation: appear 5s linear  infinite alternate;
+
 			}
 			&.gun {
 				background: url("../images/gun.jpg") no-repeat 0 0;
+				background-size: cover;
 				display: none;
+				animation: appear 5s linear  infinite alternate;
+			}
+			@keyframes appear {
+				0% {
+					width: 24px;
+					height: 24px;
+				}
+				100% {
+					width: 44px;
+					height: 44px;
+				}
+				
 			}
 			
 		}	
