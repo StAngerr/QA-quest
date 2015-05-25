@@ -71,7 +71,7 @@
 }	
 
 .gameInfo .infoBlock .fakeDot {
-	background: #CDCF6E url('../images/zombie.png') no-repeat 50% 50%;
+	background: #1D28FF ;
 }
 
 .clickCounter {
@@ -140,9 +140,6 @@
 	        transform: scaleX(0);
 }
 
-
-
-
 /*    GAME FIELD */
 .playGround {
 	position: relative;
@@ -164,28 +161,9 @@
 	height: 70px;
 	border-radius: 100px;
 	cursor: pointer;
+	background-color: #32A600;
 }
 
-.greenColor {
-	background-color: #A9E065;
-}
-
-.greenColor:hover {
-	background-image: url("../images/green_star.png");
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-}
-
-
-
-.redColor {
-	background-color: #FF4F4F;
-}
-.redColor:hover {
-	background-image: url("../images/icon_4_red.png");
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-}
 .fakeDot {
 	position: absolute;
 	width: 70px;

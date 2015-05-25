@@ -14,15 +14,13 @@ define(function(require) {
     	var singleGameTime = 3;
 		var points = 0;
 		var seconds = singleGameTime;
-		var greenCounter = 1; /*this for reduce total second that adding when click on green dot*/
+		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
 		/*intervals*/
 		var gameTime;
-		var dotLife;
 
 		this.startClickGame = function() {
-			createNewDot();
-			setInerval();
 			onGameInterface();
+			createNewDot();
 			showVisualization();
 			gameTime = setInterval(function() {
 				$('.digitalTimer').text(seconds.toFixed(2));
@@ -40,8 +38,6 @@ define(function(require) {
 
 		function showVisualization() {
 			$('.visualTimer').hide("scale", {percent: 0, direction: 'horizontal'}, (seconds.toFixed(2) * 1000) + 4500);
-			console.log('time: ' + seconds);
-			console.log('rime added: ' + ((seconds.toFixed(2) * 1000) + 4500));
 		};
 
 		function resetVisual() {
@@ -65,7 +61,6 @@ define(function(require) {
 		};
 
 		function finishGame() {
-			cancelInterval();
 			onInfoInterface();
 			showResults(points);
 			clearInterval(gameTime);
@@ -81,34 +76,37 @@ define(function(require) {
 		function resetTimerAndPoints() {
 			seconds = singleGameTime;
 			points = 0;
-			greenCounter = 1;
+			totalTime = 1;
 			$('.digitalTimer').text(seconds.toFixed(2));
 		};
 
 		function createNewDot() {
 			if ($('.fakeDot').length) $('.fakeDot').remove();
 			var dot = $('<div class="dot"></div>');
-			var randomTop = Math.floor( Math.random() * 300 );
-			var randomLeft = Math.floor( Math.random() * 300 );
+			var randomTop = Math.floor( Math.random() * 510 );
+			var randomLeft = Math.floor( Math.random() * 410 );
 
 			$(dot).css({'transform' : 'translate(' + randomLeft + 'px,' + randomTop +'px)' });
-			$(dot).on('click', dotClick);
-			setColorToDot(dot);	
+			$(dot).on('click', dotClick);	
 			$('.playGround').append(dot);
 			createTotalDots();
 		};
 
 		function createTotalDots() {
 			var random = Math.floor( (Math.random() * 100) + 1 );
-			
-			if (points > 0 && points <= 5) {
-				if(random <= 5) createFakeDots(' 5');
-			} else if(points <= 10 ) {
-				if(random <= 25  ) createFakeDots(' 25');
-			} else if(points <= 30) {
-				if(random <= 50) createFakeDots('50');
-			} else {
-				if(random <= 70) createFakeDots('70'); 
+			var fakeDotsCount = Math.floor( (Math.random() * 100) + 1);
+			var dots = (fakeDotsCount < 50) ?  dots = 1 : dots = 2;
+
+			for (var i = 0; i < dots; i++) {
+				if (points > 0 && points <= 5) {
+					if(random <= 5) createFakeDots(' 5');
+				} else if(points <= 10 ) {
+					if(random <= 25  ) createFakeDots(' 25');
+				} else if(points <= 30) {
+					if(random <= 50) createFakeDots('50');
+				} else {
+					if(random <= 70) createFakeDots('70'); 
+				}
 			}
 		};
 
@@ -142,14 +140,12 @@ define(function(require) {
 		};
 
 		function decorateFakeDot(dot) {
-			var path = 'src/images/'
-			var colors = ['#CDCF6E', '#29B250', '#6DBFE3', '#D090FB'];
-			var pictures = [path + 'skull.png',path + 'zombie.png',path + 'streamline.png',path + 'halloween.png'];
+						/* yellow      blue        red         orange    */
+			var colors = ['#E3DB00', '#1D28FF', '#FF1D28', '#FF8724'];
 			var randomColor = Math.floor( Math.random() * 4);
 			var randomPicture = Math.floor( Math.random() * 4); 
 
 			$(dot).css('background-color', colors[randomColor]);
-			$(dot).css('background-image', 'url("' + pictures[randomPicture] + '")');
 		};
 
 		function fakeClick() {
@@ -157,34 +153,9 @@ define(function(require) {
 				top: parseInt( $(this).css('transform').split(',')[5], 10),
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
 			};
-
-			points--;
-			updatePoints(points);
-			showClickResult('loose point', coordinates);
-			$(this).animate('-webkit-transform','scale(2)');
-		};
-
-		function setColorToDot(dot) {
-			var random = Math.floor( (Math.random() * 100) + 1 );
-			if(random < 80) {
-				$(dot).addClass('greenColor');
-				$(dot).attr('name', 'green');
-			} else {
-				$(dot).addClass('redColor');
-				$(dot).attr('name', 'red');
-			}
-		};
-
-		function cancelInterval() {
-			removeDot();
-			clearInterval(dotLife);
-		};
-
-		function setInerval() {
-			dotLife = setInterval(function() { 
-				removeDot();
-				createNewDot();
-			}, 700);
+			seconds -= 0.2;
+			showClickResult('-0.2 sec', coordinates);
+			$(this).remove();
 		};
 
 		function removeDot() {
@@ -200,17 +171,11 @@ define(function(require) {
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
 			 };
 
-			if($(this).attr('name') == 'green') {
-				(max - (greenCounter / 10) > min) ? seconds += max - (greenCounter / 10) : seconds += min;
-				greenCounter++;	
-				showClickResult('+' + ((max - (greenCounter / 10) > min) ? (max - (greenCounter / 10)).toFixed(1) :  min) + ' sec', coordinates);
-			} else {
-				showClickResult('-1 sec', coordinates)
-				seconds--;
-			}
-			cancelInterval();
+			(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
+			totalTime++;	
+			showClickResult('+' + ((max - (totalTime / 10) > min) ? (max - (totalTime / 10)).toFixed(1) :  min) + ' sec', coordinates);
+			removeDot();
 			createNewDot();
-			setInerval();
 			points++;	
 			updatePoints(points);
 			resetVisual();
@@ -224,10 +189,10 @@ define(function(require) {
 			var block = '<div class="underDotMsg">' + message + '</div>';
 			$('.playGround').append(block);
 			$('.underDotMsg')
-			.css({'top': coordinates.top + 'px', 'left': coordinates.left + 'px'})
-			.animate({'top': coordinates.top - 10 + 'px'}, 300, function() {
-			$('.underDotMsg').remove();
-			});
+				.css({'top': coordinates.top + 'px', 'left': coordinates.left + 'px'})
+				.animate({'top': coordinates.top - 10 + 'px'}, 300, function() {
+				$('.underDotMsg').remove();
+				});
 		};
     };
     return stage4;
