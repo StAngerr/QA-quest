@@ -35,7 +35,7 @@ define(function(require) {
             stage1.getTmpl('popupFrameTmpl.html');
             $('.popup').append('<button class="item gun"> </button>');
             stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
-            $('.item.gun').on('click', sendDnDWord);
+            //$('.item.gun').on('click', sendDnDWord);
             $('#sendWord').on('click', showWord);
             /*Drag n drop*/
             var leafes = $('.letters');
@@ -79,13 +79,14 @@ define(function(require) {
 
     function showWord() { 
         $('#stage1Popup1').remove();
-        $('.gun').show();      
+        $('.gun').show();   
+        setTimeout(sendDnDWord, 4000); 
 
         
     };
 
     function sendDnDWord(event) {
-        $('#stage1Popup1').remove();
+        
         $('.popupWrap').remove();
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
@@ -112,7 +113,7 @@ define(function(require) {
             $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
             $('.popup').append('<button class="item battery"></button>');  
             wade.init('src/js/flow.js');
-            $('.popup').on('click', closePopup); 
+            //$('.popup').on('click', closePopup); 
             $('.popup').on('flowGameFinished', finishFlowGame); 
             changeManState();
         });
@@ -122,6 +123,7 @@ define(function(require) {
         $('#wade_main_div').remove();
         $('.item.battery').show();
         flowGameStatus = 'finished';
+        setTimeout(closePopup, 4000); 
     };
 
     function closePopup(event) {

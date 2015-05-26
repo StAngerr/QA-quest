@@ -339,6 +339,7 @@
              if ((all == 0) && (pause == 0)) {
                  setTimeout(function(){
                     myChoice();
+                    return;
                 }, 500);
                 
             }
@@ -389,23 +390,30 @@
      }
 
      function process() {
-        // CHANGE IT THEN!
+        // CHANGE IT THEN! we need some conditions from customer
 
          logicOne();
-         if (all == 1) {
-             $('.newGameB').css('visibility', 'hidden');
-             $('.oil').css('visibility', 'visible');
-                $('#ticTacToe').remove();
-         } else if (all == 2 || all == 3) {
-             //$('.newGameB').css('visibility', 'visible');
-              $('.newGameB').css('visibility', 'hidden');
-             $('.oil').css('visibility', 'visible');
-                $('#ticTacToe').remove();
+         if (all == 2) {
+            // 0 won
+             showInwentory ()
+             
+               
+         } else if (all == 1 || all == 3) {
+             
+            
+                showInwentory ()
          }
 
      }
        
-  
+    function showInwentory (){
+        $('.newGameB').css('visibility', 'hidden');
+        $('#ticTacToe').remove();
+        stage2.getTmpl('popupFrameTmpl.html');
+        $('.popup').append('<button class="item oil"> </button>');
+         $('.oil').show();
+         setTimeout(addOil, 2000);
+    }
     var counter = 0;
 
      function playAgain() {
