@@ -45,19 +45,21 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-		background: rgba(154,154,154, 0.7);
+	background: rgba(154,154,154, 0.7);
 	margin: 0px auto;
 	z-index: 10;	
 	.popup {
 		position: relative;
-		width: 780px;
-		height: 580px;
+		max-width: 780px;
+		max-height: 580px;
+		min-width: 380px;
+		min-height: 380px;
 		background: #fff;
 		z-index: 11;
 		top: 150px;
 		margin: 0 auto;	
-		border: 20px solid #145D2F;
-		border-radius: 15px;
+		border: 10px solid rgb(90,74,66);
+		
 			
   		.item {
 			position: absolute;
@@ -97,12 +99,7 @@
 			
 		}	
 		
-		#stage1Popup1 {
-			background: #86CB9B;
-			font-size: 20px;
-			height: 100%;
-			padding: 2em;
-			
+		.popup-common {					
 
 		.letters {
 			position: relative;
@@ -111,35 +108,25 @@
 			
 			span {
 				position: absolute;
+				font: "Noto Sans Bold";
 				height: 68px;
 				width: 52px;
 				top: 10px;
 				left: 25%;			
-				font-weight: 900;
-				font-size: 2em;
+				// font-weight: 900;
+				font-size: 45pt;
 				color: #145D2F;
 			}
 		}
 		.makeWord {
-			width: 100%;
+			width: 90%;
 			min-height: 100px;
 			margin: 2em auto;
-			border: 20px solid #145D2F;
-			border-radius: 10px;
-			padding: 1em;
+			padding: 0;
 			background: #fff;
 			text-align: center
 		}
-		#sendWord {
-			display: block;
-			width: 100%;
-			padding: 1em;
-			background: #145D2F;
-			border-radius: 10px;
-			color: #fff;
-			font-size: 18px;
-
-		}
+		
 	}
 	}
 }

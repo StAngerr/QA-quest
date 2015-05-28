@@ -19,21 +19,78 @@
     /*
     start move user click on pictures
       */ 
-     $('.choosePic').on ('click', function() {
-         $('.man').animate({'left' : '450'}, 1000);
-        canPlay = true;
-        $('#ticTacToe').show();
-     });
-    /*start to play cross-zero*/
+         $('.choosePic').on ('click', function() {
+             $('.man').animate({'left' : '450'}, 1000);
+            canPlay = true;
+            stage2.getTmpl('popupFrameTmpl.html');
+                $('.popup').append('<button class="item joystick"> </button>');
+                findRightPicture ();       
+         });
+
+     /*start to play cross-zero*/
         $('.field').on('click', function (event) {
             $('.man').animate({'left' : '750'}, 1000);           
             if(!canPlay) return false;
             event.stopPropagation();
             yourChoice($(this).attr('id'));
         });
-        $('.newGameB').on('click', playAgain);
-        $('.oil').on('click', addOil);
-     };
+        $('.newGameB').on('click', playAgain);           
+    }
+
+
+     function findRightPicture () {
+         var stage_content = {
+            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+            src : ['_brown.png', '_white.png']          
+            }; 
+        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content);
+        
+        var pictureDraggable = $('.pic-to-drag');        
+
+        for (var i=0; i < pictureDraggable.length; i++) {
+             $(pictureDraggable[i]).attr('draggable','true');
+            $(pictureDraggable[i]).on('mouseover', function(){               
+                var old_src = $(this).attr('src');
+                var  new_src = old_src.slice(0,27) + stage_content.src[0];                
+                $(this).attr('src', new_src);
+            });
+            $(pictureDraggable[i]).on('mouseleave', function() { 
+                var old_src = $(this).attr('src');
+                var new_src = old_src.slice(0,27) + stage_content.src[1];                
+                $(this).attr('src', new_src);
+            });
+           
+
+        }
+        for (var i=0; i < pictureDraggable.length; i++) {
+            pictureDraggable[i].addEventListener("dragstart", drag);
+            pictureDraggable[i].addEventListener("dragover", over);
+            pictureDraggable[i].addEventListener("dragleave", leave);
+        }
+
+        var fieldToDrop = $('.field-to-drop')[0];
+        fieldToDrop.addEventListener('dragover', allowDrop);
+        fieldToDrop.addEventListener('drop', function (event) {
+            event.preventDefault();
+            event.stopPropagation();            
+            var data =  event.dataTransfer.getData('text/html');
+            var html =  $(event.target).html();
+             $(event.target).html(that);
+        });
+
+        $('#sendPicture').on('click', function() {
+            $('#stage2Popup1').remove();
+            $('.joystick').show();  
+            // $('#inventory').trigger('inventory:addОщ'); 
+            setTimeout(function(){
+                $('.popupWrap').remove();
+                 $('#ticTacToe').show();
+            }, 4000);          
+        });
+     }
+
+    
+    
 
     stage2.finishStage = function() {
         removeFlashLightEvents();
@@ -47,7 +104,7 @@
      };
      /*    Move events to flash light*/
     function addFlashLightEvents() {
-        $(document).mousemove(function (e) {
+        $(document).mousemove(function(e) {
             $('body').css({
                 '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
             });
@@ -65,6 +122,34 @@
         $('.flashLightShadow').remove();
         $('body').css({'-webkit-clip-path': 'none'});
     };
+
+                                                             /* think how avoid the repetittions*/
+    var that;
+     function allowDrop(event) {
+        event.preventDefault();
+        return false;
+    };
+
+    function drag(event) {  
+   
+        event.dataTransfer.setData('text/html', $(event.target).html()); 
+        that = $(event.target);  
+               
+        return false;
+    };
+
+    function over(event) {
+        event.preventDefault();
+        //that.css('opacity', '0.5');     
+        return false;
+    };
+
+    function leave(event) {
+        event.preventDefault();
+        //that.css('opacity', '1');
+        return false;       
+    };
+
 
      function removeFlashLightEvents() {
         $(document).off('mousemove');

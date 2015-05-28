@@ -1,7 +1,7 @@
-<div id="stage1Popup1">
+<div id="stage1Popup1" class="popup-common">
 	<p class="task-description"><%=taskDescription%></p>	
 	<div class="makeWord" ></div>
-	<button id="sendWord" type="submit">Send</button>
+	<button id="sendWord" class="popup-btn">Send</button>
 	<div class="all-letters">
 		<% for(var i=0; i < letters.length; i++) {%>
 			<figure class="letters" class="letters"> 
@@ -9,7 +9,5 @@
 				<span draggable="false"><%= letters[i].toUpperCase() %></span>
 			</figure>
 		<%}%>	
-	</div>
-
-		
+	</div>		
 </div>

@@ -1,5 +1,7 @@
 #stage2 {
 	background: url('../images/stage2Bg.jpg') no-repeat 0 0;
+
+
 	
 	.choosePic {
 		position: absolute;
@@ -58,6 +60,7 @@
 	
 
 }
+
 .item.oil {
 		background: url('../images/oil.jpeg') no-repeat 0 0;
 		background-size: cover;
@@ -65,7 +68,13 @@
 		animation: appear 3s linear  infinite alternate;
 		animation-iteration-count: 1;
 	}
-
+.item.joystick {
+		background: url('../images/joystick.jpg') no-repeat 0 0;
+		background-size: cover;
+		display: none;
+		animation: appear 3s linear  infinite alternate;
+		animation-iteration-count: 1;
+}
 .lightOff {
 	background-color: #000;
 	overflow: hidden;
@@ -83,4 +92,33 @@
 	background: transperent;
 	border-radius: 100px;
 	box-shadow: -205px -5px  30px rgba(204,204,204,0.6);
+}
+#stage2Popup1.popup-common {
+
+.field-with-pictures, .pictures-to-choose {
+		display: inline-block;
+		margin-right: 2.5em;
+		margin-top: 1em;		
+		height: 270px;	
+		background-color: rgb(208,226,168);
+		text-align: left;	
+		
+	}
+	.field-with-pictures {
+		width: 270px;
+	}
+	.pictures-to-choose {		
+		width: 178px;		
+	}	
+
+	figure, .field-to-drop {
+			display: inline-block;
+			width: 86px;
+			height: 86px;
+			padding: 0;
+			margin: 0;
+			border: 1px solid rgb(90,74,66);
+			overflow: hidden;
+
+		}
 }

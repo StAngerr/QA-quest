@@ -35,7 +35,6 @@ define(function(require) {
             stage1.getTmpl('popupFrameTmpl.html');
             $('.popup').append('<button class="item gun"> </button>');
             stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
-            //$('.item.gun').on('click', sendDnDWord);
             $('#sendWord').on('click', showWord);
             /*Drag n drop*/
             var leafes = $('.letters');
@@ -113,7 +112,6 @@ define(function(require) {
             $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
             $('.popup').append('<button class="item battery"></button>');  
             wade.init('src/js/flow.js');
-            //$('.popup').on('click', closePopup); 
             $('.popup').on('flowGameFinished', finishFlowGame); 
             changeManState();
         });
@@ -158,18 +156,21 @@ define(function(require) {
 
     function drop(event) {
         event.preventDefault();
-        event.stopPropagation();       
+        event.stopPropagation(); 
+           
         var data =  '<figure class="letters" draggable="true"> ' + event.dataTransfer.getData('text/html') + '</figure>';
         var html =  $(event.target).html();
+        var targetNodeName = $(event.target)[0].nodeName;
         $('.makeWord').css ('background-color', '#fff'); 
         if ($(event.target)[0].className != that.parent()[0].className) {
             if ( $(event.target).parent().parent()[0].className != that.parent()[0].className) {
-                if( $(event.target)[0].nodeName == 'SPAN') { 
+                if( targetNodeName == 'SPAN' || targetNodeName == "IMG") { 
                         html =  $(event.target).parent().parent().html()       
                         $(event.target).parent().parent().html(html + data);          
-                } else if ($(event.target)[0].nodeName == 'FIGURE') {
+                } else if (targetNodeName == 'FIGURE') {
                     html =  $(event.target).parent().html();
-                     $(event.target).parent().html(html + data);        
+                     $(event.target).parent().html(html + data);    
+
                      
                 } else {
                     $(event.target).html(html + data); 

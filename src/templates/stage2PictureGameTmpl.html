@@ -1,0 +1,19 @@
+<div id="stage2Popup1" class="popup-common">
+	<p class="task-description"><%=taskDescription%></p>	
+	<div class="field-with-pictures">
+		<% for(var i=1; i <= 8; i++) {%>		
+			<figure class="picture"> 
+				<img  src=<%="src/images/pop_up_figures/" + i + src[0]%> alt="pict">			
+			</figure>
+		<%}%>
+		<div class="field-to-drop"></div>	
+	</div>
+	<div class="pictures-to-choose">
+		<% for(var i=1; i <= 6; i++) {%>		
+			<figure> 
+				<img class="pic-to-drag" src=<%= "src/images/pop_up_figures/" + i + src[1]%>	alt="pict" >			
+			</figure>
+		<%}%>	
+	</div>
+	<button class="popup-btn" id="sendPicture">Send</button>
+</div>
