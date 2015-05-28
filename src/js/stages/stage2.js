@@ -20,10 +20,15 @@
 
          $('.choosePic').on ('click', function() {
              $('.man').animate({'left' : '450'}, 1000);
-            canPlay = true;
-            stage2.getTmpl('popupFrameTmpl.html');
+             if(!canPlay) {
+                canPlay = true;
+                 stage2.getTmpl('popupFrameTmpl.html');
                 $('.popup').append('<button class="item joystick"> </button>');
-                findRightPicture ();       
+                findRightPicture ();
+             } else {
+                return false;
+             }
+                   
          });
 
      /*start to play cross-zero*/
@@ -54,9 +59,12 @@
                 $(this).attr('src', new_src);
             });
             $(pictureDraggable[i]).on('mouseleave', function() { 
-                var old_src = $(this).attr('src');
-                var new_src = old_src.slice(0,27) + stage_content.src[1];                
-                $(this).attr('src', new_src);
+                // if($(this).parent())
+                if (!$(this).parent().hasClass('field-to-drop')) {
+                    var old_src = $(this).attr('src');
+                    var new_src = old_src.slice(0,27) + stage_content.src[1];                
+                    $(this).attr('src', new_src);
+                }
             });
            
 
@@ -74,7 +82,7 @@
             event.stopPropagation();            
             var data =  event.dataTransfer.getData('text/html');
             var html =  $(event.target).html();
-             $(event.target).html(that);
+            $(event.target).html(that);
         });
 
         $('#sendPicture').on('click', function() {
