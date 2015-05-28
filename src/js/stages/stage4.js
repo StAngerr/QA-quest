@@ -15,6 +15,8 @@ define(function(require) {
 		var points = 0;
 		var seconds = singleGameTime;
 		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
+		var maxLeftCoordinate = 410;
+		var maxTopCoordinate = 510;
 		/*intervals*/
 		var gameTime;
 
@@ -83,8 +85,8 @@ define(function(require) {
 		function createNewDot() {
 			if ($('.fakeDot').length) $('.fakeDot').remove();
 			var dot = $('<div class="dot"></div>');
-			var randomTop = Math.floor( Math.random() * 510 );
-			var randomLeft = Math.floor( Math.random() * 410 );
+			var randomTop = Math.floor( Math.random() * maxTopCoordinate );
+			var randomLeft = Math.floor( Math.random() * maxLeftCoordinate );
 
 			$(dot).css({'transform' : 'translate(' + randomLeft + 'px,' + randomTop +'px)' });
 			$(dot).on('click', dotClick);	
@@ -112,15 +114,16 @@ define(function(require) {
 
 		function createFakeDots(perc) {
 			var fakeDot = $('<div class="fakeDot"></div>');
-			var realDot =  $('.dot');
+/*			var realDot =  $('.dot');
 			var realDotLeft =  parseInt( $(realDot).css('transform').split(',')[4], 10); 
 			var realDotTop = parseInt( $(realDot).css('transform').split(',')[5], 10);
 			var dotHeight = 70;
-			var dotWidth = 70;
-			var randomTop = Math.floor( Math.random() * 300 );
-			var randomLeft = Math.floor( Math.random() * 300 );
+			var dotWidth = 70;*/
+			var randomTop = Math.floor( Math.random() * maxTopCoordinate);
+			var randomLeft = Math.floor( Math.random() * maxLeftCoordinate);
+			var coordinates = correctCoordinates(randomTop, randomLeft);
 			/* this code corrects coordinates of "fake" dot to prevent imposition of one on one*/
-			if(randomTop > realDotTop && randomTop < realDotTop + dotHeight) {
+			/*if(randomTop > realDotTop && randomTop < realDotTop + dotHeight) {
 				if(randomLeft >= realDotLeft && randomLeft <= realDotLeft + dotWidth) {
 					randomTop += 70;
 				} else if(randomLeft +  dotWidth >= realDotLeft &&  randomLeft + dotWidth <= realDotLeft + dotWidth) {
@@ -132,13 +135,99 @@ define(function(require) {
 				} else if(randomLeft + dotWidth >= realDotLeft &&  randomLeft + dotWidth <= realDotLeft + dotWidth) {
 					randomLeft += 140;
 				}
-			}
-			$(fakeDot).css({'transform' : 'translate(' + randomLeft + 'px,' + randomTop +'px)' });
+			}*/
+			$(fakeDot).css({'transform' : 'translate(' + coordinates.left + 'px,' + coordinates.top +'px)' });
 			$(fakeDot).on('click', fakeClick);
 			decorateFakeDot(fakeDot);
 			$('.playGround').append(fakeDot);
 		};
 
+		/*  function impr    */
+
+		function correctCoordinates(top, left) {
+			var realDot = $('.dot');
+			var fakeDot = $('.fakeDot');
+			var realDotLeft =  parseInt( $(realDot).css('transform').split(',')[4], 10); 
+			var realDotTop = parseInt( $(realDot).css('transform').split(',')[5], 10);
+			var dotHeight = 70;
+			var dotWidth = 70;
+
+			if(top > realDotTop && top < realDotTop + dotHeight) {
+				if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
+					
+					console.log('---1---');
+
+					console.log('top before: ' + top);
+					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+					console.log('top after: ' + top);
+				} else if(left +  dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
+					
+					console.log('---2---');
+
+					console.log('top before: ' + top);
+					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+					console.log('top after: ' + top);
+				}
+			} else if(top + dotHeight > realDotTop && top + dotHeight < realDotTop + dotHeight) {
+				if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
+
+					console.log('---3---');
+
+					console.log('top before: ' + top);
+					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+					console.log('top after: ' + top);
+				} else if(left + dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
+
+					console.log('---4---');
+
+					console.log('top before: ' + top);
+					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+					console.log('top after: ' + top);
+				}
+			}
+
+			if(fakeDot.length) {
+				var fakeTop = parseInt( $(fakeDot).css('transform').split(',')[5], 10);
+				var fakeLeft = parseInt( $(fakeDot).css('transform').split(',')[4], 10); 
+
+				if( chekIfCoverFakeDot(top, left, fakeTop ,fakeLeft ,dotHeight, dotWidth) ) {
+
+					( (left + 160) > maxLeftCoordinate) ? left -= 160 : left += 160;
+
+					/*change this*/
+
+					if(top > realDotTop && top < realDotTop + dotHeight) {
+						if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
+							((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+						} else if(left +  dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
+							((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+						}
+					} else if(top + dotHeight > realDotTop && top + dotHeight < realDotTop + dotHeight) {
+						if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
+							((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+						} else if(left + dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
+							((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+						}
+					}					
+					/* ---------------------*/
+					console.log('corrected');
+				}
+			}
+			return {
+				top: top,
+				left: left
+			};
+		};
+
+		function chekIfCoverFakeDot(top, left, fakeTop, fakeLeft,dotHeight,dotWidth) {
+			if( (top > fakeTop && top < fakeTop + dotHeight) || (top + dotHeight > fakeTop && top + dotHeight < fakeTop + dotHeight) )  {
+				if( (left >= fakeLeft && left <= fakeLeft + dotWidth) ||  (left +  dotWidth >= fakeLeft &&  left + dotWidth <= fakeLeft + dotWidth))	
+				return true;
+			}
+			return false;
+		};
+
+		/*-------------------------*/
 		function decorateFakeDot(dot) {
 						/* yellow      blue        red         orange    */
 			var colors = ['#E3DB00', '#1D28FF', '#FF1D28', '#FF8724'];
@@ -171,8 +260,9 @@ define(function(require) {
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
 			 };
 
-			(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
-			totalTime++;	
+	/*		(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
+			totalTime++;	*/
+			seconds += 10;
 			showClickResult('+' + ((max - (totalTime / 10) > min) ? (max - (totalTime / 10)).toFixed(1) :  min) + ' sec', coordinates);
 			removeDot();
 			createNewDot();
