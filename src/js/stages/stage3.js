@@ -70,6 +70,7 @@ define(function(require) {
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
 			printWhoWon(winner);
 			/*CHECK WHO IS WINNER*/
+			$('.bridge').show();
 			setTimeout(function(){
 				 bubbleStart();
 				  //$('#mainSection').trigger('main:stageFinished');

@@ -105,17 +105,16 @@
 			position: relative;
 			display: inline-block;
 			text-align: justify;
+			background:none;
 			
 			span {
 				position: absolute;
-				font: "Noto Sans Bold";
-				height: 68px;
-				width: 52px;
+				height: 69px;
+				width: 51px;
 				top: 10px;
-				left: 25%;			
-				// font-weight: 900;
-				font-size: 45pt;
-				color: #145D2F;
+				left: 15%;			
+				font-size: 30pt;
+				color: #eee;
 			}
 		}
 		.makeWord {
