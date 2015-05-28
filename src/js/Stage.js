@@ -14,7 +14,7 @@ define(function(require) {
             $.ajax({
                 url: 'src/templates/' + tmplName,
                 method: 'GET',
-                async:false,
+                async: false,
                 success: function(data) {
                     var target = direction || '#mainContent';                   
                     var content = dataToTempl ? _.template(data)(dataToTempl): data;

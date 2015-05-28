@@ -13,12 +13,11 @@
         $('#hero').css( heroPosition );
         $('#hero').show();
        
-    /*turn off the light */
-       // turnOffTheLight();
-       // addFlashLightEvents();
-    /*
-    start move user click on pictures
-      */ 
+
+        turnOffTheLight();
+        addFlashLightEvents();
+    
+
          $('.choosePic').on ('click', function() {
              $('.man').animate({'left' : '450'}, 1000);
              if(!canPlay) {
