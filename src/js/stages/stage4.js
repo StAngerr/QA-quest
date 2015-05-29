@@ -114,171 +114,56 @@ define(function(require) {
 
 		function createFakeDots(perc) {
 			var fakeDot = $('<div class="fakeDot"></div>');
-/*			var realDot =  $('.dot');
-			var realDotLeft =  parseInt( $(realDot).css('transform').split(',')[4], 10); 
-			var realDotTop = parseInt( $(realDot).css('transform').split(',')[5], 10);
-			var dotHeight = 70;
-			var dotWidth = 70;*/
 			var randomTop = Math.floor( Math.random() * maxTopCoordinate);
 			var randomLeft = Math.floor( Math.random() * maxLeftCoordinate);
 			var coordinates = correctCoordinates(randomTop, randomLeft);
-			/* this code corrects coordinates of "fake" dot to prevent imposition of one on one*/
-			/*if(randomTop > realDotTop && randomTop < realDotTop + dotHeight) {
-				if(randomLeft >= realDotLeft && randomLeft <= realDotLeft + dotWidth) {
-					randomTop += 70;
-				} else if(randomLeft +  dotWidth >= realDotLeft &&  randomLeft + dotWidth <= realDotLeft + dotWidth) {
-					randomLeft += 140;
-				}
-			} else if(randomTop + dotHeight > realDotTop && randomTop + dotHeight < realDotTop + dotHeight) {
-				if(randomLeft >= realDotLeft && randomLeft <= realDotLeft + dotWidth) {
-					randomTop += 140;
-				} else if(randomLeft + dotWidth >= realDotLeft &&  randomLeft + dotWidth <= realDotLeft + dotWidth) {
-					randomLeft += 140;
-				}
-			}*/
+
 			$(fakeDot).css({'transform' : 'translate(' + coordinates.left + 'px,' + coordinates.top +'px)' });
 			$(fakeDot).on('click', fakeClick);
 			decorateFakeDot(fakeDot);
 			$('.playGround').append(fakeDot);
 		};
 
-		/*  function impr    */
-
 		function correctCoordinates(top, left) {
 			var realDot = $('.dot');
 			var fakeDot = $('.fakeDot');
-			var realDotLeft =  parseInt( $(realDot).css('transform').split(',')[4], 10); 
-			var realDotTop = parseInt( $(realDot).css('transform').split(',')[5], 10);
-			var dotHeight = 70;
-			var dotWidth = 70;
 
-			 /*      */
-			switch(some(top, left, realDot)) {
+			switch(chekOnImposition(top, left, realDot)) {
 				case 1: 
-					console.log('---1---');
-					console.log('top before: ' + top);
 					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-					console.log('top after: ' + top);
 					break;
 				case 2:
-
-					console.log('---2---');
-
-					console.log('top before: ' + top);
 					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-					console.log('top after: ' + top); 
 				break;
 				case 3:
-					console.log('---3---');
-
-					console.log('top before: ' + top);
 					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-					console.log('top after: ' + top);
 				break;
 				case 4:
-
-					console.log('---4---');
-
-					console.log('top before: ' + top);
 					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-					console.log('top after: ' + top);
 				break;
 			}
-
-			if(fakeDot.length && some(top, left, fakeDot)) {
+			if(fakeDot.length && chekOnImposition(top, left, fakeDot)) {
 				var correctState; 
 
 				((left + 160) > maxLeftCoordinate) ? left -= 160 : left += 160;
-
-				correctState = some(top, left, fakeDot);
+				correctState = chekOnImposition(top, left, realDot);
 				if(correctState == 1 || correctState == 2) ((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
 				if(correctState == 3 || correctState == 4) ((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
 			}
-
-			 /*     */
-
-			/*if(top > realDotTop && top < realDotTop + dotHeight) {
-				if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
-					
-					console.log('---1---');
-
-					console.log('top before: ' + top);
-					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-					console.log('top after: ' + top);
-				} else if(left +  dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
-					
-					console.log('---2---');
-
-					console.log('top before: ' + top);
-					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-					console.log('top after: ' + top);
-				}
-			} else if(top + dotHeight > realDotTop && top + dotHeight < realDotTop + dotHeight) {
-				if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
-
-					console.log('---3---');
-
-					console.log('top before: ' + top);
-					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-					console.log('top after: ' + top);
-				} else if(left + dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
-
-					console.log('---4---');
-
-					console.log('top before: ' + top);
-					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-					console.log('top after: ' + top);
-				}
-			}
-*/
-	/*		if(fakeDot.length) {
-				var fakeTop = parseInt( $(fakeDot).css('transform').split(',')[5], 10);
-				var fakeLeft = parseInt( $(fakeDot).css('transform').split(',')[4], 10); 
-
-				if( chekIfCoverFakeDot(top, left, fakeTop ,fakeLeft ,dotHeight, dotWidth) ) {
-
-					( (left + 160) > maxLeftCoordinate) ? left -= 160 : left += 160;
-
-					
-
-					if(top > realDotTop && top < realDotTop + dotHeight) {
-						if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
-							((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-						} else if(left +  dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
-							((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-						}
-					} else if(top + dotHeight > realDotTop && top + dotHeight < realDotTop + dotHeight) {
-						if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
-							((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-						} else if(left + dotWidth >= realDotLeft &&  left + dotWidth <= realDotLeft + dotWidth) {
-							((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-						}
-					}					
-					
-				}
-			}*/
 			return {
 				top: top,
 				left: left
 			};
 		};
 
-/*		function chekIfCoverFakeDot(top, left, fakeTop, fakeLeft,dotHeight,dotWidth) {
-			if( (top > fakeTop && top < fakeTop + dotHeight) || (top + dotHeight > fakeTop && top + dotHeight < fakeTop + dotHeight) )  {
-				if( (left >= fakeLeft && left <= fakeLeft + dotWidth) ||  (left +  dotWidth >= fakeLeft &&  left + dotWidth <= fakeLeft + dotWidth))	
-				return true;
-			}
-			return false;
-		};*/
-
-		function some(top, left, dotToCompare) {
+		function chekOnImposition(top, left, dotToCompare) {
 			var realDot = $('.dot');
 			var fakeDot = $('.fakeDot');
 			var comparingDotLeft =  parseInt( $(dotToCompare).css('transform').split(',')[4], 10); 
 			var comparingDotTop = parseInt( $(dotToCompare).css('transform').split(',')[5], 10);
 			var dotHeight = 70;
 			var dotWidth = 70;
-			var case1 = 1,
+			var case1 = 1,   /* imposition cases*/
 				case2 = 2,
 				case3 = 3,
 				case4 = 4;
@@ -296,11 +181,9 @@ define(function(require) {
 					return case4
 				}
 			}
-
 			return 0;		
-		}
+		};
 
-		/*-------------------------*/
 		function decorateFakeDot(dot) {
 						/* yellow      blue        red         orange    */
 			var colors = ['#E3DB00', '#1D28FF', '#FF1D28', '#FF8724'];
