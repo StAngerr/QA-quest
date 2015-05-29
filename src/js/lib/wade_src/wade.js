@@ -1,3471 +1,386 @@
-/**
- * WADE - Web App Development Engine.
- * @version 2.1
- * @constructor
- */
-function Wade()
-{
-    var version = '2.1';
-    var sceneManager = 0;
-    var assetLoader = 0;
-    var assetPreloader = 0;
-    var inputManager = 0;
-	var pendingMainLoop = 0;
-    var pendingAppTimer = 0;
-	var appInitialised = false;
-	var appLoading = false;
-	var relativeAppPath = '';
-    var appTimerInterval = 1.0;
-    var loadingImages = [];
-    var mainLoopCallbacks = [];
-    var mainLoopLastTime = 0;
-    var doubleBuffering = false;
-    var resolutionFactor = 1;
-    var forcedOrientation = 'none';
-    var blankImage = new Image();
-    var audioSources = [];
-    var loadingBar;
-    var simulationPaused;
-    var internalCanvas;
-    var internalContext;
-    var webGlSupported;
-    var debugMode;
-    var audioContext;
-    var catchUpBuffer = 1; // how many seconds of lag until we give up trying to catch up
-    var containerDiv = 'wade_main_div'; // the div that contains all the wade canvases
-    blankImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII='; // fully transparent image
-
-    /**
-     * The current app instance
-     * @type {Object}
-     */
-    this.app = 0;
-
-    /**
-     * The time (in seconds) between simulation steps
-     * @type {number}
-     * @constant
-     */
-    this.c_timeStep = 1 / 60;
-
-    /**
-     * The default layer for new sprites. This is initially set to 1.
-     * @type {number}
-     */
-    this.defaultLayer = 1;
-
-    this._appData = 0;
-    this.c_epsilon = 0.0001;
-
-    /**
-     * Initialize the engine
-     * @param {string} appScript Path and filename of the main app script
-     * @param {Object} [appData = {}] An object containing initialization data for the app
-     * @param {Object} [options = {}] An object that contains a set of fields that specify some configuration options. All the fields are optional. Supported values are:<br/><ul>
-        <li> <b>forceReload</b>: <i>boolean</i> -  Whether to force reloading the main app script (as opposed to trying to get it from the cache. Defaults to false</li>
-        <li> <b>updateCallback</b>: <i>function</i> -  A function to execute when an update for the cached version of the app is available and has been downloaded. This only applies to apps using the application cache. If omitted, the default behavior is to display an alert, after which the page will be refreshed.</li>
-        <li> <b>container</b>: <i>string</i> - The name of an HTML element in the current document (typically a DIV), that will contain all of the app's canvases and will be used to detect input events. Default is 'wade_main_div'.</li>
-        <li> <b>debug</b>: <i>boolean</i> - Whether to run the app in debug mode. When this is active, the source code of functions loaded through scene files will be easily accessible from the debugger. This will also inject 'sourceURL' tags into all dynamically loaded scripts. Defaults to false.</li>
-        <li> <b>audio</b>: <i>boolean</i> - Whether to activate audio or not. Defaults to true.</li>
-        <li> <b>input</b>: <i>boolean</i> - Whether to activate input or not. Defaults to true.</li></ul>
-     */
-    this.init = function(appScript, appData, options)
-	{
-        options = options || {};
-        var forceReload = options.forceReload;
-        var updateCallback = options.updateCallback;
-        var container = options.container;
-
-        containerDiv = container || 'wade_main_div';
-
-        // handle application cache
-        var handleApplicationCache = function()
-        {
-            var appCache = window.applicationCache;
-            if (!appCache)
-            {
-                return;
-            }
-
-            if (appCache.status == appCache.UPDATEREADY)
-            {
-                wade.log('a new version of the app is available');
-                if (updateCallback)
-                {
-                    updateCallback();
-                }
-                else
-                {
-                    alert('A new version is available.\nPlease press OK to restart.');
-                    appCache.swapCache();
-                    window.location.reload(true);
-                    window.location = window.location;
-                }
-                return;
-            }
-            else
-            {
-                try
-                {
-                    appCache.update();
-                } catch(e) {}
-            }
-            appCache.addEventListener('updateready', handleApplicationCache, false);
-        };
-        handleApplicationCache();
-
-        if (appScript)
-        {
-            // set relative app path
-            relativeAppPath = appScript.substr(0, Math.max(appScript.lastIndexOf('/'), appScript.lastIndexOf('\\')) + 1);
-        }
-
-        // add support for requestAnimationFrame
-        // it has to be a bit convoluted because some browsers will have vendor-specific extensions for this, others will have no support at all
-        var lastTime = 0;
-        var vendors = ['ms', 'moz', 'webkit', 'o'];
-        for (var i=0; i<vendors.length && !window.requestAnimationFrame; i++)
-        {
-            window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
-            window.cancelAnimationFrame = window[vendors[i] + 'CancelAnimationFrame'] || window[vendors[i] + 'CancelRequestAnimationFrame'];
-        }
-        if (!window.requestAnimationFrame)
-        {
-            window.requestAnimationFrame = function(callback)
-            {
-                var currTime = new Date().getTime();
-                var timeToCall = Math.max(0, 16 - (currTime -lastTime));
-                var id = window.setTimeout(function() {callback(currTime + timeToCall);}, timeToCall);
-                lastTime = currTime + timeToCall;
-                return id;
-            };
-        }
-        if (!window.cancelAnimationFrame)
-        {
-            window.cancelAnimationFrame = function(id)
-            {
-                clearTimeout(id);
-            }
-        }
-
-        // try to create a WebAudio context
-        var enableAudio = (typeof(options.audio) == 'undefined' || options.audio);
-        audioContext = options.audioContext;
-        if (enableAudio && !audioContext)
-        {
-            try
-            {
-                window.AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioContext = new AudioContext();
-                var canUseWebAudio = XMLHttpRequest && (typeof (new XMLHttpRequest()).responseType === 'string');
-            }
-            catch (e) {}
-            if (!canUseWebAudio)
-            {
-                wade.log('Warning: the WebAudio API is not supported by this browser. Audio functionality will be limited');
-            }
-        }
-
-		// create the asset loader
-		assetLoader = new AssetLoader();
-        assetLoader.init(false);
-
-        // create the asset preloader
-        assetPreloader = new AssetLoader();
-        assetPreloader.init(true);
-
-		// create and initialise the scene manager
-		sceneManager = new SceneManager();
-		sceneManager.init();
-
-		// create and initialise the input manager
-		inputManager = new InputManager();
-        if (typeof(options.input) == 'undefined' || options.input)
-        {
-            inputManager.init();
-        }
-
-        // create an internal canvas context for various operations such as measuring text, etc
-        internalCanvas = document.createElement('canvas');
-        internalCanvas.width = internalCanvas.height = 256;
-        internalContext = internalCanvas.getContext('2d');
-
-        // generate procedural images
-        this.proceduralImages.init();
-
-        // set debug mode
-        debugMode = !!options.debug;
-
-		// load user app
-		this._appData = appData? appData : {};
-        if (appScript)
-        {
-		    assetLoader.loadAppScript(appScript, forceReload);
-        }
-        else if (window.App)
-        {
-            this.instanceApp();
-        }
-        else
-        {
-            wade.log("Warning - App is not defined.")
-        }
-
-		// start the main loop
-		this.event_mainLoop();
-	};
-
-    /**
-     * Stop the execution of the WADE app. The simulation and rendering loops will be interrupted, and 'onAppTimer' events will stop firing.<br/>
-     * If the WADE app has scheduled any events (for example with setTimeout), it is responsible for cancelling those events.
-     */
-    this.stop = function()
-    {
-        if (pendingMainLoop)
-        {
-            cancelAnimationFrame(pendingMainLoop);
-        }
-        if (pendingAppTimer)
-        {
-            clearTimeout(pendingAppTimer);
-        }
-        this.setLoadingImages([]);
-		wade.stopInputEvents();
-    };
-
-    /**
-     * Stop listening for input events
-     */
-    this.stopInputEvents = function()
-    {
-        inputManager.deinit();
-    };
-
-    /**
-     * Restart listening to input events after a call to wade.stopInputEvents()
-     */
-    this.restartInputEvents  = function()
-    {
-        inputManager.init();
-    };
-
-    /**
-     * Stop the normal input event handling by the browser. Note that this happens by default, so you don't need to call this function unless you want to re-enable the default handling of input events, or change it programmatically.
-     * @param {boolean} [toggle] Whether to cancel the normal handling of event. If this parameter is omitted, it's assumed to be true.
-     */
-    this.cancelInputEvents = function(toggle)
-    {
-        inputManager.cancelEvents(toggle);
-    };
-
-    /**
-     * Get the base path of the app (i.e. the directory where the main app script is located or the directory that was set via setBasePath)<br/>
-     * The result of this function depends on the path that was passed to the last call to <i>wade.init()</i> or <i>wade.setBasePath</i>. It can be an absolute path, or a path relative to the location of WADE.
-     * @returns {String} The base path of the app
-     */
-	this.getBasePath = function()
-	{
-		return relativeAppPath;
-	};
-
-    /**
-     * Set the base path of the app. Omit the parameter or set it to an empty string "" if you want to always use absolute paths
-     * @param {String} path the base path of the app
-     */
-    this.setBasePath = function(path)
-    {
-        relativeAppPath = path || '';
-    };
-
-    /**
-     * Get the full path and file name of the specified file. This could be relative to the app's main file location, or an absolute address starting with 'http://', 'https://' or '//'
-     * @param {string} file The base file name
-     * @returns {string} The full path and file name
-     */
-    this.getFullPathAndFileName = function(file)
-    {
-        if (!file || file.substr(0, 11) == 'procedural_')
-        {
-            return file;
-        }
-        var firstChar = file[0];
-        return (firstChar=='\\' || firstChar == '/' || file.indexOf(':') != -1)? file : relativeAppPath + file;
-    };
-    
-    /**
-     * Load a javascript file. Although the loading happens asynchronously, the simulation is suspended until this operation is completed.<br/>
-     * If a loading screen has ben set, it will be shown during the loading.<br/>
-     * See preloadScript for an equivalent operation that happens in the background without suspending the simulation.
-     * @param {string} file A javascript file to load. It can be a relative path, or an absolute path starting with "http://"
-     * @param {function} [callback] A callback to execute when the script is loaded
-     * @param {boolean} [forceReload] Wheter to force the client to reload the file even when it's present in its cache
-     * @param {function} [errorCallback] A callback to execute when the script cannot be loaded
-     * @param {boolean} [dontExecute] Scripts loaded via wade.loadScript() are automatically executed. Set this boolean to true to avoid executing them as they are loaded.
-     */
-    this.loadScript = function(file, callback, forceReload, errorCallback, dontExecute)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.loadScript(fileName, callback, forceReload, errorCallback, dontExecute);
-    };
-
-    /**
-     * Load a javascript file asynchronously, without suspending the simulation.
-     * @param {string} file A javascript file to load. It can be a relative path, or an absolute path starting with "http://"
-     * @param {function} [callback] A callback to execute when the script is loaded
-     * @param {boolean} [forceReload] Wheter to force the client to reload the file even when it's present in its cache
-     * @param {function} [errorCallback] A callback to execute when the script cannot be loaded
-     * @param {boolean} [dontExecute] Scripts loaded via wade.preloadScript() are automatically executed. Set this boolean to true to avoid executing them as they are loaded.
-     */
-    this.preloadScript = function(file, callback, forceReload, errorCallback, dontExecute)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetPreloader.loadScript(fileName, callback, forceReload, errorCallback, dontExecute);
-    };
-
-    /**
-     * Get the contents of a script file
-     * @param {string} file A script file to access (it has to be a file that has been loaded via wade.loadScript() or set via wade.setScript() first). It can be a relative path, or an absolute path starting with "http://"
-     * @returns {string} The contents of the script file
-     */
-    this.getScript = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        return assetLoader.getScript(fileName);
-    };
-
-    /**
-     * Associate a file name with a script, so that any subsequent calls to getScript using the given file name will return that script.
-     * @param {string} file The script file name
-     * @param {string} [data] A string representation of the script
-     * @param {boolean} [setForPreloader] Whether to apply this operation to the asset preloader as well as the asset loader. This is false by default. If set to true, subsequent calls to wade.preloadScript will get this cached version of the data instead of loading it again in the background.
-     */
-    this.setScript = function(file, data, setForPreloader)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.setScript(fileName, data);
-        setForPreloader && assetPreloader.setScript(fileName, data);
-    };
-
-    /**
-     * Load a JavaScript Object Notation (JSON) data file. Although the loading happens asynchronously, the simulation is suspended until this operation is completed.<br/>
-     * If a loading screen has ben set, it will be shown during the loading.<br/>
-     * See preloadJson for an equivalent operation that happens in the background without suspending the simulation.
-     * @param {string} file A json file to load. It can be a relative path, or an absolute path starting with "http://"
-     * @param {Object} [objectToStoreData] An object that will be used to store the data. When the loading is complete, objectToStoreData.data will contain the contents of the json file
-     * @param {function} [callback] A callback to execute when the script is loaded
-     * @param {boolean} [forceReload] Whether to force the client to reload the file even when it's present in its cache#
-     * @param {function} [errorCallback] A callback to execute when the json file cannot be loaded
-     */
-	this.loadJson = function(file, objectToStoreData, callback, forceReload, errorCallback)
-	{
-        var fileName = this.getFullPathAndFileName(file);
-		assetLoader.loadJson(fileName, objectToStoreData, callback, forceReload, errorCallback);
-	};
-
-    /**
-     * Load a JavaScript Object Notation (JSON) data file asynchronously, without suspending the simulation.
-     * @param {string} file A json file to load. It can be a relative path, or an absolute path starting with "http://"
-     * @param {Object} [objectToStoreData] An object that will be used to store the data. When the loading is complete, objectToStoreData.data will contain the contents of the json file
-     * @param {function} [callback] A callback to execute when the script is loaded
-     * @param {boolean} [forceReload] Whether to force the client to reload the file even when it's present in its cache
-     * @param {function} [errorCallback] A callback to execute when the json file cannot be loaded
-     */
-    this.preloadJson = function(file, objectToStoreData, callback, forceReload, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetPreloader.loadJson(fileName, objectToStoreData, callback, forceReload, errorCallback);
-    };
-
-    /**
-     * @param {string} file A JSON file to access (it has to be a file that has been loaded via wade.loadJson() or set via wade.setJson() first). It can be a relative path, or an absolute path starting with "http://"
-     * @returns {object|Array} The contents of the JSON file
-     */
-    this.getJson = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        return assetLoader.getJson(fileName);
-    };
-
-    /**
-     * Associate a file name with a JSON object, so that any subsequent calls to getJson using the given file name will return that object.
-     * @param {string} file The JSON file name
-     * @param {Object} [data] The data object to associate with the JSON file name
-     * @param {boolean} [setForPreloader] Whether to apply this operation to the asset preloader as well as the asset loader. This is false by default. If set to true, subsequent calls to wade.preloadJson will get this cached version of the data instead of loading it again in the background.
-     */
-    this.setJson = function(file, data, setForPreloader)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.setJson(fileName, data);
-        setForPreloader && assetPreloader.setJson(fileName, data);
-    };
-
-    /**
-     * Load an image file. Although the loading happens asynchronously, the simulation is suspended until this operation is completed.<br/>
-     * If a loading screen has ben set, it will be shown during the loading.<br/>
-     * See preloadImage for an equivalent operation that happens in the background without suspending the simulation.
-     * @param {string} file An image file to load. It can be a relative path, or an absolute path starting with "http://"
-     * @param {function} [callback] A callback to execute when the file is loaded
-     * @param {function} [errorCallback] A callback to execute when the image cannot be loaded
-     */
-    this.loadImage = function(file, callback, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.loadImage(fileName, callback, errorCallback);
-    };
-
-    /**
-     * This is a helper functions to load multiple images in a single function call, and is equivalent to calling wade.loadImage() multiple times.
-     * @param {Array} arrayOfFileNames An array of strings, where each string is the file name of an image to load.
-     */
-    this.loadImages = function(arrayOfFileNames)
-    {
-        for (var i=0; i<arrayOfFileNames.length; i++)
-        {
-            this.loadImage(arrayOfFileNames[i]);
-        }
-    };
-
-    /**
-     * Load an image file asynchronously, without suspending the simulation.
-     * @param {string} file An image file to load. It can be a relative path, or an absolute path starting with "http://"
-     * @param {function} [callback] A callback to execute when the file is loaded
-     * @param {function} [errorCallback] A callback to execute when the image cannot be loaded
-     */
-    this.preloadImage = function(file, callback, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetPreloader.loadImage(fileName, callback, errorCallback);
-    };
-
-    /**
-     * Release references to an image file, so it can be garbage-collected to free some memory
-     * @param {string} file An image file to unload. It can be a relative path, or an absolute path starting with "http://"
-     */
-    this.unloadImage = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.unloadImage(fileName);
-        assetPreloader.unloadImage(fileName);
-    };
-
-    /**
-     * Release references to all the image files that have been loaded so far, so they can be garbage-collected to free some memory
-     */
-    this.unloadAllImages = function()
-    {
-        assetLoader.unloadAllImages();
-        assetPreloader.unloadAllImages();
-    };
-
-    /**
-     * Get an image object that has previously been loaded, or a blank image
-     * @param {string} [file] An image file to get. This must be the file name that was used in a previous call to loadImage, preloadImage or setImage. If omitted or falsy, a bank (white) image is returned
-     * @param {string} [errorMessage] An error message to display in the console if the image hasn't been loaded. If omitted, a default error message will be printed.
-     * @returns {Object} The image object that was requested
-     */
-    this.getImage = function(file, errorMessage)
-    {
-        if (file)
-        {
-            var fileName = this.getFullPathAndFileName(file);
-            return (assetLoader.getImage(fileName, errorMessage));
-        }
-        else
-        {
-            return blankImage;
-        }
-    };
-
-    /**
-     * Associate a file name with an image object, so that any subsequent calls to getImage using the given file name will return that object.
-     * @param {string} file The image file name
-     * @param {Object} [image] The image object
-     * @param {boolean} [setForPreloader] Whether to apply this operation to the asset preloader as well as the asset loader. This is false by default. If set to true, subsequent calls to wade.preloadImage will get this cached version of the data instead of loading it again in the background.
-     */
-    this.setImage = function(file, image, setForPreloader)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.setImage(fileName, image);
-        setForPreloader && assetPreloader.setImage(fileName, image);
-        sceneManager.renderer.updateImageUsers(fileName);
-    };
-
-    /**
-     * Load an audio file. Although the loading happens asynchronously, the simulation is suspended until this operation is completed.<br/>
-     * If a loading screen has ben set, it will be shown during the loading.<br/>
-     * See preloadAudio for an equivalent operation that happens in the background without suspending the simulation.
-     * @param {string} file The audio file to load. Note that while some browsers support '.aac' files, some don't and support '.ogg' instead. If you plan to use one of these formats, you should provide the same file in the other format too in the same location (same file name but different extension). It then doesn't matter wheter you refer to your file as 'fileName.aac' or 'fileName.ogg', because WADE will automatically use the one that is supported by the client
-     * @param {boolean} [autoplay] Whether to start play the audio file as soon as it's ready.
-     * @param {boolean} [looping] Whether to repeat the audio when it's over
-     * @param {function} [callback] A function to execute when the audio is ready to play
-     * @param {function} [errorCallback] A callback to execute when the audio file cannot be loaded
-     */
-    this.loadAudio = function(file, autoplay, looping, callback, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.loadAudio(fileName, autoplay, looping, callback, errorCallback);
-    };
-
-    /**
-     * Load an audio file asynchronously, without suspending the simulation.
-     * @param {string} file The audio file to load. Note that while some browsers support '.aac' files, some don't and support '.ogg' instead. If you plan to use one of these formats, you should provide the same file in the other format too in the same location (same file name but different extension). It then doesn't matter wheter you refer to your file as 'fileName.aac' or 'fileName.ogg', because WADE will internally use the one that is supported by the client
-     * @param {boolean} [autoplay] Whether to start play the audio file as soon as it's ready.
-     * @param {boolean} [looping] Whether to repeat the audio when it's over
-     * @param {function} [callback] A function to execute when the audio is ready to play
-     * @param {function} [errorCallback] A callback to execute when the audio file cannot be loaded
-     */
-    this.preloadAudio = function(file, autoplay, looping, callback, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetPreloader.loadAudio(fileName, autoplay, looping, callback, errorCallback);
-    };
-
-    /**
-     * Release references to an audio file, so it can be garbage-collected to free some memory
-     * @param {string} file An audio file to unload. It can be a relative path, or an absolute path starting with "http://"
-     */
-    this.unloadAudio = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.unloadAudio(fileName);
-        assetPreloader.unloadAudio(fileName);
-    };
-
-    /**
-     * Release references to all the audio files that have been loaded so far, so they can be garbage-collected to free some memory
-     */
-    this.unloadAllAudio = function()
-    {
-        assetLoader.unloadAllAudio();
-        assetPreloader.unloadAllAudio();
-    };
-
-    /**
-     * Associate a file name with an audio object, so that any subsequent calls to getAudio using the given file name will return that object.
-     * @param {string} file The audio file name
-     * @param {Object} [audio] The audio object
-     * @param {function} [callback] A function to execute when the audio has finished decoding and is fully set. This is useful if the audio object is a data URI of a compressed audio type that needs to be decoded
-     * @param {boolean} [setForPreloader] Whether to apply this operation to the asset preloader as well as the asset loader. This is false by default. If set to true, subsequent calls to wade.preloadAudio will get this cached version of the data instead of loading it again in the background.
-     */
-    this.setAudio = function(file, audio, callback, setForPreloader)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.setAudio(fileName, audio, callback);
-        setForPreloader && assetPreloader.setAudio(fileName, audio, callback);
-    };
-
-    /**
-     * Play an audio file that has previously been loaded with a call to loadAudio or preloadAudio
-     * @param {string} file The file name for the audio object. This must be the same string that was used in a previous call to loadAudio or preloadAudio
-     * @param {boolean} looping Whether to repeat the audio when it's over
-     * @param {function} [callback] A function to call when the sound is finished playing
-     * @returns {number} a unique identifier of the audio source that is being played
-     */
-    this.playAudio = function(file, looping, callback)
-    {
-        var audio = this.getAudio(file);
-        if (audioContext)
-        {
-            var source = audioContext.createBufferSource();
-            source.buffer = audio;
-            source.loop = !!looping;
-            source.connect(audioContext.destination);
-            source.endEventFired = false;
-            source.onended = function()
-            {
-                source.endEventFired = true;
-                if (callback)
-                {
-                    callback();
-                    callback = null;
-                }
-            };
-            source.start(0);
-            audioSources.push(source);
-            if (callback && !looping)
-            {
-                var checkIfFinished = function ()
-                {
-                    if (source.playbackState != source.FINISHED_STATE)
-                    {
-                        setTimeout(checkIfFinished, wade.c_timeStep);
-                    }
-                    else if (source.onended && !source.endEventFired)
-                    {
-                        source.endEventFired = true;
-                        source.onended();
-                    }
-                };
-                source.checkEnded = setTimeout(checkIfFinished, source.buffer.duration * 1000 + wade.c_timeStep);
-            }
-        }
-        else
-        {
-            if (audio.alreadyPlayed && !audio.ended)
-            {
-                audio = new Audio(audio.src);
-                this.setAudio(file, audio);
-            }
-            audio.loop = looping;
-            audio.alreadyPlayed = true;
-            if (looping)
-            {
-                audio.addEventListener('ended', function() {this.currentTime = 0; this.play();}, false);
-            }
-            audio.play();
-            audioSources.push(audio);
-        }
-        return audioSources.length;
-    };
-
-    /**
-     * Stop an audio file that was playing
-     * @param {number} [uid] The unique identifier of the audio source that you want to stop playing. If omitted, all sources will be stoppped
-     */
-    this.stopAudio = function(uid)
-    {
-        if (typeof(uid) == 'undefined')
-        {
-            for (var i=0; i<audioSources.length; i++)
-            {
-                if (audioSources[i])
-                {
-                    audioSources[i].stop();
-                    audioSources[i].checkEnded && clearTimeout(audioSources[i].checkEnded);
-                }
-            }
-        }
-        else
-        {
-            var source = audioSources[uid-1];
-            if (source)
-            {
-                source.stop();
-                source.checkEnded && clearTimeout(source.checkEnded);
-            }
-        }
-    };
-
-    /**
-     * Play an audio file only if it's ready to be played, do not attempt to play otherwise
-     * @param {string} file The file name for the audio object. This must be the same string that was used in a previous call to loadAudio or preloadAudio
-     * @param {boolean} looping Whether to repeat the audio when it's over
-     * @param {function} [callback] A function to call when the sound is finished playing
-     * @returns {number} a unique identifier of the audio source that is being played
-     */
-    this.playAudioIfAvailable = function(file, looping, callback)
-    {
-        if (this.getLoadingStatus(this.getFullPathAndFileName(file)) == 'ok')
-        {
-            return this.playAudio(file, looping, callback);
-        }
-        return 0;
-    };
-
-    /**
-     * Play a segment of an audio file
-     * @param {string} file The file name for the audio object. This must be the same string that was used in a previous call to loadAudio or preloadAudio
-     * @param {number} [start] The starting point, in seconds. If omitted or falsy, the sound will be played from the beginning
-     * @param {number} [end] The ending point, in seconds. If omitted or falsy, the sound is played from the start position to the end of the source file.
-     * @param {function} [callback] A function to call when the ending point is reached
-     * @returns {number} a unique identifier of the audio source that is being played
-     */
-    this.playAudioSegment = function(file, start, end, callback)
-    {
-        start = start || 0;
-        var audio = this.getAudio(this.getFullPathAndFileName(file));
-        if (audioContext)
-        {
-            var source = audioContext.createBufferSource();
-            source.buffer = audio;
-            source.connect(audioContext.destination);
-            source.endEventFired = false;
-            source.onended = function()
-            {
-                source.endEventFired = true;
-                if (callback)
-                {
-                    callback();
-                    callback = null;
-                }
-            };
-            source.start(start);
-            if (callback)
-            {
-                var checkIfFinished = function ()
-                {
-                    if (source.playbackState != source.FINISHED_STATE)
-                    {
-                        setTimeout(checkIfFinished, wade.c_timeStep);
-                    }
-                    else if (source.onended && !source.endEventFired)
-                    {
-                        source.endEventFired = true;
-                        source.onended();
-                    }
-                };
-                source.checkEnded = setTimeout(checkIfFinished, (source.buffer.duration - start) * 1000 + wade.c_timeStep);
-            }
-            end && source.stop(end);
-            audioSources.push(source);
-        }
-        else
-        {
-            end = end || audio.duration;
-            var endFunction = function()
-            {
-                if (this.currentTime >= end)
-                {
-                    this.pause();
-                    this.ended = true;
-                    callback && callback();
-                }
-            };
-            if (audio.alreadyPlayed && !audio.ended)
-            {
-                audio = new Audio(audio.src);
-            }
-            audio.addEventListener('timeupdate', endFunction, false);
-            audio.alreadyPlayed = true;
-            audio.play();
-            audioSources.push(audio);
-        }
-        return audioSources.length-1;
-    };
-
-    /**
-     * Play a segment of an audio file only if it's ready to be played, do not attempt to play otherwise
-     * @param {string} file The file name for the audio object. This must be the same string that was used in a previous call to loadAudio or preloadAudio
-     * @param {number} start The starting point, in seconds
-     * @param {number} end The ending point, in seconds
-     * @param {function} callback A function to call when the ending point is reached
-     */
-    this.playAudioSegmentIfAvailable = function(file, start, end, callback)
-    {
-        if (this.getLoadingStatus(this.getFullPathAndFileName(file)) == 'ok')
-        {
-            // this.playAudio(file);
-            this.playAudioSegment(file, start, end, callback);
-        }
-    };
-
-    /**
-     * Load a font file. Although the loading happens asynchronously, the simulation is suspended until this operation is completed.<br/>
-     * If a loading screen has ben set, it will be shown during the loading.<br/>
-     * See preloadFont for an equivalent operation that happens in the background without suspending the simulation.
-     * @param {string} file A fonr file to load (.woff files are universally supported, other format may be supported depending on the browser). It can be a relative path, or an absolute path starting with "http://" or "https://" or "//"
-     * @param {function} [callback] A callback to execute when the file is loaded
-     * @param {function} [errorCallback] A callback to execute when the font cannot be loaded
-     */
-    this.loadFont = function(file, callback, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.loadFont(fileName, callback, errorCallback);
-    };
-
-    /**
-     * Load a font file asynchronously, without suspending the simulation.
-     * @param {string} file A font file to load (.woff files are universally supported, other format may be supported depending on the browser). It can be a relative path, or an absolute path starting with "http://" or "https://" or "//"
-     * @param {function} [callback] A callback to execute when the file is loaded
-     * @param {function} [errorCallback] A callback to execute when the font cannot be loaded
-     */
-    this.preloadFont = function(file, callback, errorCallback)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetPreloader.loadFont(fileName, callback, errorCallback);
-    };
-
-    /**
-     * Get the base64-encoded dataURL of a font
-     * @param {string} file A font dataURL to access (it has to be data that has been set via wade.setFont() first). It can be a relative path, or an absolute path starting with "http://"
-     * @returns {string} The dataURL of the font
-     */
-    this.getFont = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        return assetLoader.getFont(fileName);
-    };
-
-    /**
-     * Associate a file name with a font, so that any subsequent calls to getFont using the given file name will return that font.
-     * @param {string} file The font file name
-     * @param {string} [data] The dataURL of the font
-     * @param {boolean} [setForPreloader] Whether to apply this operation to the asset preloader as well as the asset loader. This is false by default. If set to true, subsequent calls to wade.preloadFont will get this cached version of the data instead of loading it again in the background.
-     */
-    this.setFont = function(file, data, setForPreloader)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        assetLoader.setFont(fileName, data);
-        setForPreloader && assetPreloader.setFont(fileName, data);
-    };
-
-    /**
-     * Get the current loading status of a file
-     * @param {string} file The file name.
-     * @returns {string | undefined} The loading status:<br/>
-     * - 'loading' when the loading of the file is in progress<br/>
-     * - 'ok' if the file was loaded with no problems<br/>
-     * - 'error' if there were loading errors<br/>
-     * - 'unknown' if WADE has never been requested to load the file
-     */
-    this.getLoadingStatus = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        return assetLoader.getLoadingStatus(fileName);
-    };
-
-    /**
-     * Create an instance of the user app. This function is called automatically when the main app script is finished loading.
-     */
-    this.instanceApp = function()
-	{
-		// create a new instance of the user app
-		this.app = new App();
-		this.app.appData = this._appData;
-		
-		// tell it to load its own assets
-        if (this.app.load)
-        {
-            this.app.load();
-        }
-        appInitialised = false;
-        appLoading = true;
-	};
-
-    /**
-     * Initialize the user app. This function is called automatically when the main app is finished loading its assets.
-     */
-	this.initializeApp = function()
-	{
-        appInitialised = true;
-
-        // set double buffering for the android stock browser
-        var isAndroidStockBrowser = (navigator.userAgent.indexOf("Android") >= 0 && navigator.userAgent.indexOf("Firefox") == -1 && !(window.chrome && window.chrome.app) && !this.isWebGlSupported());
-        this.enableDoubleBuffering(isAndroidStockBrowser);
-
-        // call the init function of the user app
-        var that = this;
-		if (!that.app.init)
-		{
-			wade.log('Warning: Unable to initialize app. App.init function is missing.');
-			return;
-		}
-		that.app.init();
-
-		// schedule app timer event
-		pendingAppTimer = setTimeout(function() {wade.event_appTimerEvent();}, appTimerInterval * 1000);
-	};
-
-    /**
-     * Process a given event. A callback function with the same name as the event will be called for the objects that have been registered with addEventListener for this event.<br/>
-     * Note that when a listener indicates that they have processed the event (by returning true in their callback), the event won't be passed to any more listeners.
-     * @param {string} event The name of the event to process
-     * @param {Object} [eventData] An object to be passed to all the callbacks that will be called
-     * @returns {boolean} Whether any listener succesfully processed the event
-     */
-    this.processEvent = function(event, eventData)
-    {
-        return sceneManager.processEvent(event, eventData);
-    };
-
-    /**
-     * Register a scene object to listen for all the events with a given name. When an event is triggered, a callback with the same name as the event will be called for this object and all its behaviors (when present).
-     * When input events (such as onClick) occur outside the bounding boxes of the objects' sprites, the scene object will not receive the event.
-     * @param {SceneObject} sceneObject A scene object that will be listening for the event
-     * @param {string} event The name of the event to listen for
-     */
-    this.addEventListener = function(sceneObject, event)
-    {
-        sceneManager.addEventListener(sceneObject, event);
-    };
-
-    /**
-     * Unregister an object that has previously been registered to listen for an event using addEventListener.
-     * @param {SceneObject} sceneObject The scene object to unregister
-     * @param {string} event The name of the event to stop listening for
-     */
-    this.removeEventListener = function(sceneObject, event)
-    {
-        sceneManager.removeEventListener(sceneObject, event);
-    };
-
-    /**
-     * Check to see if a Scene Object is currently listening for a specific type of event
-     * @param {SceneObject} sceneObject The scene object to check
-     * @param {string} event The name of the event
-     * @returns {boolean} Whether the scene object is currently listening for the event
-     */
-    this.isEventListener = function(sceneObject, event)
-    {
-        return sceneManager.isObjectListeneningForEvent(sceneObject, event);
-    };
-
-    /**
-     * Register a scene object to listen for all the events with a given name. When an event is triggered, a callback with the same name as the event will be called for this object and all its behaviors (when present).
-     * The scene object will receive events that occur outside the bounding boxes of the objects' sprites, where this is applicable (depending on the event type).
-     * @param {SceneObject} sceneObject A scene object that will be listening to the event
-     * @param {string} event The name of the event to listen for
-     */
-    this.addGlobalEventListener = function(sceneObject, event)
-    {
-        sceneManager.addGlobalEventListener(sceneObject, event);
-    };
-
-    /**
-     * Unregister an object that has previously been registered to listen for an event using addGlobalEventListener.
-     * @param {SceneObject} sceneObject The scene object to unregister
-     * @param {string} event The name of the event to stop listenening for
-     */
-    this.removeGlobalEventListener = function(sceneObject, event)
-    {
-        sceneManager.removeGlobalEventListener(sceneObject, event);
-    };
-
-    /**
-     * Get the current camera position.
-     * @returns {Object} An object whose 'x', 'y' and 'z' fields represent the coordinates of the camera position in world space
-     */
-    this.getCameraPosition = function()
-    {
-        return sceneManager.renderer.getCameraPosition();
-    };
-
-    /**
-     * Set a world space position for the camera.
-     * @param {Object} pos An object whose 'x', 'y' and 'z' fields represent the coordinates of the camera position in world space
-     */
-    this.setCameraPosition = function(pos)
-    {
-        sceneManager.renderer.setCameraPosition(pos);
-    };
-
-    /**
-     * Get the total simulation time, in seconds, since the app was started
-     * @returns {number} The number of seconds the simulation has been running since the app was started
-     */
-    this.getAppTime = function()
-    {
-        return sceneManager.getAppTime();
-    };
-
-    /**
-     * Set a custom interval for the 'onAppTimer' event. If this function is never called, the interval is 1 second by default.
-     * @param {number} interval The number of seconds between 'onAppTimer' events
-     */
-    this.setAppTimerInterval = function(interval)
-    {
-        appTimerInterval = interval;
-    };
-
-    /**
-     * Remove an object from an array based on the object's index into the array
-     * @param {number} index The index of the object to remove
-     * @param {Array} array The array that contains the object
-     * @returns {Object} The array after the object has been removed
-     */
-    this.removeObjectFromArrayByIndex = function(index, array)
-    {
-        if (index >= 0)
-        {
-            var rest = array.slice(index + 1 || array.length);
-            array.length = index;
-            return array.push.apply(array, rest);
-        }
-        return array;
-    };
-
-    /**
-     * Remove an object from an array
-     * @param {Object} object The object to remove from the array
-     * @param {Array} array The array that contains the object
-     * @returns {Object} The array after the object has been removed
-     */
-    this.removeObjectFromArray = function(object, array)
-    {
-        var i = array.lastIndexOf(object);
-        if (i != -1)
-        {
-            return this.removeObjectFromArrayByIndex(i, array);
-        }
-        return array;
-    };
-
-    /**
-     * Add a scene object to the scene
-     * @param {SceneObject} sceneObject The scene object to add to the scene
-     * @param {boolean} [autoListen] This is false by default. When set to true (or a truthy value), WADE will set the object to automatically listen for any events for which handlers are defined on the object or any of its behaviors.
-     * For example if the object has an onMouseDown function when it's addded to the scene (or any of its behaviours has an onMouseDown function) and this parameter is true, the object will be set to listen for onMouseDown events automatically.
-     * @param [params] This argument can be any type, is optional, and if present is passed to the onAddToScene event handler(s) for this object
-     * @returns {SceneObject} The scene object that was just added to the scene
-     */
-    this.addSceneObject = function(sceneObject, autoListen, params)
-    {
-        sceneManager.addSceneObject(sceneObject, autoListen, params);
-        return sceneObject;
-    };
-
-    /**
-     * Remove a scene object from the scene
-     * @param {SceneObject|string} sceneObject The object to remove from the scene. If the scene object that you want to remove has a name, you can use its name (a string) rather than a reference to the object itself.
-     */
-    this.removeSceneObject = function(sceneObject)
-    {
-        sceneManager.removeSceneObject(typeof(sceneObject) == 'string'? this.getSceneObject(sceneObject) : sceneObject);
-    };
-
-    /**
-     * Remove multiple scene objects from the scene
-     * @param {Array} sceneObjects An array of scene objects to remove from the scene
-     */
-    this.removeSceneObjects = function(sceneObjects)
-    {
-        for (var i=0; i<sceneObjects.length; i++)
-        {
-            sceneManager.removeSceneObject(sceneObjects[i]);
-        }
-    };
-
-    /**
-     * Remove all the scene objects from the scene
-     */
-    this.clearScene = function()
-    {
-        sceneManager.clear();
-    };
-
-    /**
-     * Get the sorting method that is currently being used for the layer
-     * @param {number} layerId The layer id
-     * @returns {string|function} A user specified function that was previously set with setLayerSorting, or a string indicating one of the built-in types of sorting: 'bottomToTop', 'topToBottom', 'none'.<br/>
-     * The default value for a layer sorting method is 'none'.
-     */
-    this.getLayerSorting = function(layerId)
-    {
-        return sceneManager.renderer.getLayerSorting(layerId);
-    };
-
-    /**
-     * Set the sorting method to use for a specified layer
-     * @param {number} layerId The layer id
-     * @param {string|function} sortingType A user-defined function to use for sorting the layer, or a string indicating one of the built-in types of sorting: 'bottomToTop', 'topToBottom', 'none'.<br/>
-     * A sorting function looks like 'function sort(a, b)' where 'a' and 'b' are two sprites. The function returns a negative number if 'a' needs to be drawn before 'b', and a positive number otherwise.<br/>
-     * The default sorting type is 'none', which means that objects will be drawn in the order they were added to the scene
-     */
-    this.setLayerSorting = function(layerId, sortingType)
-    {
-        sceneManager.renderer.setLayerSorting(layerId, sortingType);
-    };
-
-    /**
-     * Set a coordinate transformation for the layer. This will determine how the objects in the layer are rotated and translated when the camera moves
-     * @param {number} layerId The layer id
-     * @param {number} scale The scale transformation factor. The default value is 1. A value of 0 indicates that no scaling will occur when the camera moves. Higher values indicate more scaling.
-     * @param {number} translate The transformation factor. The default value is 1. A value of 0 indicates that no translation will occur when the camera moves.  Higher values indicate larger translations.
-     */
-    this.setLayerTransform = function(layerId, scale, translate)
-    {
-        sceneManager.renderer.setLayerTransform(layerId, scale, translate);
-    };
-
-    /**
-     * Set the resolution factor for a specific layer
-     * @param {number} layerId The layer id
-     * @param {number} resolutionFactor The resolution factor. It must be > 0. 1 indicates full resolution, < 1 lower resolution, > 1 higher resolution.
-     */
-    this.setLayerResolutionFactor = function(layerId, resolutionFactor)
-    {
-        sceneManager.renderer.setLayerResolutionFactor(layerId, resolutionFactor);
-    };
-
-    /**
-     * Get the resolution factor for a specific  layer
-     * @param {number} layerId The layer id
-     * @returns {number} The resolution factor of the layer
-     */
-    this.getLayerResolutionFactor = function(layerId)
-    {
-        return sceneManager.renderer.getLayerResolutionFactor(layerId);
-    };
-
-    /**
-     * Set the resolution factor for all layers
-     * @param {number} _resolutionFactor The resolution factor. It must be > 0. 1 indicates full resolution, < 1 lower resolution, > 1 higher resolution.
-     */
-    this.setResolutionFactor = function(_resolutionFactor)
-    {
-        resolutionFactor = _resolutionFactor;
-        sceneManager.renderer.setResolutionFactor(resolutionFactor);
-    };
-
-    /**
-     * Get the current global resolution factor. Note that resolution factors of individual layers may be different, if they were set through setLayerResolutionFactor
-     * @returns {number} The global resolution factor
-     */
-    this.getResolutionFactor = function()
-    {
-        return resolutionFactor;
-    };
-
-    /**
-     * Get the width of the current render area
-     * @returns {number} The width of the current render area
-     */
-    this.getScreenWidth = function()
-    {
-        return sceneManager.renderer.getScreenWidth();
-    };
-
-    /**
-     * Get the hight of the current render area
-     * @returns {number} The height of the current render area
-     */
-    this.getScreenHeight = function()
-    {
-        return sceneManager.renderer.getScreenHeight();
-    };
-
-    /**
-     * Set the size of the render area. Note that, depending on the current window mode, changing the size of the render area may have no actual effect, although an onResize event will always be fired if the width and height specified are not the same as the current ones.
-     * @param {number} width The width of the render area
-     * @param {number} height The height of the render area
-     */
-    this.setScreenSize = function(width, height)
-    {
-        sceneManager.renderer.setScreenSize(width, height);
-    };
-
-    /**
-     * Get the width of the window that contains the app
-     * @returns {number} The width of the window that contains the app
-     */
-    this.getContainerWidth = function()
-    {
-        return this.isScreenRotated()? window.innerHeight : window.innerWidth;
-    };
-
-    /**
-     * Get the height of the window that contains the app
-     * @returns {number} The height of the window that contains the app
-     */
-    this.getContainerHeight = function()
-    {
-        return this.isScreenRotated()? window.innerWidth : window.innerHeight;
-    };
-
-    /**
-     * Determine whether the canvas (or the portions of it that have changed) should be cleared between frames. This happens by default but, where possible, you may want to disable the clearing to improve performance.
-     * @param {number} layerId The layer id
-     * @param {boolean} toggle Whether to clear the canvas between frames
-     */
-    this.setCanvasClearing = function(layerId, toggle)
-    {
-        sceneManager.renderer.setCanvasClearing(layerId, toggle);
-    };
-
-    /**
-     * Set the current window mode. This determines how the render area will be resized when the parent window is resized.
-     * @param {string} mode The window mode. Valid values are:<br/>
-     * 'full' - The render area will be resized to cover the whole window, as long as it's between the minimum and maximum screen sizes (see setMinScreenSize and setMaxScreenSize)<br/>
-     * 'stretchToFit' - The render area will be resized to cover as much as possible of the parent window, without changing its aspect ratio<br/>
-     * any other string - The render area will never be resized<br/>
-     * The default value is 'full'
-     */
-    this.setWindowMode = function(mode)
-    {
-        sceneManager.renderer.setWindowMode(mode);
-    };
-
-    /**
-     * Get the current window mode.
-     * @returns {string} The current window mode.
-     */
-    this.getWindowMode = function()
-    {
-        return sceneManager.renderer.getWindowMode();
-    };
-
-    /**
-     * Open a web page in the app's window.
-     * @param {string} url The address of the web page to open
-     */
-    this.loadPage = function(url)
-    {
-        self.location = url;
-    };
-
-    /**
-     * Clone an object
-     * @param {Object} object The object to clone
-     * @returns {Object} A clone of the original object
-     */
-    this.cloneObject = function(object)
-    {
-        return jQuery.extend(true, {}, object);
-    };
-
-    /**
-     * Clone an array
-     * @param {Array} array The array to clone
-     * @returns {Array} A clone of the original array
-     */
-    this.cloneArray = function(array)
-    {
-        return jQuery.extend(true, [], array);
-    };
-
-    /**
-     * Enable or disable the simulation of a scene object
-     * @param {SceneObject} sceneObject The scene object
-     * @param {boolean} toggle Whether to enable the simulation
-     */
-    this.simulateSceneObject = function(sceneObject, toggle)
-    {
-        if (toggle)
-        {
-            if (!sceneObject.simulated)
-            {
-                sceneManager.addEventListener(sceneObject, 'onSimulationStep');
-                sceneObject.simulated = true;
-            }
-        }
-        else
-        {
-            if (sceneObject.simulated)
-            {
-                sceneManager.removeEventListener(sceneObject, 'onSimulationStep');
-                sceneObject.simulated = false
-            }
-        }
-    };
-
-    /**
-     * Set the maximum width and height of the render area. When the window mode is set to full, even when the render area is automatically resized it will never be larger than the specified dimensions.<br/>
-     * The default values are 1920 and 1080
-     * @param {number} width The maximum width of the render area
-     * @param {number} height The maximum height of the render area
-     */
-    this.setMaxScreenSize = function(width, height)
-    {
-        sceneManager.renderer.setMaxScreenSize(width, height);
-    };
-
-    /**
-     * Get the maximum width of the render area
-     * @returns {number} The maximum width of the render area, as set with the last call to <i>setMaxScreenWidth</i>, or 1920 by default
-     */
-    this.getMaxScreenWidth = function()
-    {
-        return sceneManager.renderer.getMaxScreenWidth();
-    };
-
-    /**
-     * Get the maximum height of the render area
-     * @returns {number} The maximum height of the render area, as set with the last call to <i>setMaxScreenHeight</i>, or 1080 by default
-     */
-    this.getMaxScreenHeight = function()
-    {
-        return sceneManager.renderer.getMaxScreenHeight();
-    };
-
-    /**
-     * Set the minimum width and height of the render area. When the window mode is set to full, even when the render area is automatically resized it will never be smaller than the specified dimensions.<br/>
-     * The default values are 0 and 0
-     * @param {number} width The minimum width of the render area
-     * @param {number} height The minimum height of the render area
-     */
-    this.setMinScreenSize = function(width, height)
-    {
-        return sceneManager.renderer.setMinScreenSize(width, height);
-    };
-
-    /**
-     * Get the minimum width of the render area
-     * @returns {number} The minimum width of the render area, as set with the last call to <i>setMinScreenWidth</i>, or 0 by default
-     */
-    this.getMinScreenWidth = function()
-    {
-        return sceneManager.renderer.getMinScreenWidth();
-    };
-
-    /**
-     * Get the minimum height of the render area
-     * @returns {number} The minimum height of the render area, as set with the last call to <i>setMinScreenHeight</i>, or 0 by default
-     */
-    this.getMinScreenHeight = function()
-    {
-        return sceneManager.renderer.getMinScreenHeight();
-    };
-
-    /**
-     * Create an HTML5 canvas object and add it to the document
-     * @param {number} [resolutionFactor] Resolution relative to the the other canvas objects. 1 is full resolution, < 1 is lower resolution, > 1 is higher resolution. Default is 1. How this relates to the number of logical pixels in the canvas depends on the current window mode.
-     * @returns {HTMLElement}
-     */
-    this.createCanvas = function(resolutionFactor)
-    {
-        resolutionFactor = resolutionFactor || 1;
-
-        // get the main canvas object to copy some properties from it
-        var mainCanvas = document.getElementById(containerDiv);
-        var $containerDiv = $("#" + containerDiv);
-        var mainWidth = parseInt($containerDiv.attr("width"));
-        var mainHeight = parseInt($containerDiv.attr("height"));
-
-        // create a new canvas object
-        var canvas = document.createElement('canvas');
-        canvas.width = Math.round(mainWidth * resolutionFactor);
-        canvas.height = Math.round(mainHeight * resolutionFactor);
-        canvas.style.position = mainCanvas.style.position;
-        canvas.style.margin = 'auto';
-        canvas.style.top = 0;
-        canvas.style.left = 0;
-        canvas.style.right = 0;
-        canvas.style.bottom = 0;
-        canvas.style['backfaceVisibility'] = canvas.style['WebkitBackfaceVisibility'] = canvas.style['MozBackfaceVisibility'] = canvas.style['OBackfaceVisibility'] = 'hidden';
-
-        // calculate css width and height relative to the main canvas
-        var w = canvas.style.width.toString().toLowerCase();
-        var h = canvas.style.height.toString().toLowerCase();
-        if (w == h && w == 'auto')
-        {
-            canvas.style.width = mainWidth + 'px';
-            canvas.style.height = mainHeight + 'px';
-        }
-        else
-        {
-            canvas.style.width = mainCanvas.style.width;
-            canvas.style.height = mainCanvas.style.height;
-        }
-
-        // set css transform
-        canvas.style['MozTransform'] =  canvas.style['msTransform'] = canvas.style['OTransform'] = canvas.style['WebkitTransform'] = canvas.style['transform'] = 'translate3d(0,0,0)';
-
-        // add the canvas to the html document
-        mainCanvas.appendChild(canvas);
-        return canvas;
-    };
-
-    /**
-     * Delete all the canvas objects created by WADE
-     */
-    this.deleteCanvases = function()
-    {
-        sceneManager.renderer.removeCanvases();
-    };
-
-    /**
-     * Recreate canvas objects that were delete with a call to wade.deleteCanvases
-     */
-    this.recreateCanvases = function()
-    {
-        sceneManager.renderer.recreateCanvases();
-    };
-
-    /**
-     * Checks whether the init function for the app has been executed
-     */
-    this.isAppInitialized = function()
-    {
-        return appInitialised;
-    };
-
-    /**
-     * Check whether box1 contains box2
-     * @param {Object} box1 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} box2 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @returns {boolean} Whether box1 contains box2
-     */
-    this.boxContainsBox = function(box1, box2)
-    {
-        return (box1.minX < box2.minX && box1.maxX > box2.maxX && box1.minY < box2.minY && box1.maxY > box2.maxY);
-    };
-
-    /**
-     * Check whether box1 and box2 intersect each other
-     * @param {Object} box1 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} box2 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @returns {boolean} Whether box1 and box2 intersect each other
-     */
-    this.boxIntersectsBox = function(box1, box2)
-    {
-        return !(box1.maxX < box2.minX || box1.minX > box2.maxX || box1.maxY < box2.minY || box1.minY > box2.maxY);
-    };
-
-    /**
-     * Check whether a box contains a point
-     * @param {Object} box An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} point An object with the following fields: 'x', 'y'
-     * @returns {boolean} Whether box contains point
-     */
-    this.boxContainsPoint = function(box, point)
-    {
-        return (point.x >= box.minX && point.x <= box.maxX && point.y >= box.minY && point.y <= box.maxY);
-    };
-
-    /**
-     * Check whether an oriented box contains a point
-     * @param {Object} ob An object with 'centerX' and 'centerY' fields representing its center coordinates, and the following fields:<br/>
-     * 'axisXx' and 'axisXy' represent the rotated X axis (the Width axis) of the rectangle in world-space coordinates. The length of the axisX vector must be half the width of the rectangle.<br/>
-     * 'axisYx' and 'axisYy' represent the rotated Y axis (the Height axis) of the rectangle in world-space coordinates. The length of the axisY vector must be half the height of the rectangle.
-     * @param {Object} point An object with the following fields: 'x', 'y'
-     * @returns {boolean} Whether orientedBox contains point
-     */
-    this.orientedBoxContainsPoint = function(ob, point)
-    {
-        var s = Math.sin(ob.rotation);
-        var c = Math.cos(ob.rotation);
-        var dx = point.x - ob.centerX;
-        var dy = point.y - ob.centerY;
-        var x = c * dx + s * dy;
-        var y = c * dy - s * dx;
-        return (x >= -ob.halfWidth && x <= ob.halfWidth && y >= -ob.halfHeight && y <= ob.halfHeight);
-    };
-
-    /**
-     * Check whether two oriented boxes intersect each other. Each box must be an object with 'centerX' and 'centerY' fields representing its center coordinates, and the following fields:<br/>
-     * 'axisXx' and 'axisXy' represent the rotated X axis (the Width axis) of the rectangle in world-space coordinates. The length of the axisX vector must be half the width of the rectangle.<br/>
-     * 'axisYx' and 'axisYy' represent the rotated Y axis (the Height axis) of the rectangle in world-space coordinates. The length of the axisY vector must be half the height of the rectangle.
-     * @param {Object} ob1 An oriented box
-     * @param {Object} ob2 The other oriented box
-     * @returns {boolean} Whether the two boxes intersect each other
-     */
-    this.orientedBoxIntersectsOrientedBox = function(ob1, ob2)
-    {
-        var tx = ob2.centerX - ob1.centerX;
-        var ty = ob2.centerY - ob1.centerY;
-        var axx = ob1.axisXx;
-        var axy = ob1.axisXy;
-        var ayx = ob1.axisYx;
-        var ayy = ob1.axisYy;
-        var bxx = ob2.axisXx;
-        var bxy = ob2.axisXy;
-        var byx = ob2.axisYx;
-        var byy = ob2.axisYy;
-        return !(Math.abs(tx * axx + ty * axy) > axx * axx + axy * axy + Math.abs(bxx * axx + bxy * axy) + Math.abs(byx * axx + byy * axy) ||
-                 Math.abs(tx * ayx + ty * ayy) > ayx * ayx + ayy * ayy + Math.abs(bxx * ayx + bxy * ayy) + Math.abs(byx * ayx + byy * ayy) ||
-                 Math.abs(tx * bxx + ty * bxy) > bxx * bxx + bxy * bxy + Math.abs(bxx * axx + bxy * axy) + Math.abs(bxx * ayx + bxy * ayy) ||
-                 Math.abs(tx * byx + ty * byy) > byx * byx + byy * byy + Math.abs(byx * axx + byy * axy) + Math.abs(byx * ayx + byy * ayy));
-    };
-
-    /**
-     * Check whether an axis-aligned box and an oriented box overlap each other.
-     * @param {Object} box An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} ob An object with 'centerX' and 'centerY' fields representing its center coordinates, and the following fields:<br/>
-     * 'axisXx' and 'axisXy' represent the rotated X axis (the Width axis) of the rectangle in world-space coordinates. The length of the axisX vector must be half the width of the rectangle.<br/>
-     * 'axisYx' and 'axisYy' represent the rotated Y axis (the Height axis) of the rectangle in world-space coordinates. The length of the axisY vector must be half the height of the rectangle.
-     * @returns {boolean}
-     */
-    this.boxIntersectsOrientedBox = function(box, ob)
-    {
-        var tx = (box.minX + box.maxX) / 2 - ob.centerX;
-        var ty = (box.minY + box.maxY) / 2 - ob.centerY;
-        var axx = (box.maxX - box.minX) / 2;
-        var ayy = (box.maxY - box.minY) / 2;
-        var bxx = ob.axisXx;
-        var bxy = ob.axisXy;
-        var byx = ob.axisYx;
-        var byy = ob.axisYy;
-        return !(Math.abs(tx * axx) > axx * axx + Math.abs(bxx * axx) + Math.abs(byx * axx) ||
-                 Math.abs(ty * ayy) > ayy * ayy + Math.abs(bxy * ayy) + Math.abs(byy * ayy) ||
-                 Math.abs(tx * bxx + ty * bxy) > bxx * bxx + bxy * bxy + Math.abs(bxx * axx) + Math.abs(bxy * ayy) ||
-                 Math.abs(tx * byx + ty * byy) > byx * byx + byy * byy + Math.abs(byx * axx) + Math.abs(byy * ayy));
-    };
-
-    /**
-     * Check whether an axis-aligned box and an oriented box overlap each other.
-     * @param {Object} box An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} ob An object with 'centerX' and 'centerY' fields representing its center coordinates, and the following fields:<br/>
-     * 'axisXx' and 'axisXy' represent the rotated X axis (the Width axis) of the rectangle in world-space coordinates. The length of the axisX vector must be half the width of the rectangle.<br/>
-     * 'axisYx' and 'axisYy' represent the rotated Y axis (the Height axis) of the rectangle in world-space coordinates. The length of the axisY vector must be half the height of the rectangle.
-     * @returns {boolean}
-     */
-    this.orientedBoxIntersectsBox = function(ob, box)
-    {
-        return this.boxIntersectsOrientedBox(box, ob);
-    };
-
-    /**
-     * Expand box1 so that it encompasses both box1 and box2
-     * @param {Object} box1 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} box2 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     */
-    this.expandBox = function(box1, box2)
-    {
-        box1.minX = Math.min(box1.minX, box2.minX);
-        box1.minY = Math.min(box1.minY, box2.minY);
-        box1.maxX = Math.max(box1.maxX, box2.maxX);
-        box1.maxY = Math.max(box1.maxY, box2.maxY);
-    };
-
-    /**
-     * Resize box1 so that it's fully contained in box2
-     * @param {Object} box1 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     * @param {Object} box2 An object representing a box with the following fields: 'minX', 'minY', 'maxX', 'maxY'
-     */
-    this.clampBoxToBox = function(box1, box2)
-    {
-        box1.minX = Math.max(box1.minX , box2.minX);
-        box1.minY = Math.max(box1.minY , box2.minY);
-        box1.maxX = Math.min(box1.maxX , box2.maxX);
-        box1.maxY = Math.min(box1.maxY , box2.maxY);
-    };
-
-    /**
-     * Send an object to a server. The object is serialized to JSON before being sent.
-     * @param {string} url The web address to send the object to
-     * @param {Object} object A javascript object to send
-     * @param {function} callback A function to call when the server replies
-     * @param {Object} extraParameters An object containing extra parameters to send together with the object (for example a cookie for csrf prevention)
-     */
-    this.postObject = function(url, object, callback, extraParameters)
-    {
-        var dataObject = {data: JSON.stringify(object)};
-        if (extraParameters)
-        {
-            jQuery.extend(dataObject, extraParameters);
-        }
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: dataObject,
-            complete: callback,
-            dataType: 'json'
-        });
-    };
-
-    /**
-     * Set a callback to be executed when all the pending loading requests terminate. Note that preloading requests are ignored for this purpose.
-     * @param {function} callback A callback to be executed when all the pending loading requests terminate
-     */
-    this.setGlobalLoadingCallback = function(callback)
-    {
-        assetLoader.setGlobalCallback(callback);
-    };
-
-    /**
-     * Set or remove a callback to be executed after each simulation step. Callbacks can be named, and you can have multiple ones active at the same time (although only one for each name).
-     * @param {function} [callback] The function to be executed after each simulation step. You can use a falsy value here (such as 0) to disable the callback
-     * @param {string} [name] The name you want to give to the callback. Subsequent calls to setMainLoopCallback() with the same name, will replace the callback you are setting now.
-     * @param {number} [priority] When there are multiple callbacks, they will be executed in ascending order of priority. Default is 0
-     */
-    this.setMainLoopCallback = function(callback, name, priority)
-    {
-        name = name || '_wade_default';
-        priority = priority || 0;
-        for (var i=0; i<mainLoopCallbacks.length && (mainLoopCallbacks[i].name != name); i++) {}
-        mainLoopCallbacks[i] = {func: callback, name: name, priority: priority};
-        mainLoopCallbacks.sort(function(a, b) {return b.priority - a.priority;});
-    };
-
-    /**
-     * Set the loading image(s) to be displayed while loading data
-     * @param {string|Array} files An image file name, or an arrray of image file names. These images don't need to be loaded using loadImage
-     * @param {string} [link] An URL to open when the loading image is clicked. The link is opened in a new window (or tab).
-     */
-    this.setLoadingImages = function(files, link)
-    {
-        for (var i=0; i<loadingImages.length; i++)
-        {
-            document.body.removeChild(loadingImages[i]);
-        }
-        loadingImages.length = 0;
-
-        if (!jQuery.isArray(files))
-        {
-            files = [files];
-        }
-        for (i=0; i<files.length; i++)
-        {
-            // create a loading image
-            var loadingImage = document.createElement('img');
-            loadingImage.className = 'loadingImage_class';
-            loadingImage.style.display = 'none';
-            var div = document.getElementById('container');
-            document.body.insertBefore(loadingImage, div);
-
-            // point it to the specified file name
-            var file = files[i];
-            loadingImage.src = this.getFullPathAndFileName(file);
-            loadingImages.push(loadingImage);
-
-            // if there's a link associated with the loading images, add an event listener
-            if (link)
-            {
-                loadingImage.addEventListener('click', function()
-                {
-                    window.open(link, '_blank');
-                });
-            }
-        }
-    };
-
-    /**
-     * Transform a world space position into screen space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} position An object whose 'x' and 'y' fields represent a world space position
-     * @returns {Object} An object whose 'x' and 'y' fields represent a screen space position
-     */
-    this.worldPositionToScreen = function(layerId, position)
-    {
-        return sceneManager.renderer.worldPositionToScreen(layerId, position);
-    };
-
-    /**
-     * Transform a world space direction into screen space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} direction An object whose 'x' and 'y' fields represent a world space direction
-     * @returns {Object} An object whose 'x' and 'y' fields represent a screen space direction
-     */
-    this.worldDirectionToScreen = function(layerId, direction)
-    {
-        return sceneManager.renderer.worldDirectionToScreen(layerId, direction);
-    };
-
-    /**
-     * Transform a world space box into screen space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} box An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a world space box
-     * @returns {Object} An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a screen space box
-     */
-    this.worldBoxToScreen = function(layerId, box)
-    {
-        return sceneManager.renderer.worldBoxToScreen(layerId, box);
-    };
-
-    /**
-     * Get the size (in screen pixels) of a world-space unit
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @returns {number} The size of a world-space unit in screen pixels
-     */
-    this.worldUnitToScreen = function(layerId)
-    {
-        return sceneManager.renderer.worldUnitToScreen(layerId);
-    };
-
-    /**
-     * Transform a screen space position into world space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} position An object whose 'x' and 'y' fields represent a screen space position
-     * @returns {Object} An object whose 'x' and 'y' fields represent a world space position
-     */
-    this.screenPositionToWorld = function(layerId, position)
-    {
-        return sceneManager.renderer.screenPositionToWorld(layerId, position);
-    };
-
-    /**
-     * Transform a screen space direction into world space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} direction An object whose 'x' and 'y' fields represent a screen space direction
-     * @returns {Object} An object whose 'x' and 'y' fields represent a world space direction
-     */
-    this.screenDirectionToWorld = function(layerId, direction)
-    {
-        return sceneManager.renderer.screenDirectionToWorld(layerId, direction);
-    };
-
-    /**
-     * Transform a screen space box into world space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} box An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a screen space box
-     * @returns {Object} An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a world space box
-     */
-    this.screenBoxToWorld = function(layerId, box)
-    {
-        return sceneManager.renderer.screenBoxToWorld(layerId, box);
-    };
-
-    /**
-     * Get the size of a screen pixel in world-space units
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @returns {number} The size of a screen pixel in world-space units
-     */
-    this.screenUnitToWorld = function(layerId)
-    {
-        return sceneManager.renderer.screenUnitToWorld(layerId);
-    };
-
-    /**
-     * Transform a world space position into canvas space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} position An object whose 'x' and 'y' fields represent a world space position
-     * @returns {Object} An object whose 'x' and 'y' fields represent a canvas space position
-     */
-    this.worldPositionToCanvas = function(layerId, position)
-    {
-        return sceneManager.renderer.worldPositionToCanvas(layerId, position);
-    };
-
-    /**
-     * Transform a world space direction into canvas space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} direction An object whose 'x' and 'y' fields represent a world space direction
-     * @returns {Object} An object whose 'x' and 'y' fields represent a canvas space direction
-     */
-    this.worldDirectionToCanvas = function(layerId, direction)
-    {
-        return sceneManager.renderer.worldDirectionToCanvas(layerId, direction);
-    };
-
-    /**
-     * Transform a world space box into canvas space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} box An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a world space box
-     * @returns {Object} An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a canvas space box
-     */
-    this.worldBoxToCanvas = function(layerId, box)
-    {
-        return sceneManager.renderer.worldBoxToCanvas(layerId, box);
-    };
-
-    /**
-     * Get the size (in canvas pixels) of a world-space unit
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @returns {number} The size of a world-space unit in canvas pixels
-     */
-    this.worldUnitToCanvas = function(layerId)
-    {
-        return sceneManager.renderer.worldUnitToCanvas(layerId);
-    };
-
-    /**
-     * Transform a canvas space position into world space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} position An object whose 'x' and 'y' fields represent a canvas space position
-     * @returns {Object} An object whose 'x' and 'y' fields represent a world space position
-     */
-    this.canvasPositionToWorld = function(layerId, position)
-    {
-        return sceneManager.renderer.canvasPositionToWorld(layerId, position);
-    };
-
-    /**
-     * Transform a canvas space direction into world space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} direction An object whose 'x' and 'y' fields represent a canvas space direction
-     * @returns {Object} An object whose 'x' and 'y' fields represent a world space direction
-     */
-    this.canvasDirectionToWorld = function(layerId, direction)
-    {
-        return sceneManager.renderer.canvasDirectionToWorld(layerId, direction);
-    };
-
-    /**
-     * Transform a canvas space box into world space
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @param {Object} box An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a canvas space box
-     * @returns {Object} An object whose 'minX', 'minY', 'maxX' and 'maxY' fields represent a world space box
-     */
-    this.canvasBoxToWorld = function(layerId, box)
-    {
-        return sceneManager.renderer.canvasBoxToWorld(layerId, box);
-    };
-
-    /**
-     * Get the size of a canvas pixel in world-space units
-     * @param {number} layerId The id of the layer to use. This determines the translation and scale factors to use in the transformation.
-     * @returns {number} The size of a canvas pixel in world-space units
-     */
-    this.canvasUnitToWorld = function(layerId)
-    {
-        return sceneManager.renderer.canvasUnitToWorld(layerId);
-    };
-
-    /**
-     * Set the minimum time between input events of the same type. Events occurring before the specified interval will be ignored.
-     * @param {string} type The input event type. Valid values are 'mouseDown', 'mouseUp', 'mouseMove' and 'mouseWheel'
-     * @param {number} interval The minimum interval between events of the same type, in milliseconds
-     */
-    this.setMinimumInputEventInterval = function(type, interval)
-    {
-        inputManager.setMinimumIntervalBetweenEvents(type, interval);
-    };
-
-    /**
-     * Check whether a mouse button is currently pressed. For touch-screen devices, the return value represents whether the screen is being touched
-     * @returns {boolean} Whether a mouse button is pressed
-     */
-    this.isMouseDown = function()
-    {
-        return inputManager.isMouseDown();
-    };
-
-    /**
-     * Check whether a key is currently down (it's being pressed by the user).
-     * @param keyCode The code of the key to check
-     * @returns {boolean} Whether the key is pressed
-     */
-    this.isKeyDown = function(keyCode)
-    {
-        return inputManager.isKeyDown(keyCode);
-    };
-
-    /**
-     * Create a separate image (more specifically an off-screen canvas) for each sprite in the sprite sheet
-     * @param {string} spriteSheet The path of the input sprite sheet
-     * @param {Array} [destinations] An array with the virtual paths for the single images, that can later be used to retrieve the canvas objects via wade.getImage(). If omitted, destination images will be called [spriteSheetName]_0, [spriteSheetName]_1, [spriteSheetName]_2, etc.
-     * @param {number} [numCellsX=1] The number of horizontal cells
-     * @param {number} [numCellsY=1] The number of vertical cells
-     * @param {boolean} [unload] Whether to unload the sprite sheet after unpacking
-     */
-    this.unpackSpriteSheet = function(spriteSheet, destinations, numCellsX, numCellsY, unload)
-    {
-        numCellsX = numCellsX || 1;
-        numCellsY = numCellsY || 1;
-        var sheetImage = this.getImage(spriteSheet);
-        var width = sheetImage.width / numCellsX;
-        var height = sheetImage.height / numCellsY;
-        for (var i=0; i<destinations.length && i < numCellsX * numCellsY; i++)
-        {
-            var canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            var animation  = new Animation(spriteSheet, numCellsX, numCellsY, 1, false, i, i);
-            animation.draw(canvas.getContext('2d'), {x: width / 2, y: height / 2}, {x: width, y: height});
-            wade.setImage((destinations[i] || (spriteSheet + '_' + i)), canvas);
-        }
-        unload && this.unloadImage(spriteSheet);
-    };
-
-    /**
-     * Store an object in the local storage. Note that the object must be serializable, so you cannot store objects with cyclic references
-     * @param {string} name The name to give the object. This can later be used with a call to retrieveLocalObject
-     * @param {object} object The object to store
-     */
-    this.storeLocalObject = function(name, object)
-    {
-        localStorage.setItem(name, JSON.stringify(object));
-    };
-
-    /**
-     * Retrieve an object from the local storage, that has previously been saved through storeLocalObject()
-     * @param {string} name The name of the object to retrieve
-     */
-    this.retrieveLocalObject = function(name)
-    {
-        var object = localStorage.getItem(name);
-        return (object && JSON.parse(object));
-    };
-
-    /**
-     * Enable or disable double buffering for the on-screen canvases. When double buffering is enabled, each layer uses two canvases: one is visible, the other is hidden.
-     * Whenever a layer needs a full redraw, this is done on the invisible canvas, and when the operation is completed, the two canvases are swapped.
-     * @param {boolean} [toggle] whether to enable or disable double buffering
-     */
-    this.enableDoubleBuffering = function(toggle)
-    {
-        if (typeof(toggle) == 'undefined')
-        {
-            toggle = true;
-        }
-        if (doubleBuffering != toggle)
-        {
-            sceneManager.renderer.enableDoubleBuffering(toggle);
-            doubleBuffering = toggle;
-        }
-    };
-
-    /**
-     * Check the current state of double buffering. When double buffering is enabled, each layer uses two canvases: one is visible, the other is hidden.
-     * Whenever a layer needs a full redraw, this is done on the invisible canvas, and when the operation is completed, the two canvases are swapped.
-     * @returns {boolean} The current state of double buffering
-     */
-    this.isDoubleBufferingEnabled = function()
-    {
-        return doubleBuffering;
-    };
-
-    /**
-     * Toggle full screen mode. Note that not all browsers support this, so it may fail. Also, call this from an onMouseUp or onClick event to increase the chances of success.
-     * @param {boolean} [toggle] Whether to enable or disable full screen mode. If not specified, "true" is assumed.
-     */
-    this.setFullScreen = function(toggle)
-    {
-        var element = document.documentElement;
-        var f;
-        if (toggle || typeof(toggle) == 'undefined')
-        {
-            f = element.requestFullScreen || element.requestFullscreen || element.mozRequestFullScreen || element.mozRequestFullscreen || element.webkitRequestFullScreen || element.webkitRequestFullscreen || element.msRequestFullScreen || element.msRequestFullscreen;
-        }
-        else
-        {
-            element = document;
-            f = element.exitFullscreen || element.msExitFullscreen || element.mozCancelFullScreen || element.webkitCancelFullScreen;
-        }
-        f && f.call(element);
-    };
-
-    /**
-     * Enable or disable image smoothing for a specific layer. This determines the type of filtering that is applied to stretched images (nearest-neighbor filtering is used when smoothing is disabled). Note that smoothing is true by default.
-     * @param {number} layerId The id of the affected layer
-     * @param {boolean} [toggle] Whether to enable or disable image smoothing for the layer. If not specified, "true" is assumed.
-     */
-    this.setLayerSmoothing = function(layerId, toggle)
-    {
-        if (typeof(toggle) == 'undefined')
-        {
-            toggle = true;
-        }
-        sceneManager.renderer.setLayerSmoothing(layerId, toggle);
-    };
-
-    /**
-     * Get the current image smoothing state for a specific layer
-     * @param layerId The layer id
-     * @returns {boolean} The image smoothing state for the specified layer
-     */
-    this.getLayerSmoothing = function(layerId)
-    {
-        return sceneManager.renderer.getLayerSmoothing(layerId);
-    };
-
-    /**
-     * Enable or disable image smoothing for all layers. This determines the type of filtering that is applied to stretched images (nearest-neighbor filtering is used when smoothing is disabled). Note that smoothing is true by default.
-     * @param {boolean} [toggle] Whether to enable or disable image smoothing. If not specified, "true" is assumed.
-     */
-    this.setSmoothing = function(toggle)
-    {
-        if (typeof(toggle) == 'undefined')
-        {
-            toggle = true;
-        }
-        sceneManager.renderer.setSmoothing(toggle);
-    };
-
-    /**
-     * Get the "global" image smoothing state. This is the image smoothing state that is applied to all the layers, unless setLayerSmoothing has been called for some specific layers.
-     * @returns {boolean} The global image smoothing state
-     */
-    this.getSmoothing = function()
-    {
-        return sceneManager.renderer.getSmoothing();
-    };
-
-    /**
-     * Set a tolerance for "onClick" events. A click is defined as a mouseDown followed by a mouseUp in the same place. However, especially in a touch-screen environment, it is possible (and indeed frequent) that the two events occur in slightly different places. Use this function to define the tolerance that you want for click events - default is 5.
-     * @param {number} [tolerance] The tolerance for "onClick" events, in pixels.
-     */
-    this.setClickTolerance = function(tolerance)
-    {
-        inputManager.setClickTolerance(tolerance);
-    };
-
-    /**
-     * Get the current mouse position, or the position of the last input event (in the case of touch events). Note that if there have been no mouse or input events since the app started, this will return an empty object
-     * @returns {object} An object with 'x' and 'y' fields describing the screen coordinates of the mouse, or of the last input event
-     */
-    this.getMousePosition = function()
-    {
-        return inputManager.getMousePosition();
-    };
-
-    /**
-     * Checks whether the WebAudio API is supported by the client
-     * @returns {boolean} whether the WebAudio API is supported
-     */
-    this.isWebAudioSupported = function()
-    {
-        return !!audioContext;
-    };
-
-    /**
-     * Force the app to be displayed in a certain orientation. For example, if the orientation is set to 'landscape', but the screen is taller than it is wide, the app will be rendered rotated by 90 degrees. Forced orientation is disabled by default.
-     * @param {string} [orientation] The orientation to use. This can be 'landscape', 'portrait', or any other string (to disable forced orientation).
-     */
-    this.forceOrientation = function(orientation)
-    {
-        if (forcedOrientation != orientation)
-        {
-            switch (orientation)
-            {
-                case 'landscape':
-                    forcedOrientation = 'landscape';
-                    break;
-                case 'portrait':
-                    forcedOrientation = 'portrait';
-                    break;
-                default:
-                    forcedOrientation = 'none';
-            }
-            sceneManager.setSimulationDirtyState();
-            sceneManager.draw();
-        }
-    };
-
-    /**
-     * Checks if the app is being displayed in forced orientation mode.
-     * @returns {string} A string describing the forced orientation. It can be 'landscape', 'portrait', or 'none'
-     */
-    this.getForcedOrientation = function()
-    {
-        return forcedOrientation;
-    };
-
-    /**
-     * Checks whether the screen is rotated, with respect to the orientation that was set with forceOrientation(). For example, this returns true if forceOrientation() was called to set a 'landscape' orientation, and now the screen is taller than it is wide (therefore the screen appears rotated by 90 degrees to the viewer).
-     * @returns {boolean}
-     */
-    this.isScreenRotated = function()
-    {
-        return sceneManager.renderer.isScreenRotated();
-    };
-
-    /**
-     * Gradually move the camera to the specified position, with the specified speed. If wade.app.onCameraMoveComplete exists, it's executed when the camera finishes moving. If you need to change the camera position instantly, use setCameraPosition() instead.
-     * @param {object} destination The destination of the camera. This is an object with 'x', 'y' and 'z' fields, where 'z' is depth (or distance from the scene), and is 1 by default.
-     * @param {number|function} [speed] The movement speed. This can be a number, or a function of distance that returns a number
-     * @param {function} [callback] A function to execute when the camera is finished moving. Using this callback is the same as defining an App.onCameraMoveComplete function, which would be called when the camera is finished moving.
-     */
-    this.moveCamera = function(destination, speed, callback)
-    {
-        // check parameters
-        if (typeof(destination) != 'object' || typeof(destination.x) != 'number' || typeof(destination.y) != 'number' || typeof(destination.z) != 'number')
-        {
-            wade.log("Warning - invalid destination for wade.moveCamera(). It needs to be an object with x, y, and z fields.");
-            return;
-        }
-        else if (typeof(speed) != 'number' && typeof(speed) != 'function')
-        {
-            wade.log("Warning - invalid speed for wade.moveCamera(). It needs to be a number, or a function that returns a number.");
-            return;
-        }
-
-        // set a main loop function for the camera movement
-        this.setMainLoopCallback(function()
-        {
-            var pos = wade.getCameraPosition();
-            var dx = (destination.x - pos.x);
-            var dy = (destination.y - pos.y);
-            var dz = (destination.z - pos.z);
-            var length = Math.sqrt(dx*dx + dy*dy + dz*dz);
-            var s = (typeof(speed) == 'number')?  speed : (speed(length) || 0);
-            if (length <= s * wade.c_timeStep)
-            {
-                wade.setCameraPosition(destination);
-                wade.setMainLoopCallback(0, '_wade_camera');
-                callback && callback();
-                wade.app.onCameraMoveComplete && wade.app.onCameraMoveComplete();
-            }
-            else
-            {
-                wade.setCameraPosition({x: pos.x + dx * s * wade.c_timeStep / length, y: pos.y + dy * s * wade.c_timeStep / length, z: pos.z + dz * s * wade.c_timeStep / length});
-            }
-        }, '_wade_camera');
-    };
-
-    /**
-     * Set a scene object for the camera to follow.
-     * @param {SceneObject} [target] The scene object to follow. If omitted or falsy, the camera target is cleared.
-     * @param {number} [inertia] The inertia of the camera, between 0 (no inertia) and 1 (maximum inertia, i.e. the camera doesn't move at all)
-     * @param {object} [offset] An object with 'x' and 'y' fields, that specifies an offset relative to the center of the target scene object to follow.
-     */
-    this.setCameraTarget = function(target, inertia, offset)
-    {
-        if (!target)
-        {
-            this.setMainLoopCallback(0, '_wade_cameraTarget');
-            return;
-        }
-        inertia = inertia || 0;
-        offset = offset || {x:0, y:0};
-        this.setMainLoopCallback(function()
-        {
-            if (target.isInScene())
-            {
-                var targetPos = target.getPosition();
-                var cameraPos = wade.getCameraPosition();
-                targetPos.x += offset.x;
-                targetPos.y += offset.y;
-                targetPos.z = cameraPos.z;
-                if (inertia)
-                {
-                    var actualPos = {x: targetPos.x * (1 - inertia) + cameraPos.x * inertia,
-                                     y: targetPos.y * (1 - inertia) + cameraPos.y * inertia,
-                                     z: targetPos.z * (1 - inertia) + cameraPos.z * inertia};
-                    var dx = actualPos.x - targetPos.x;
-                    var dy = actualPos.y - targetPos.y;
-                    var dz = actualPos.z - targetPos.z;
-                    if (dx*dx + dy*dy + dz*dz > inertia * inertia)
-                    {
-                        targetPos = actualPos;
-                    }
-                }
-                wade.setCameraPosition(targetPos);
-            }
-        }, '_wade_cameraTarget');
-    };
-
-    /**
-     * Get the objects inside (or intersecting) the specified area, expressed in world units
-     * @param {object} area An object with the following fields (in world-space units): 'minX', 'minY', 'maxX', 'maxY'
-     * @param {number} [layerId] If specified, the object search will be restricted to this layer id
-     * @returns {Array} An array of scene objects
-     */
-    this.getObjectsInArea = function(area, layerId)
-    {
-        var result = [];
-        sceneManager.renderer.addObjectsInAreaToArray(area, result, layerId);
-        return result;
-    };
-
-    /**
-     * Get the objects inside (or intersecting) the specified area, expressed in screen units
-     * @param {object} area An object with the following fields (in screen-space units): 'minX', 'minY', 'maxX', 'maxY'
-     * @returns {Array} An array of scene objects
-     */
-    this.getObjectsInScreenArea = function(area)
-    {
-        var result = [];
-        sceneManager.renderer.addObjectsInScreenAreaToArray(area, result);
-        return result;
-    };
-
-    /**
-     * Get the sprites inside (or intersecting) the specified area, expressed in world units
-     * @param {object} area An object with the following fields (in world-space units): 'minX', 'minY', 'maxX', 'maxY'
-     * @param {number} [layerId] If specified, the sprite search will be restricted to this layer id
-     * @returns {Array} An array of sprites
-     */
-    this.getSpritesInArea = function(area, layerId)
-    {
-        var result = [];
-        sceneManager.renderer.addSpritesInAreaToArray(area, result, layerId);
-        return result;
-    };
-
-    /**
-     * Get the sprites inside (or intersecting) the specified area, expressed in screen units
-     * @param {object} area An object with the following fields (in screen-space units): 'minX', 'minY', 'maxX', 'maxY'
-     * @returns {Array} An array of sprites
-     */
-    this.getSpritesInScreenArea = function(area)
-    {
-        var result = [];
-        sceneManager.renderer.addSpritesInScreenAreaToArray(area, result);
-        return result;
-    };
-
-    /**
-     * Get a scene object by name. This only works with objects that have been added to the scene.
-     * @param {string} name The name of the scene object to look for
-     * @returns {SceneObject} The scene object corresponding to the given name, or null if no SceneObjects have that name
-     */
-    this.getSceneObject = function(name)
-    {
-        return sceneManager.getObjectByName(name);
-    };
-
-    /**
-     * Get a list of all the objects in the scene, or just the objects with a given property/value pair.
-     * @param {string} [property] A property that must be set for the objects. Omit this parameter or use a falsy value to get all the objects in the scene.
-     * @param {*} [value] The value that the property must be set to. You can omit this parameter to get all the objects where the property is defined, regarding of its value
-     * @returns {Array} An array containing references to all the objects that are currently present in the scene
-     */
-    this.getSceneObjects = function(property, value)
-    {
-        return sceneManager.getSceneObjects(property, value);
-    };
-
-    /**
-     * Get the raw data of an image file or canvas, as an array of bytes
-     * @param {string} file The file name associated with the image or canvas resource
-     * @param {number} [posX] The left coordinate of the data to retrieve. Default is 0.
-     * @param {number} [posY] The top coordinate of the data to retrieve. Default is 0.
-     * @param {number} [width] The width of the image data to retrieve. By default this is the whole width of the image.
-     * @param {number} [height] The height of the image data to retrieve. By default this is the whole height of the image.
-     * @returns {ImageData} An HTML ImageData object containing the image data. Use its <i>data</i> property to access the byte array, where pixels are stored sequentially and for each pixel there are 4 bytes representing the red, green, blue and alpha channels in this order.
-     */
-    this.getImageData = function(file, posX, posY, width, height)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        var canvas = assetLoader.getImage(fileName);
-        var context;
-
-        // it may be that the asset manager stored this asset as a canvas, or as an image. If it isn't a canvas, create a canvas and draw the image onto it
-        if (!canvas.getContext)
-        {
-            var img = canvas;
-            canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            context = canvas.getContext('2d');
-            context.drawImage(img, 0, 0);
-            wade.setImage(file, canvas);
-        }
-        else
-        {
-            context = canvas.getContext('2d');
-        }
-        return context.getImageData(posX || 0, posY || 0, width || canvas.width, height || canvas.height);
-    };
-
-    /**
-     * Write raw data into an image or canvas resource. Best used in conjunctions with wade.getImageData()
-     * @param {string} file The file name associated with the image or canvas resource to modify. If a resource associated with this file name doesn't exist, it will be created and its dimensions will be set to the specified width and height, or to the image data's width and height if the widht and height parameters aren't set explicitly.
-     * @param {ImageData} data A HTML ImageData object containing the raw data
-     * @param {number} [destX] The left coordinate of the destination image (where the data is going to copied). Default is 0.
-     * @param {number} [destY] The top coordinate of the destination image (where the data is going to copied). Default is 0.
-     * @param {number} [sourceX] The left coordinate of  the source data to copy. Default is 0.
-     * @param {number} [sourceY] The top coordinate of the source data to copy. Default is 0.
-     * @param {number} [width] The width of the data to copy. By default this is the whole width of the source image data.
-     * @param {number} [height] The height of the data to copy. By default this is the whole height of the source image data.
-     */
-    this.putImageData = function(file, data, destX, destY, sourceX, sourceY, width, height)
-    {
-        destX = destX || 0;
-        destY = destY || 0;
-        sourceX = sourceX || 0;
-        sourceY = sourceY || 0;
-        width = width || data.width;
-        height = height || data.height;
-        var fileName = this.getFullPathAndFileName(file);
-        var canvas, context;
-        if (assetLoader.getLoadingStatus(fileName) == 'ok')
-        {
-            canvas = assetLoader.getImage(fileName);
-
-            // it may be that the asset manager stored this asset as a canvas, or as an image. If it isn't a canvas, create a canvas and draw the image onto it
-            if (!canvas.getContext)
-            {
-                var img = canvas;
-                canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                context = canvas.getContext('2d');
-                context.drawImage(img, 0, 0);
-                wade.setImage(file, canvas);
-            }
-            else
-            {
-                context = canvas.getContext('2d');
-            }
-        }
-        else
-        {
-            canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            context = canvas.getContext('2d');
-            wade.setImage(file, canvas);
-        }
-        context.putImageData(data, sourceX, sourceY, destX, destY, width, height);
-        sceneManager.renderer.updateImageUsers(fileName);
-    };
-
-    /**
-     * Enable or disable support for multi touch. Multi touch is disabled by default.
-     * @param {boolean} [toggle] Whether to enable or disable multi touch. This parameter is true by default.
-     */
-    this.enableMultitouch = function(toggle)
-    {
-        if (typeof(toggle) == 'undefined')
-        {
-            toggle = true;
-        }
-        inputManager.enableMultitouch(toggle);
-    };
-
-    /**
-     * Check whether multi touch support is current enabled. By default it's disabled, unless you call wade.enableMultitouch()
-     */
-    this.isMultitouchEnabled = function()
-    {
-        return inputManager.isMultitouchEnabled();
-    };
-
-    /**
-     * Get the current version of WADE as a string. If you are using it to make sure that it's greater than a certain version, you may want to use <i>wade.requireVersion</i> instead.
-     * @returns {string} The current version of WADE.
-     */
-    this.getVersion = function()
-    {
-        return version;
-    };
-
-    /**
-     * Ensure that the current version of WADE is greater or equal than a specific version.
-     * @param {string} requiredVersion The required version of WADE. For example '1.0.2'
-     * @param {string} [errorMode] The type of error message to display. This can be 'alert' to show an alert box, 'console' to print a message in the console, or anything else to not show an error message
-     * @param {string} [errorMessage] The error message to display. Default is 'A newer version of WADE is required;.
-     */
-    this.requireVersion = function(requiredVersion, errorMode, errorMessage)
-    {
-        var thisVersion = version.split('.');
-        var reqVersion = requiredVersion.split('.');
-        for (var i=0; i < reqVersion.length; i++)
-        {
-            var a = (thisVersion[i] || 0);
-            if (a > reqVersion[i])
-            {
-                return true;
-            }
-            else if (a < reqVersion[i])
-            {
-                errorMessage = errorMessage || ('A newer version of WADE is required (' + requiredVersion + ')');
-                switch (errorMode)
-                {
-                    case 'alert':
-                        alert(errorMessage);
-                        break;
-                    case 'console':
-                        wade.log(errorMessage);
-                        break;
-                }
-                return false;
-            }
-        }
-        return true;
-    };
-
-    /**
-     * Get the percentage of files that have been fully loaded with respect to the number of files for which a loading operation has been requested
-     * @returns {number} A number between 0 and 100 indicating the percentage of loaded files
-     */
-    this.getLoadingPercentage = function()
-    {
-        return assetLoader.getPercentageComplete();
-    };
-
-    /**
-     * Display (or hide) a progress bar that indicates the current loading progress
-     * @param {boolean} [visible] Whether to show the loading bar or not. If omitted, this parameter is assumed to be false.
-     * @param {Object} [position] An object with <i>x</i> and <i>y</i> fields describing the position in pixels (relative to the screen center) where the loading bar should appear. This is only relevant if the <i>visible</i> parameter is true.
-     * @param {string} [backColor] A HTML color string to use as the background color of the loading bar
-     * @param {string} [foreColor] A HTML color string to use as the foreground color of the loading bar
-     */
-    this.setLoadingBar = function(visible, position, backColor, foreColor)
-    {
-        if (visible)
-        {
-            var outer = document.createElement('div');
-            var inner = document.createElement('div');
-            outer.style.backgroundColor = backColor || 'red';
-            outer.style.borderRadius = '13px';
-            outer.style.padding = '3px';
-            outer.style.width = '50%';
-            outer.style.height = '20px';
-            outer.style.position = 'absolute';
-            outer.style.left = position? (position.x * 2) + 'px' : 0;
-            outer.style.right = 0;
-            outer.style.top = position? (position.y * 2) + 'px' : 0;
-            outer.style.bottom = 0;
-            outer.style.margin = 'auto';
-            inner.style.backgroundColor = foreColor || 'orange';
-            inner.style.borderRadius = '10px';
-            inner.style.height = '20px';
-            inner.style.width = 0;
-            outer.appendChild(inner);
-            outer.id = '__wade_loading_bar';
-            loadingBar = outer;
-            loadingBar.inner = inner;
-            document.body.appendChild(outer);
-        }
-        else
-        {
-            loadingBar && document.body.removeChild(loadingBar);
-            loadingBar = null;
-        }
-    };
-
-    /**
-     * Check to see if gamepads are supported in the current browser
-     * @returns {boolean} Whether gamepads are supported in the current browsers
-     */
-    this.areGamepadsSupported = function()
-    {
-        return !!(navigator.webkitGetGamepads || navigator.getGamepads)
-    };
-
-    /**
-     * Enabled or disable gamepad support
-     * @param {boolean} [toggle] Whether to enable or disable gamepad support. If omitted, this parameter is assumed to be true.
-     */
-    this.enableGamepads = function(toggle)
-    {
-        inputManager.enableGamepads();
-    };
-
-    /**
-     * Generate a data URL from an image that had previously been loaded or procedurally generated
-     * @param {string} imageName The name or virtual path of the image
-     * @returns {string} A base64 data URL
-     */
-    this.getImageDataURL = function(imageName)
-    {
-        var image = wade.getImage(imageName);
-        if (image.toDataURL)
-        {
-            return image.toDataURL();
-        }
-        var s = new Sprite(imageName);
-        s.drawToImage(imageName, true);
-        return wade.getImage(imageName).toDataURL();
-    };
-
-    /**
-     * Generate a data URL from a game layer
-     * @param {number} layerId The layer Id
-     * @returns {string} A base64 data URL
-     */
-    this.getLayerDataURL = function(layerId)
-    {
-        return this.getLayer(layerId).toDataURL();
-    };
-
-    /**
-     * A function to log any error or warning message from WADE. By default, this is set to console.log
-     * @param {*} data The data to log
-     * @type {Function}
-     */
-    this.log = function(data)
-    {
-        console.log(data)
-    };
-
-    /**
-     * Force the full redraw of the scene (or of a single layer)
-     * @param {number} [layerId] The id of the layer to redraw. If omitted or falsy, all layers will be redrawn.
-     */
-    this.forceRedraw = function(layerId)
-    {
-        sceneManager.setSimulationDirtyState();
-        sceneManager.renderer.forceRedraw(layerId);
-    };
-
-    /**
-     * Apply a per-pixel transformation to an image. Note that you need to load the image (with wade.loadImage) before doing this, or it must be an image that is loaded in memory somehow (it can be an image that you have procedurally generated too).
-     * @param {string} sourceImage The file name (or virtual path) of the source image
-     * @param {function} whatToDo A function to execute for each pixel. It will receive data about the pixel, and can return an object containing output data. An example is this:<br/><i>function(r, g, b, a, x, y) { return {r: 255, g: 255, b: 255, a: 255}; }</i><br/>Where r is red, g is green, b is blue, a is alpha, and x and y are the coordinates of the pixel being processed.
-     * @param {string} [targetImage] The file name (or virtual path) of the target image. If omitted, the source image will be overwritten with the new data.
-     */
-    this.forEachPixel = function(sourceImage, whatToDo, targetImage)
-    {
-        var imageData = this.getImageData(sourceImage);
-        for (var i=0; i<imageData.width; i++)
-        {
-            for (var j=0; j<imageData.height; j++)
-            {
-                var p = (i + j * imageData.width) * 4;
-                var result = whatToDo(imageData.data[p], imageData.data[p+1], imageData.data[p+2], imageData.data[p+3], i, j);
-                if (result)
-                {
-                    imageData.data[p] = result.r || 0;
-                    imageData.data[p+1] = result.g || 0;
-                    imageData.data[p+2] = result.b || 0;
-                    imageData.data[p+3] = result.a || 0;
-                }
-            }
-        }
-        targetImage = targetImage || sourceImage;
-        wade.putImageData(targetImage, imageData);
-    };
-
-    /**
-     * Get the canvas object being used by a layer. You can use it as a source image for sprite and effects.
-     * @param {number} [layerId] The id of the layer to use. Default is 1
-     * @returns {Object} An HTML5 canvas object
-     */
-    this.getLayerCanvas = function(layerId)
-    {
-        return wade.getLayer(layerId || 1).getCanvas();
-    };
-
-    /**
-     * Draw a layer to an image in memory
-     * @param {number} layerId The id of the layer to use
-     * @param {string} imageName The file name (or virtual path) of the target image
-     * @param {boolean} [replace] Whether to replace the existing image at the virtual path (if it exists), or draw on top of it
-     * @param {Object} [offset] An object with 'x' and 'y' fields representing the offset to use when drawing this sprite onto the image
-     * @param {Object} [transform] An object with 6 parameters: 'horizontalScale', 'horizontalSkew', 'verticalSkew', 'verticalScale', 'horizontalTranslate', 'verticalTranslate'
-     * @param {string} [compositeOperation] A string describing an HTML5 composite operation
-     */
-    this.drawLayerToImage = function(layerId, imageName, replace, offset, transform, compositeOperation)
-    {
-        var canvas = wade.getLayerCanvas(layerId);
-        var source = '__wade_layer' + layerId;
-        wade.setImage(source, canvas);
-        var s = new Sprite(source);
-        var opacity = wade.getLayerOpacity(layerId);
-        if (opacity != 1)
-        {
-            s.setDrawFunction(wade.drawFunctions.alpha_(opacity, s.draw));
-        }
-        if (!transform)
-        {
-            var r = this.getLayerResolutionFactor(layerId);
-            transform = {horizontalScale: 1 / r, verticalScale: 1 / r, horizontalSkew: 0, verticalSkew: 0, horizontalTranslate: 0, verticalTranslate: 0};
-        }
-        s.drawToImage(imageName, replace, offset, transform, compositeOperation);
-    };
-
-    /**
-     * Draw the contents of the WADE screen to an image in memory
-     * @param {string} imageName The file name (or virtual path) of the target image
-     */
-    this.screenCapture = function(imageName)
-    {
-        var layerIds = sceneManager.renderer.getActiveLayerIds();
-        if (layerIds.length)
-        {
-            var s = new Sprite(null, layerIds[0]);
-            s.setSize(wade.getScreenWidth(), wade.getScreenHeight());
-            s.setDrawFunction(wade.drawFunctions.transparent_());
-            s.drawToImage(imageName, true);
-            for (var i=0; i<layerIds.length; i++)
-            {
-                wade.drawLayerToImage(layerIds[i], imageName);
-            }
-        }
-    };
-
-    /**
-     * Set the opacity of a layer. This is then applied to the layer canvas(es) via CSS.
-     * @param {number} layerId The id of the layer
-     * @param {number} opacity The opacity of the layer, between 0 (fully transparent) and 1 (fully opaque)
-     */
-    this.setLayerOpacity = function(layerId, opacity)
-    {
-        this.getLayer(layerId).setOpacity(opacity);
-    };
-
-    /**
-     * Get the opacity of a layer.
-     * @param {number} layerId The id of the layer
-     * @returns {number} The opacity of the layer. This is a number between 0 (fully transparent) and 1 (fully opaque)
-     */
-    this.getLayerOpacity = function(layerId)
-    {
-        var opacity = parseFloat(this.getLayer(layerId).getOpacity());
-        return (isNaN(opacity))? 1 : opacity;
-    };
-
-    /**
-     * Get the name of the DIV or the HTML element that contains the App. This can be set when calling wade.init.
-     * @returns {string} The name of the container element
-     */
-    this.getContainerName = function()
-    {
-        return containerDiv;
-    };
-
-    /**
-     * Fade in a layer over time
-     * @param {number} layerId The id of the layer to fade in
-     * @param {number} time How long (in seconds) the fading should take
-     * @param {function} [callback] A function to execute when the fading is complete
-     */
-    this.fadeInLayer = function(layerId, time, callback)
-    {
-        var loopName = '__wade_fadeLayer_' + layerId;
-        wade.setLayerOpacity(layerId, 0);
-        this.setMainLoopCallback(function()
-        {
-            var opacity = wade.getLayerOpacity(layerId);
-            opacity = Math.min(1, opacity + wade.c_timeStep / time);
-            if (1 - opacity < wade.c_epsilon)
-            {
-                opacity = 1;
-            }
-            wade.setLayerOpacity(layerId, opacity);
-            if (opacity == 1)
-            {
-                wade.setMainLoopCallback(null, loopName);
-                callback && callback();
-            }
-        }, loopName);
-    };
-
-    /**
-     * Fade out a layer over time
-     * @param {number} layerId The id of the layer to fade out
-     * @param {number} time How long (in seconds) the fading should take
-     * @param {function} [callback] A function to execute when the fading is complete
-     */
-    this.fadeOutLayer = function(layerId, time, callback)
-    {
-        var loopName = '__wade_fadeLayer_' + layerId;
-        wade.setLayerOpacity(layerId, 1);
-        this.setMainLoopCallback(function()
-        {
-            var opacity = wade.getLayerOpacity(layerId);
-            opacity = Math.max(0, opacity - wade.c_timeStep / time);
-            if (opacity < wade.c_epsilon)
-            {
-                opacity = 0;
-            }
-            wade.setLayerOpacity(layerId, opacity);
-            if (opacity == 0)
-            {
-                wade.setMainLoopCallback(null, loopName);
-                callback && callback();
-            }
-        }, loopName);
-    };
-
-    /**
-     * Clear the canvas(es) associated with a specific layer. This can be useful when setCanvasClearing(false) has been called for a layer and you want to clear it manually.
-     * @param {number} layerId The id of the layer to clear
-     */
-    this.clearCanvas = function(layerId)
-    {
-        this.getLayer(layerId).clear();
-    };
-
-    /**
-     * Draw a layer, group of layers, or the whole scene. Normally you don't need to do this (WADE does it automatically when needed), but by calling this function you can manuallly control when the drawing happens.
-     * @param {number|Array} [layerIds] The id of the layer (or layers) to draw. If omitted, the whole scene will be drawn
-     */
-    this.draw = function(layerIds)
-    {
-        sceneManager.draw(layerIds);
-    };
-
-    /**
-     * Export the current scene to an object (optionally serializing it to a JSON string), that can then be used to import a scene like the current one, through wade.importScene()
-     * @param {boolean} [stringify] Whether the result should be serialized to a JSON string
-     * @param {Array} [exclude] An array of scene objects (or scene object names) to exclude from the exported scene
-     * @param {boolean} [exportObjectFunctions] Whether to export a string representation of all member functions of the scene objects. False by default.
-     * @returns {object|string} Either an object or a JSON string representation of the scene (depending on the <i>serialize</i> parameter)
-     */
-    this.exportScene = function(stringify, exclude, exportObjectFunctions)
-    {
-        var scene = {sceneObjects: sceneManager.exportSceneObjects(exclude, exportObjectFunctions)};
-        scene.layers = sceneManager.renderer.getLayerSettings();
-        scene.minScreenSize = {x: wade.getMinScreenWidth(), y: wade.getMinScreenHeight()};
-        scene.maxScreenSize = {x: wade.getMaxScreenWidth(), y: wade.getMaxScreenHeight()};
-        scene.orientation = wade.getForcedOrientation();
-        scene.windowMode = wade.getWindowMode();
-        scene.defaultLayer = wade.defaultLayer || 1;
-        return (stringify? JSON.stringify(scene) : scene);
-    };
-
-    /**
-     * Import a scene from an object that contains a description of all the entities in the scene - it could have been previously exported with wade.exportScene(), or edited manually. This will automatically load all the assets referenced in the scene data.
-     * @param {object} data A scene description object, such as one created with wade.exportScene(). The format is the following (all fields are optional):<pre>
-       {
-            json: An array of file names, describing which json files should be loaded
-            audio: An array of audio file names
-            scripts: An array of script (.js) file names. Note that these scripts will be loaded and executed after the rest of the scene has been loaded, but before any scene objects are created and added to the scene
-            images: An array of image file names - you don't need to include files that are referenced by the scene objects and sprites in the scene (those will be loaded automatically).
-            minScreenSize: An object with x and y components describing the minimum screen size. Refer to the documentation of wade.setMinScreenSize() for more details
-            maxScreenSize: An object with x and y components describing the maximum screen size. Refer to the documentation of wade.setMaxScreenSize() for more details
-            windowMode: A string describing the window mode. Refer to the documentation of wade.setWindowMode() for more details
-            orientation: A string describing the orientation. Valid values are 'portrait' and 'landscape', all other values are ignored. See wade.forceOrientation() for more details
-            sceneObjects: An array containing all the SceneObjects to instantiate. See the SceneObject documentation for more details about the format to use.
-       }</pre>
-     * @param {{position: {x: number, y: number}, foreColor: string, backColor: string}} [loadingBar] A loading bar while loading the assets referenced in the scene data (see wade.setLoadingBar for details about the parameters, which are all optional). If omitted or falsy, no loading bar will be shown
-     * @param {function} [callback] A function to execute when the scene has been imported
-     * @param {boolean} [async] Whether the scene should be loaded asynchronously in the background, without blocking the simulation and rendering of the app. False by default
-     * @param {boolean} [clearScene] Whether the current scene should be cleared before adding objects for the new scene. False by default
-     */
-    this.importScene = function(data, loadingBar, callback, async, clearScene)
-    {
-        if (loadingBar)
-        {
-            wade.setLoadingBar(true, loadingBar.position, loadingBar.backColor, loadingBar.foreColor);
-        }
-        var sceneObjects = data.sceneObjects;
-        if (!sceneObjects)
-        {
-            callback && setTimeout(callback, 0);
-            return;
-        }
-        var images = data.images || [];
-        for (var i=0; i<sceneObjects.length; i++)
-        {
-            if (sceneObjects[i].sprites)
-            {
-                for (var j=0; j<sceneObjects[i].sprites.length; j++)
-                {
-                    sceneObjects[i].sprites[j].image && (images.indexOf(sceneObjects[i].sprites[j].image) == -1) && (sceneObjects[i].sprites[j].image.substr(0, 11) != 'procedural_') && images.push(sceneObjects[i].sprites[j].image);
-                    if (sceneObjects[i].sprites[j].animations)
-                    {
-                        for (var k in sceneObjects[i].sprites[j].animations)
-                        {
-                            if (sceneObjects[i].sprites[j].animations.hasOwnProperty(k))
-                            {
-                                var image = sceneObjects[i].sprites[j].animations[k].image;
-                                image && (image.substr(0, 11) != 'procedural_') && (images.indexOf(image) == -1) && images.push(image);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        var numLoaded = 0;
-        var numToLoad = images.length;
-        var afterLoading = function(loadedData, loadedFileName)
-        {
-            if (++numLoaded == numToLoad)
-            {
-                clearScene && wade.clearScene();
-                if (data.scripts)
-                {
-                    for (var i=0; i<data.scripts.length; i++)
-                    {
-                        eval.call(window, wade.getScript(data.scripts[i]));
-                    }
-                }
-                data.minScreenSize && wade.setMinScreenSize(data.minScreenSize.x, data.minScreenSize.y);
-                data.maxScreenSize && wade.setMaxScreenSize(data.maxScreenSize.x, data.maxScreenSize.y);
-                data.windowMode && wade.setWindowMode(data.windowMode);
-                data.orientation && wade.forceOrientation(data.orientation);
-                if (data.layers)
-                {
-                    for (i=0; i<data.layers.length; i++)
-                    {
-                        if (data.layers[i])
-                        {
-                            var scaleFactor = (typeof(data.layers[i].scaleFactor) != 'number')? 1 : data.layers[i].scaleFactor;
-                            var translateFactor = (typeof(data.layers[i].translateFactor) != 'number')? 1 : data.layers[i].translateFactor;
-                            var useQuadtree = (typeof(data.layers[i].useQuadtree) != 'undefined') ? data.layers[i].useQuadtree : true;
-                            var resolutionFactor = (typeof(data.layers[i].resolutionFactor) != 'number')? 1 : data.layers[i].resolutionFactor;
-                            wade.setLayerTransform(i, scaleFactor, translateFactor);
-                            wade.setLayerRenderMode(i, (data.layers[i].renderMode == 'webgl')? 'webgl' : '2d');
-                            wade.useQuadtree(i, useQuadtree);
-                            wade.setLayerResolutionFactor(i, resolutionFactor);
-                        }
-                    }
-                }
-                if (data.defaultLayer)
-                {
-                    wade.defaultLayer = data.defaultLayer;
-                }
-                for (i=0; i<sceneObjects.length; i++)
-                {
-                    new SceneObject(sceneObjects[i]);
-                }
-                callback && callback();
-            }
-        };
-        var loadingPrefix = async? 'pre' : '';
-        if (data.json)
-        {
-            numToLoad += data.json.length;
-            for (i=0; i<data.json.length; i++)
-            {
-                if (data.json.indexOf(data.json[i]) == i)
-                {
-                    wade[loadingPrefix + 'loadJson'](data.json[i], null, afterLoading);
-                }
-                else
-                {
-                    numToLoad--;
-                }
-            }
-        }
-        if (data.audio)
-        {
-            if (!data.webAudioOnly || wade.isWebAudioSupported())
-            {
-                numToLoad += data.audio.length;
-                for (i=0; i<data.audio.length; i++)
-                {
-                    if (data.audio.indexOf(data.audio[i]) == i)
-                    {
-                        wade[loadingPrefix + 'loadAudio'](data.audio[i], false, false, afterLoading);
-                    }
-                    else
-                    {
-                        numToLoad--;
-                    }
-                }
-            }
-        }
-        if (data.fonts)
-        {
-            numToLoad += data.fonts.length;
-            for (i=0; i<data.fonts.length; i++)
-            {
-                if (data.fonts.indexOf(data.fonts[i]) == i)
-                {
-                    wade[loadingPrefix + 'loadFont'](data.fonts[i], afterLoading);
-                }
-                else
-                {
-                    numToLoad--;
-                }
-            }
-        }
-        if (data.scripts)
-        {
-            numToLoad += data.scripts.length;
-            for (i=0; i<data.scripts.length; i++)
-            {
-                if (data.scripts.indexOf(data.scripts[i]) == i)
-                {
-                    wade[loadingPrefix + 'loadScript'](data.scripts[i], afterLoading, false, null, true);
-                }
-                else
-                {
-                    numToLoad--;
-                }
-            }
-        }
-        if (images.length)
-        {
-            for (i=0; i<images.length; i++)
-            {
-                if (images.indexOf(images[i]) == i)
-                {
-                    wade[loadingPrefix + 'loadImage'](images[i], afterLoading);
-                }
-                else
-                {
-                    numToLoad--;
-                }
-            }
-        }
-        if (!numToLoad)
-        {
-            numToLoad = 1;
-            afterLoading();
-        }
-    };
-
-    /**
-     * Load a JSON file that contains the description of a wade scene, and process that file to load any assets being used and instantiate SceneObjects, Sprites, TextSprites and Animations according to the scene description. This is the same as wade.preloadScene(), except that the loading happens synchronously, blocking the rendering and simulation of the current scene
-     * @param {string} fileName The name of a JSON file containing a description of the scene
-     * @param {{position: {x: number, y: number}, foreColor: string, backColor: string}} [loadingBar] A loading bar while loading the assets referenced in the scene data (see wade.setLoadingBar for details about the parameters, which are all optional). If omitted or falsy, no loading bar will be shown
-     * @param {function} [callback] A function to execute when the scene has been loaded
-     * @param {boolean} [clearScene] Whether the previous scene should be cleared before adding objects for the new scene. False by default
-     */
-    this.loadScene = function(fileName, loadingBar, callback, clearScene)
-    {
-        wade.loadJson(fileName, null, function(data)
-        {
-            wade.importScene(data, loadingBar, callback, false, clearScene);
-        });
-    };
-    /**
-     * Load a JSON file that contains the description of a wade scene, and process that file to load any assets being used and instantiate SceneObjects, Sprites, TextSprites and Animations according to the scene description. This is the same as wade.loadScene(), except that the loading happens asynchronously without blocking the rendering and simulation of the current scene
-     * @param {string} fileName The name of a JSON file containing a description of the scene
-     * @param {{position: {x: number, y: number}, foreColor: string, backColor: string}} [loadingBar] A loading bar while loading the assets referenced in the scene data (see wade.setLoadingBar for details about the parameters, which are all optional). If omitted or falsy, no loading bar will be shown
-     * @param {function} [callback] A function to execute when the scene has been loaded
-     * @param {boolean} [clearScene] Whether the previous scene should be cleared before adding objects for the new scene. False by default
-     */
-    this.preloadScene = function(fileName, loadingBar, callback, clearScene)
-    {
-        wade.preloadJson(fileName, null, function(data)
-        {
-            wade.importScene(data, loadingBar, callback, true, clearScene);
-        });
-    };
-
-    /**
-     * Enable or disable quadtree optimization for a specific layer. Note that this optimization is enabled by default, so normally you don't need to call this function. Sometimes you may want to wade.useQuadtree(layerId, false) for layers that have lots of small moving objects that you don't need to know the exact positions of, such as particles.
-     * @param {number} layerId The id of the layer for which you want to enable/disable the quadtree optimization
-     * @param {boolean} [toggle] Whether to enable or disable the quadtree. If omitted, this parameter is assumed to be true.
-     */
-    this.useQuadtree = function(layerId, toggle)
-    {
-        if (typeof(toggle) == 'undefined')
-        {
-            toggle = true;
-        }
-        this.getLayer(layerId).useQuadtree(toggle);
-    };
-
-    /**
-     * Check whether a layer is using quadtree-based optimizations
-     * @param {number} layerId The id of the layer to check
-     * @returns {boolean} Whether the layer is using a quadtree
-     */
-    this.isUsingQuadtree = function(layerId)
-    {
-        return this.getLayer(layerId).isUsingQuadtree();
-    };
-
-    /**
-     * Pause the simulation
-     * @param {string} [mainLoopName] The name of the main loop that you want to pause. If omitted, the whole simulation will be paused.
-     */
-    this.pauseSimulation = function(mainLoopName)
-    {
-        if (mainLoopName)
-        {
-            for (var i=0; i<mainLoopCallbacks.length; i++)
-            {
-                if (mainLoopCallbacks[i].name == mainLoopName)
-                {
-                    mainLoopCallbacks[i].paused = true;
-                    return;
-                }
-            }
-        }
-        else
-        {
-            simulationPaused = true;
-        }
-    };
-
-    /**
-     * Resume the simulation (typically after it was paused via wade.pauseSimulation)
-     * @param {string} [mainLoopName] The name of the main loop that you want to resume. If omitted, the whole simulation will be resumed.
-     */
-    this.resumeSimulation = function(mainLoopName)
-    {
-        var i;
-        if (mainLoopName)
-        {
-            for (i=0; i<mainLoopCallbacks.length; i++)
-            {
-                if (mainLoopCallbacks[i].name == mainLoopName)
-                {
-                    mainLoopCallbacks[i].paused = false;
-                    return;
-                }
-            }
-        }
-        else
-        {
-            for (i=0; i<mainLoopCallbacks.length; i++)
-            {
-                mainLoopCallbacks[i].paused = false;
-            }
-            simulationPaused = false;
-        }
-    };
-
-    /**
-     * Set how many seconds of lag should be tolerated before WADE stop trying to catch up with missed frames
-     * @param {number} bufferTime The buffer time, in seconds
-     */
-    this.setCatchUpBuffer = function(bufferTime)
-    {
-        catchUpBuffer = bufferTime;
-    };
-
-    /**
-     * Retrieve the length of the catch-up buffer, that is how many seconds of lag should be tolerated before WADE stops trying to catch up with missed frames
-     * @returns {number} The buffer time, in seconds
-     */
-    this.getCatchUpBuffer = function()
-    {
-        return catchUpBuffer;
-    };
-
-    /**
-     * Prevent the WADE App from being executed inside an iframe
-     */
-    this.preventIframe = function()
-    {
-        if (!window.location || !window.top.location || !location || !top.location || window.location !== window.top.location || location !== top.location)
-        {
-            wade = 0;
-        }
-    };
-
-    /**
-     * Only allow the WADE App to be executed on a specific domain. Note that this will still allow you to execute the app on your localhost or 127.0.0.1, regardless of the domain specified
-     * @param {string} domain The domain where you want the WADE App to be executed. For example 'www.clockworkchilli.com'
-     */
-    this.siteLock = function(domain)
-    {
-        var origin = 'localhost';
-        try
-        {
-            origin = top.location.hostname;
-
-        }
-        catch(e)
-        {
-            try
-            {
-                origin = this.getHostName(top.location.origin);
-            }
-            catch (e)
-            {
-                try
-                {
-                    origin = this.getHostName(top.location.href);
-                }
-                catch(e) {}
-            }
-        }
-        var s = origin.toLowerCase();
-        if (s != domain.toLowerCase() && s != 'localhost' && s != '127.0.0.1')
-        {
-            wade = 0;
-        }
-    };
-
-    /**
-     * Get the host name based on a URL string
-     * @param {string} url The URL string
-     * @returns {string} The host name
-     */
-    this.getHostName = function(url)
-    {
-        var u = URL || webkitURL;
-        try
-        {
-            url = new u(url).hostname;
-        }
-        catch (e)
-        {
-            var pos = url.indexOf('//');
-            if (pos != -1)
-            {
-                url = url.substr(pos + 2);
-            }
-            pos = url.indexOf('/');
-            if (pos != -1)
-            {
-                url = url.substr(0, pos);
-            }
-            pos = url.indexOf(':');
-            if (pos != -1)
-            {
-                url = url.substr(0, pos);
-            }
-            pos = url.indexOf('?');
-            if (pos != -1)
-            {
-                url = url.substr(0, pos);
-            }
-        }
-        return url;
-    };
-
-    /**
-     * Only allow the App to be linked only from selected domains
-     * @param {string|Array} domains A string (or an array of strings) representing the allowed domain(s)
-     */
-    this.whitelistReferrers = function(domains)
-    {
-        var referrer = document.referrer;
-        if (!referrer)
-        {
-            return;
-        }
-        referrer = this.getHostName(referrer);
-        var d;
-        if (typeof(domains) == 'string')
-        {
-            d = [domains.toLowerCase()];
-        }
-        else if ($.isArray(domains))
-        {
-            d = [];
-            for (var i=0; i<domains.length; i++)
-            {
-                d.push(domains[i].toLowerCase());
-            }
-        }
-        else
-        {
-            return;
-        }
-        if (referrer && d.indexOf(referrer.toLowerCase()) == -1)
-        {
-            wade = 0;
-        }
-    };
-
-    /**
-     * Do not allow the App to be linked from selected domains
-     * @param {string|Array} domains A string (or an array of strings) representing the blacklisted domain(s)
-     */
-    this.blacklistReferrers = function(domains)
-    {
-        var referrer = document.referrer;
-        if (!referrer)
-        {
-            return;
-        }
-        referrer = this.getHostName(referrer);
-        if (!referrer)
-        {
-            return;
-        }
-        var d;
-        if (typeof(domains) == 'string')
-        {
-            d = [domains.toLowerCase()];
-        }
-        else if ($.isArray(domains))
-        {
-            d = [];
-            for (var i=0; i<domains.length; i++)
-            {
-                d.push(domains[i].toLowerCase());
-            }
-        }
-        else
-        {
-            return;
-        }
-        if (referrer && d.indexOf(referrer.toLowerCase()) != -1)
-        {
-            wade = 0;
-        }
-    };
-
-    /**
-     * Remove a layer that was previously created, and free all the associated resources
-     * @param {number} layerId The id of the layer to remove
-     */
-    this.removeLayer = function(layerId)
-    {
-        sceneManager.renderer.removeLayer(layerId);
-    };
-
-    /**
-     * Set a CSS 3D transform on a layer. See <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Using_CSS_transforms">this MDN article</a> for more details.
-     * @param {number} layerId The id of the layer
-     * @param {string} [transformString] Any valid CSS 3D transform string. Omitting this parameter resets the transform
-     * @param {string} [transformOrigin] Any valid CSS 3D transform-origin string. Omitting this parameter resets the transform origin to (50% 50%)
-     * @param {number} [time] The time (in seconds) needed for the transform to be applied. Omitting this parameter or setting it to 0 results in the transform to be applied instanty. Any other number will result in the transform being applied smoothly over the specified period of time
-     * @param {function} [callback] A function to execute when the transform has been applied
-     */
-    this.setLayer3DTransform = function(layerId, transformString, transformOrigin, time, callback)
-    {
-        this.getLayer(layerId).set3DTransform(transformString || 'translate3d(0, 0, 0)', transformOrigin || '50% 50%', time, callback);
-    };
-
-    /**
-     * Skip any frames that have been missed due to lag up to this point (don't try to catch up). This won't affect future missed frames, i.e. WADE will still try to catch up on those unless you call skipMissedFrames again.
-     */
-    this.skipMissedFrames = function()
-    {
-        mainLoopLastTime = (new Date()).getTime();
-    };
-
-    /**
-     * Get the current index of a scene object in the scene.
-     * @param {SceneObject} sceneObject The SceneObject
-     * @returns {number} The current index of the scene object in the scene
-     */
-    this.getSceneObjectIndex = function(sceneObject)
-    {
-        return sceneManager.getSceneObjectIndex(sceneObject);
-    };
-
-    /**
-     * Set the index of a scene object in the scene. You may want to do this if you care about SceneObjects being exported in a specific order with wade.exportScene().
-     * @param {SceneObject} sceneObject The SceneObject
-     * @param {number} index The desired index in the scene
-     * @returns {number} The actual index of the SceneObject in the scene after attempting this operation. If the scene has N objects, and you try to set the index to a number greater than N-1, the object will be moved at index N-1 instead. If the object hasn't been added to the scene yet, this function will return -1.
-     */
-    this.setSceneObjectIndex = function(sceneObject, index)
-    {
-        return sceneManager.setSceneObjectIndex(sceneObject, index);
-    };
-
-    /**
-     * Set the tolerance for swipe events.
-     * @param {number} tolerance The tolerance value to use for swipe events. Default is 1.
-     * @param {number} [numSamples] The number of samples used for gesture detection. Default is 1.
-     */
-    this.setSwipeTolerance = function(tolerance, numSamples)
-    {
-        numSamples = (numSamples || 3);
-        inputManager.setSwipeTolerance(tolerance, numSamples);
-    };
-
-    /**
-     * Set the render mode for a layer
-     * @param {number} layerId The id of the layer
-     * @param {string} renderMode The render mode for the layer. This can be either '2d' or 'webgl'. On devices that don't support webgl, setting the render mode to 'webgl' won't have any effect.
-     * @param {object} [options] An object with rendering-related options. At present, only the 'offScreenTarget' option is implemented (for webgl), and it defaults to false.
-     */
-    this.setLayerRenderMode = function(layerId, renderMode, options)
-    {
-        this.getLayer(layerId).setRenderMode(renderMode);
-    };
-
-    /**
-     * Get the current render mode of a layer.d
-     * @param {number} layerId The id of the layer
-     * @returns {string} The layer render mode. This can be either '2d' or 'webgl'
-     */
-    this.getLayerRenderMode = function(layerId)
-    {
-        return this.getLayer(layerId).getRenderMode();
-    };
-
-    /**
-     * Check to see if WebGL is supported
-     * @returns {boolean} Whether WebGL is supported in the current environment
-     */
-    this.isWebGlSupported = function()
-    {
-        if (typeof(webGlSupported) != 'undefined')
-        {
-            return !!webGlSupported;
-        }
-        else
-        {
-            try
-            {
-                var canvas = document.createElement('canvas');
-                var context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            }
-            catch(e)
-            {
-                webGlSupported = false;
-                return false;
-            }
-            webGlSupported = !!context;
-            return !!context;
-        }
-    };
-
-    /**
-     * Check whether we are currently running in debug mode
-     * @returns {boolean} Whether we are currently running in debug mode
-     */
-    this.isDebugMode = function()
-    {
-        return !!debugMode;
-    };
-
-    /**
-     * If WebAudio is supported, get the current WebAudio context
-     * @returns {AudioContext} The current WebAudio context. If WebAudio is not supported, this function returns undefined.
-     */
-    this.getWebAudioContext = function()
-    {
-        return audioContext;
-    };
-
-    // Below are some member functions and parameters that need to be public for the rest of the engine to see them, but shouldn't be exposed to the WADE API.
-
-    this.doNothing = function()
-    {
-    };
-
-    this.getAudio = function(file)
-    {
-        var fileName = this.getFullPathAndFileName(file);
-        return assetLoader.getAudio(fileName);
-    };
-
-    this.playSilentSound = function()
-    {
-        if (audioContext)
-        {
-            var oscillator = audioContext.createOscillator();
-            oscillator.frequency.value = 440;
-            var amp = audioContext.createGainNode();
-            amp.gain.value = 0;
-            oscillator.connect(amp);
-            amp.connect(audioContext.destination);
-
-            if (oscillator.start)
-            {
-                oscillator.start(0);
-            }
-            else
-            {
-                oscillator.noteOn(0);
-            }
-            if (oscillator.stop)
-            {
-                oscillator.stop(0.001);
-            }
-            else
-            {
-                oscillator.noteOff(0.001);
-            }
-        }
-        else
-        {
-            var audio = new Audio();
-            audio.src = 'data:audio/wav;base64,UklGRjoAAABXQVZFZm10IBAAAAABAAEA6AcAANAPAAACABAAZGF0YQYAAAAAAAAAAAA%3D';
-            try
-            {
-                audio.play();
-            }
-            catch (e) {}
-        }
-    };
-
-    this.event_mainLoopCallback_ = function()
-    {
-        var that = this;
-        return function()
-        {
-            that.event_mainLoop();
-        };
-    };
-
-    this.event_mainLoop = function()
-    {
-        var i, time;
-        // schedule next execution
-        pendingMainLoop = requestAnimationFrame(this.event_mainLoopCallback_());
-        // only do stuff if all the resources have finished loading
-        if (assetLoader.isFinishedLoading())
-        {
-            // hide the loading images
-            for (i=0; i<loadingImages.length; i++)
-            {
-                if (loadingImages[i].style.display != 'none')
-                {
-                    loadingImages[i].style.display = 'none';
-                }
-            }
-
-            // hide the loading bar if there is one
-            if (loadingBar && loadingBar.style.display != 'none')
-            {
-                loadingBar.style.display = 'none';
-            }
-
-            // if the app is initialised, step and draw
-            if (appInitialised)
-            {
-                // draw
-                sceneManager.draw();
-
-                // determine how many simulation steps we need to do
-                time = (new Date()).getTime();
-                var numSteps = 0;
-                var maxSteps = 3;
-                var numStepsBehind = Math.round((time - mainLoopLastTime) / (wade.c_timeStep * 1000));
-                if (mainLoopLastTime)
-                {
-                    numSteps = Math.min(maxSteps, numStepsBehind);
-                }
-                else
-                {
-                    mainLoopLastTime = time;
-                }
-
-                if (numSteps)
-                {
-                    // if we are so many steps behind, stop trying to catch up
-                    if (numStepsBehind > catchUpBuffer / wade.c_timeStep)
-                    {
-                        numSteps = 1;
-                        mainLoopLastTime = time;
-                    }
-                    else
-                    {
-                        mainLoopLastTime += numSteps * wade.c_timeStep * 1000;
-                    }
-                }
-
-                // step
-                for (i=0; i<numSteps && !simulationPaused; i++)
-                {
-                    // step the scene manager
-                    sceneManager.step();
-
-                    // execute the mainLoop callbacks
-                    for (var j=0; j<mainLoopCallbacks.length; j++)
-                    {
-                        if (!mainLoopCallbacks[j].paused)
-                        {
-                            var f = mainLoopCallbacks[j].func;
-                            f && f();
-                        }
-                    }
-                }
-
-                if (simulationPaused)
-                {
-                    sceneManager.setSimulationDirtyState();
-                }
-            }
-            else if (appLoading)
-            {
-                // if the app hasn't been initialised yet, but it's finished loading, initialise it now
-                this.initializeApp();
-            }
-        }
-        else
-        {
-            mainLoopLastTime = (new Date()).getTime();
-
-            // if the loading image is supposed to be visible, show it
-            for (i=0; i<loadingImages.length; i++)
-            {
-                if (loadingImages[i].src)
-                {
-                    loadingImages[i].style.display = 'inline';
-                }
-            }
-
-            // update the loading bar if there is one
-            if (loadingBar)
-            {
-                loadingBar.inner.style.width = this.getLoadingPercentage() + '%';
-            }
-        }
-    };
-
-    this.event_appTimerEvent = function()
-    {
-        // schedule next execution
-        pendingAppTimer = setTimeout('wade.event_appTimerEvent();', appTimerInterval * 1000);
-       // tell the sceneManager to process the event
-        sceneManager.appTimerEvent();
-    };
-
-    this.onObjectNameChange = function(sceneObject, oldName, newName)
-    {
-        if (sceneObject.isInScene())
-        {
-            sceneManager.changeObjectName(sceneObject, oldName);
-        }
-    };
-
-    this.getLayer = function(layerId)
-    {
-        return sceneManager.renderer.getLayer(layerId);
-    };
-
-    this.updateMouseInOut = function(oldPosition, newPosition)
-    {
-        sceneManager.updateMouseInOut(oldPosition, newPosition);
-    };
-
-    this.addImageUser = function(image, user)
-    {
-        sceneManager.renderer.addImageUser(image, user);
-    };
-
-    this.removeImageUser = function(image, user)
-    {
-        sceneManager.renderer.removeImageUser(image, user);
-    };
-
-    this.removeAllImageUsers = function(image)
-    {
-        sceneManager.renderer.removeAllImageUsers(image);
-    };
-
-    this.getInternalContext = function()
-    {
-        return internalContext;
-    };
-
-    this.getImageUsers = function(image)
-    {
-        return sceneManager.renderer.getImageUsers(image);
-    };
-
-    this.releaseImageReference = function(image)
-    {
-        assetLoader.releaseImageReference(this.getFullPathAndFileName(image));
-    };
-
-    // avoid console.log errors when the debugger is not attached
-    if (!window.console)
-    {
-        window.console = {};
-    }
-    if (!window.console.log)
-    {
-        window.console.log = function() {};
-    }
-}
-
-/**
- * This is the global object that is used to interact with the engine
- * @type {Wade}
- */
-wade = new Wade();
+// WADE (Web App Development Engine) 2.1.1 - Copyright Clockwork Chilli ltd 2012-2014 - all rights reserved 
+function Animation(a,b,c,d,e,f,g,i,l){if("object"==typeof a&&a){if(this.name=a.name,this._numCells={x:a.numCells&&a.numCells.x||1,y:a.numCells&&a.numCells.y||1},this._startFrame=a.startFrame||0,this._endFrame="undefined"!=typeof a.endFrame&&!isNaN(a.endFrame)?a.endFrame:this._numCells.x*this._numCells.y-1,this._imageName=a.image,this._speed="undefined"!=typeof a.speed?a.speed:20,this._looping=!!a.looping,this._blending=!!a.blending,this._playMode=a.playMode||"forward",this._autoResize="undefined"!=
+typeof a.autoResize?a.autoResize:!0,this._offset={x:a.offset&&a.offset.x||0,y:a.offset&&a.offset.y||0},this._image=wade.getImage(this._imageName),this._stopped=!!a.stopped,a.properties)for(var j in a.properties)if(a.properties.hasOwnProperty(j))try{this[j]=JSON.parse(JSON.stringify(a.properties[j]))}catch(h){}}else this._image=wade.getImage(a),this._imageName=wade.getFullPathAndFileName(a),this._numCells={x:b?b:1,y:c?c:1},this._startFrame=f?f:0,this._endFrame="undefined"!=typeof g&&!isNaN(g)?g:b*
+c-1,this._speed="undefined"!=typeof d?d:20,this._looping=e,this._blending=!1,this._playMode="forward",this._stopped=!1,this._autoResize="undefined"!=typeof i?i:!0,this._offset=l||{x:0,y:0},this._offset.x=this._offset.x||0,this._offset.y=this._offset.y||0;this._currentFrame=this._startFrame;this._playing=!1;this._time=0;this._direction=1;this._frameFraction=0;this._frameSize={x:this._image.width/this._numCells.x,y:this._image.height/this._numCells.y};this._frameCenter={};window.Float32Array&&(this._f32AnimFrameInfo=
+new Float32Array([0,0,1/this._numCells.x,1/this._numCells.y]));this._updateFrameCenter()}Animation.prototype.getImageSize=function(){return{x:this._image.width,y:this._image.height}};Animation.prototype.getFrameSize=function(){return{x:this._image.width/this._numCells.x,y:this._image.height/this._numCells.y}};Animation.prototype.getFrameCenter=function(){return{x:this._frameCenter.x,y:this._frameCenter.y}};Animation.prototype.getImageName=function(){return wade.getFullPathAndFileName(this._imageName)};
+Animation.prototype.getRelativeImageName=function(){return this._imageName};Animation.prototype.getNumCells=function(){return{x:this._numCells.x,y:this._numCells.y}};
+Animation.prototype.play=function(a){if(this._autoResize&&this.sprite){var b=this.sprite.getScaleFactor();this.sprite.setSize(this._frameSize.x*b.x,this._frameSize.y*b.y)}this._time=0;this._direction=a&&"reverse"==a?-1:1;this._playMode=a;a=this._currentFrame;this._currentFrame=1==this._direction?this._startFrame:this._endFrame;a!=this._currentFrame&&this._updateFrameCenter();a=this._playing;this._playing=!0;this._stopped=!1;if(this.sprite&&this.name)this.sprite.onAnimationStart(this.name,a)};
+Animation.prototype.stop=function(){this._playing=!1;this._stopped=!0};Animation.prototype.resume=function(){this._playing||(this._stopped?(this._playing=!0,this._stopped=!1):this.play())};
+Animation.prototype.step=function(){this._time+=wade.c_timeStep;var a=this._currentFrame,b=this._speed*this._time+wade.c_epsilon-0.5,c=Math.round(b);this._frameFraction=b-c+0.5;this._currentFrame=1==this._direction?c+this._startFrame:this._endFrame-c;if(a!=this._currentFrame){if(1==this._direction){if(this._currentFrame>this._endFrame)if("ping-pong"==this._playMode)this._currentFrame=this._endFrame,this._direction=-1,this._time=0;else if(this._looping)this._currentFrame=this._startFrame,this._time-=
+(this._endFrame-this._startFrame+1)/this._speed;else if(this._currentFrame=this._endFrame,this._playing=!1,this._time=0,this.sprite&&this.name)this.sprite.onAnimationEnd(this.name)}else if(this._currentFrame<this._startFrame)if(this._looping)"ping-pong"==this._playMode?(this._currentFrame=this._startFrame,this._direction=1,this._time=0):(this._currentFrame=this._endFrame,this._time-=(this._endFrame-this._startFrame+1)/this._speed);else if(this._currentFrame=this._startFrame,this._playing=!1,this._time=
+0,this.sprite&&this.name)this.sprite.onAnimationEnd(this.name);this._updateFrameCenter();this.sprite&&this.sprite.isVisible()&&this.sprite.getSceneObject()&&this.sprite.getSceneObject().isInScene()&&this.sprite.setDirtyArea()}};Animation.prototype.isPlaying=function(){return this._playing};Animation.prototype.setBlending=function(a){"undefined"==typeof a&&(a=!0);this.draw=a?this._drawBlended:this._drawSingle;this._blending=a};
+Animation.prototype.clone=function(){var a=new Animation;jQuery.extend(a,this);a.sprite=0;a._numCells={x:this._numCells.x,y:this._numCells.y};a._offset={x:this._offset.x,y:this._offset.y};a._frameSize={x:this._frameSize.x,y:this._frameSize.y};a._frameCenter={x:this._frameCenter.x,y:this._frameCenter.y};window.Float32Array&&(a._f32AnimFrameInfo=this._f32AnimFrameInfo?new Float32Array([this._f32AnimFrameInfo[0],this._f32AnimFrameInfo[1],this._f32AnimFrameInfo[2],this._f32AnimFrameInfo[3]]):new Float32Array([0,
+0,1,1]),a._f32PositionAndSize=this._f32PositionAndSize?new Float32Array([this._f32PositionAndSize[0],this._f32PositionAndSize[1],this._f32PositionAndSize[2],this._f32PositionAndSize[3]]):new Float32Array([0,0,1,1]),a._f32RotationAlpha=this._f32RotationAlpha?new Float32Array([this._f32RotationAlpha[0],this._f32RotationAlpha[1]]):new Float32Array([0,0]));return a};
+Animation.prototype.serialize=function(a,b){var c={type:"Animation",name:this.name,startFrame:this._startFrame,endFrame:this._endFrame,numCells:{x:this._numCells.x,y:this._numCells.y},image:this._imageName,speed:this._speed,looping:this._looping,blending:this._blending,playMode:this._playMode,autoResize:this._autoResize,offset:{x:this._offset.x,y:this._offset.y},stopped:this._stopped,properties:{}},d=["name","sprite","isDefault"];b&&(d=d.concat(b));for(var e in this)if(this.hasOwnProperty(e)&&"_"!=
+e[0]&&-1==d.indexOf(e))try{var f=JSON.stringify(this[e]);c.properties[e]=JSON.parse(f)}catch(g){}return a?JSON.stringify(c):c};Animation.prototype.setFrameNumber=function(a){a!=this._currentFrame&&(this._currentFrame=a,this._updateFrameCenter(),this.sprite&&this.sprite.setDirtyArea())};Animation.prototype.getFrameNumber=function(){return this._currentFrame};Animation.prototype.getFrameCount=function(){return this._endFrame-this._startFrame+1};
+Animation.prototype.setOffset=function(a){this._offset.x=a.x;this._offset.y=a.y;this.sprite&&this.sprite.updateBoundingBox()};Animation.prototype.getOffset=function(){return{x:this._offset.x,y:this._offset.y}};Animation.prototype.getOffset_ref=function(){return this._offset};
+Animation.prototype.refreshImage=function(){this._image=wade.getImage(this._imageName);this._frameSize={x:this._image.width/this._numCells.x,y:this._image.height/this._numCells.y};this._f32AnimFrameInfo&&(this._f32AnimFrameInfo[2]=1/this._numCells.x,this._f32AnimFrameInfo[3]=1/this._numCells.y);this._updateFrameCenter();if(this._autoResize&&this.sprite){var a=this.sprite.getScaleFactor();this.sprite.setSize(this._frameSize.x*a.x,this._frameSize.y*a.y)}};
+Animation.prototype._drawSingle=function(a,b,c){wade.numDrawCalls++;a.drawImage(this._image,this._frameCenter.x,this._frameCenter.y,this._frameSize.x,this._frameSize.y,b.x-c.x/2+this._offset.x,b.y-c.y/2+this._offset.y,c.x,c.y)};
+Animation.prototype._drawBlended=function(a,b,c){var d=0<this._frameFraction?this._currentFrame+this._direction:this._currentFrame-this._direction;if(d<this._startFrame){if("ping-pong"==this._playMode||!this._looping){this._drawSingle(a,b,c);return}d=this._endFrame}else if(d>this._endFrame){if("ping-pong"==this._playMode||!this._looping){this._drawSingle(a,b,c);return}d=this._startFrame}var e=d%this._numCells.x*this._frameSize.x,d=Math.floor(d/this._numCells.x)*this._frameSize.y;wade.numDrawCalls+=
+2;var f=a.globalAlpha,g=a.globalCompositeOperation;a.globalAlpha=f*(1-this._frameFraction);var i=b.x-c.x/2+this._offset.x,b=b.y-c.y/2+this._offset.y;a.drawImage(this._image,this._frameCenter.x,this._frameCenter.y,this._frameSize.x,this._frameSize.y,i,b,c.x,c.y);a.globalCompositeOperation="lighter";a.globalAlpha=f*this._frameFraction;a.drawImage(this._image,e,d,this._frameSize.x,this._frameSize.y,i,b,c.x,c.y);a.globalAlpha=f;a.globalCompositeOperation=g;this.sprite&&this.sprite.isVisible()&&this.sprite.getSceneObject()&&
+this.sprite.getSceneObject().isInScene()&&this.sprite.setDirtyArea()};Animation.prototype.draw=Animation.prototype._drawSingle;Animation.prototype.draw_gl=function(a,b,c){a.isWebGl?(wade.numDrawCalls++,a.uniform4fv(a.uniforms.uPositionAndSize,b),a.uniform4fv(a.uniforms.uAnimFrameInfo,this._f32AnimFrameInfo),a.uniform2fv(a.uniforms.uRotationAlpha,c),a.setTextureImage(this._image),a.drawArrays(a.TRIANGLE_STRIP,0,4)):this.draw(a,{x:b[0],y:b[1]},{x:b[2],y:b[3]})};
+Animation.prototype._updateFrameCenter=function(){var a=this._currentFrame%this._numCells.x,b=Math.floor(this._currentFrame/this._numCells.x);this._frameCenter.x=a*this._frameSize.x;this._frameCenter.y=b*this._frameSize.y;this._f32AnimFrameInfo&&(this._f32AnimFrameInfo[0]=a/this._numCells.x,this._f32AnimFrameInfo[1]=b/this._numCells.y)};Animation.prototype.mirror=function(){this._f32AnimFrameInfo[2]*=-1};Animation.prototype.flip=function(){this._f32AnimFrameInfo[3]*=-1};
+function AssetLoader(){this.loadingStatus=[];this.loadedImages=[];this.loadedAudio=[];this.loadedJson=[];this.loadedScripts=[];this.loadedFonts=[];this.attemptsCount=[];this.maxAttempts=5;this.loadingRequests={scripts:0,json:0,images:0,audio:0,fonts:0};this.loadingSuccess={scripts:0,json:0,images:0,audio:0,fonts:0};this.loadingErrors={scripts:0,json:0,images:0,audio:0,fonts:0};this.loadingFailed={scripts:0,json:0,images:0,audio:0,fonts:0};this.init=function(a){this.audioContext=wade.getWebAudioContext();
+var b;window.Audio&&(b=new Audio)?this.audioExtension=b.canPlayType("audio/ogg; codecs=vorbis")?"ogg":"aac":a||wade.log("Warning: Unable to initialise audio.")};this.updateAttempts=function(a,b){this.attemptsCount[a]?this.attemptsCount[a]++:(this.attemptsCount[a]=1,this.loadingRequests[b]++)};this.loadScript=function(a,b,c,d,e){if("loading"!=this.loadingStatus[a]||c){if("ok"==this.loadingStatus[a]||"loading"==this.loadingStatus[a]){if(!c){"ok"==this.loadingStatus[a]&&(!e&&eval.call(window,this.loadedScripts[a]),
+b&&b(this.loadedScripts[a],a));return}this.attemptsCount[a]=0}this.loadingStatus[a]="loading";this.updateAttempts(a,"scripts");a={cache:c?!1:!0,type:"GET",url:a,dataType:"script",timeout:15E3,success:this.scriptLoaded(a,b,!e),error:this.scriptLoadingError(a,b,c,d),converters:{"text script":function(a){return a}}};$.ajax(a)}};this.loadJson=function(a,b,c,d,e){if("ok"==this.loadingStatus[a]||"loading"==this.loadingStatus[a]){if(!d){"ok"==this.loadingStatus[a]&&(b&&(b.data=this.loadedJson[a]),c&&c(this.loadedJson[a],
+a));return}this.attemptsCount[a]=0}this.loadingStatus[a]="loading";this.updateAttempts(a,"json");$.ajax({cache:d?!1:!0,type:"GET",url:a,dataType:"json",timeout:15E3,success:this.jsonLoaded(a,b,c),error:this.jsonLoadingError(a,b,c,d,e)})};this.loadAppScript=function(a,b){this.updateAttempts(a,"scripts");$.ajax({cache:b?!1:!0,type:"GET",url:a,dataType:"script",timeout:15E3,success:this.appLoaded(a),error:this.appLoadingError(a)})};this.loadImage=function(a,b,c){if("ok"==this.loadingStatus[a])b&&b(this.loadedImages[a],
+a);else if("loading"==this.loadingStatus[a])this.loadedImages[a]&&this.loadedImages[a].callbackIsSet&&b&&wade.log("Warning: conflicting callbacks for the load event of image "+a);else{this.loadingStatus[a]="loading";this.updateAttempts(a,"images");var d=new Image;this.loadedImages[a]=d;d.loadListener=this.imageLoaded(a,b);d.errorListener=this.imageLoadingError(a,b,c);d.addEventListener("load",d.loadListener,!1);d.addEventListener("error",d.errorListener,!1);d.callbackIsSet=b?1:0;d.src=a}};this.unloadImage=
+function(a){if("ok"!=this.loadingStatus[a])return!1;var b=this.loadedImages[a];b.removeEventListener("load",b.loadListener);b.removeEventListener("error",b.errorListener);b.src?b.src="data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==":b.width=b.height=1;if(b=wade.getImageUsers(a))for(var c=0;c<b.length;c++)b[c].onImageUnloaded&&b[c].onImageUnloaded(a);wade.removeAllImageUsers(a);this.loadedImages[a]=null;this.loadingStatus[a]="";this.attemptsCount[a]=0;return!0};this.releaseImageReference=
+function(a){"ok"==this.loadingStatus[a]&&(this.loadedImages[a]=null,this.loadingStatus[a]="",this.attemptsCount[a]=0)};this.unloadAllImages=function(){for(var a in this.loadedImages)this.loadedImages.hasOwnProperty(a)&&this.unloadImage(a)};this.imageLoaded=function(a,b){var c=this;return function(){c.loadingSuccess.images++;c.loadingStatus[a]="ok";window.wade&&wade.setImage(a,c.loadedImages[a]);c.handleLoadingCallback(b,c.loadedImages[a],a)}};this.imageLoadingError=function(a,b,c){var d=this;return function(){d.loadingErrors.images++;
+d.loadingStatus[a]="error";d.attemptsCount[a]<d.maxAttempts?(c?c():wade.log("Unable to load image "+a),d.loadingFailed.images++):d.loadImage(a,b,c)}};this.setImage=function(a,b){b.imageName=a;(this.loadedImages[a]=b)&&(this.loadingStatus[a]="ok")};this.setJson=function(a,b){(this.loadedJson[a]=b)&&(this.loadingStatus[a]="ok")};this.setAudio=function(a,b,c){this.audioContext||(this.audioContext=wade.getWebAudioContext());if(b&&this.audioContext&&"string"==typeof b){for(var d=atob(b.split(",")[1]),
+e=new ArrayBuffer(d.length),f=new Uint8Array(e),g=0;g<d.length;g++)f[g]=d.charCodeAt(g);var i=this;this.audioContext.decodeAudioData(e,function(b){i.loadedAudio[a]=b;i.loadingStatus[a]="ok";c&&setTimeout(c,0)},function(){wade.log("Unable to decode audio file "+b)})}else(this.loadedAudio[a]=b)&&(this.loadingStatus[a]="ok"),c&&c()};this.setScript=function(a,b){wade.isDebugMode()&&-1==b.indexOf("//# sourceURL")&&(b+="\n//# sourceURL="+a);(this.loadedScripts[a]=b)&&(this.loadingStatus[a]="ok")};this.setFont=
+function(a,b){if(this.loadedFonts[a]=b)if(this.loadingStatus[a]="ok",!document.getElementById("__wade_font_"+a)){var c=Math.max(a.lastIndexOf("/"),a.lastIndexOf("\\"))+1,c=a.substr(c,a.lastIndexOf(".")-c),d=document.createElement("style");d.id="__wade_font_"+a;d.appendChild(document.createTextNode("@font-face {font-family: '"+c+"';src: url('"+b+"') format('woff');}"));document.head.appendChild(d)}};this.jsonLoaded=function(a,b,c){var d=this;return function(e){d.loadingSuccess.json++;d.loadingStatus[a]=
+"ok";d.loadedJson[a]=e;window.wade&&wade.setJson(a,d.loadedJson[a]);b&&(b.data=e);d.handleLoadingCallback(c,d.loadedJson[a],a)}};this.scriptLoaded=function(a,b,c){var d=this;return function(e){d.loadingSuccess.scripts++;d.loadingStatus[a]="ok";d.loadedScripts[a]=e;window.wade&&wade.setScript(a,d.loadedScripts[a]);c&&eval.call(window,e);d.handleLoadingCallback(b,d.loadedScripts[a],a)}};this.scriptLoadingError=function(a,b,c,d){var e=this;return function(){e.loadingErrors.scripts++;e.loadingStatus[a]=
+"error";e.attemptsCount[a]<e.maxAttempts?(d?d():wade.log("Unable to load script "+a),e.loadingFailed.scripts++):e.loadScript(a,b,c,d)}};this.jsonLoadingError=function(a,b,c,d,e){var f=this;return function(){f.loadingErrors.json++;f.loadingStatus[a]="error";f.attemptsCount[a]<f.maxAttempts?(e?e():wade.log("Unable to load json file "+a),f.loadingFailed.json++):f.loadJson(a,b,c,d,e)}};this.appLoaded=function(a){var b=this;return function(){b.loadingSuccess.scripts++;b.loadingStatus[a]="ok";wade.instanceApp()}};
+this.appLoadingError=function(a){var b=this;return function(){b.loadingErrors.scripts++;b.loadingStatus[a]="error";b.attemptsCount[a]<b.maxAttempts?(alert("Unable to load main app script "+a),b.loadingFailed.scripts++):b.loadAppScript(a)}};this.loadAudio=function(a,b,c,d,e){if("ok"==this.loadingStatus[a]||"loading"==this.loadingStatus[a]){if("ok"==this.loadingStatus[a]){var f=this;f.loadedAudio[a]&&(f.loadedAudio[a].autoplay=b,f.loadedAudio[a].loop=c);b&&f.audioContext&&wade.playAudio(a,c);d&&d(f.loadedAudio[a],
+a)}}else{this.loadingStatus[a]="loading";this.updateAttempts(a,"audio");var g=a.substr(a.length-3).toLowerCase(),i=a;if(g!=this.audioExtension&&("aac"==g||"ogg"==g))i=a.substr(0,a.length-3)+this.audioExtension;if(this.audioContext){var f=this,l=new XMLHttpRequest;l.open("GET",i,!0);l.responseType="arraybuffer";l.timeout=6E4;l.onload=function(){f.audioContext.decodeAudioData(l.response,function(e){f.loadedAudio[a]=e;f.audioLoaded(a,d)();b&&wade.playAudio(a,c)},f.audioLoadingError(a,b,c,d,e))};l.send()}else g=
+new Audio,g.autoplay=b,g.loop=c,g.name=a,g.addEventListener("canplaythrough",this.audioLoaded(a,d),!1),g.addEventListener("error",this.audioLoadingError(a,b,c,d,e),!1),c&&g.addEventListener("ended",function(){this.currentTime=0;this.play()},!1),g.src=i,g.load(),this.loadedAudio[a]=g}};this.unloadAudio=function(a){if("ok"!=this.loadingStatus[a])return!1;this.loadedAudio[a]=null;this.loadingStatus[a]="";this.attemptsCount[a]=0;return!0};this.unloadAllAudio=function(){for(var a in this.loadedAudio)this.loadedAudio.hasOwnProperty(a)&&
+this.unloadAudio(a)};this.audioLoaded=function(a,b){var c=this;return function(){"ok"!=c.loadingStatus[a]&&(c.loadingSuccess.audio++,window.wade&&wade.setAudio(a,c.loadedAudio[a]),c.loadingStatus[a]="ok",c.handleLoadingCallback(b,c.loadedAudio[a],a))}};this.audioLoadingError=function(a,b,c,d,e){var f=this;return function(){f.loadingErrors.audio++;f.loadingStatus[a]="error";f.attemptsCount[a]<f.maxAttempts?(e?e():wade.log("Unable to load audio "+a),f.loadingFailed.audio++):f.loadAudio(a,b,c,d,e)}};
+this.isFinishedLoading=function(){return this.loadingRequests.scripts==this.loadingSuccess.scripts+this.loadingFailed.scripts&&this.loadingRequests.json==this.loadingSuccess.json+this.loadingFailed.json&&this.loadingRequests.images==this.loadingSuccess.images+this.loadingFailed.images&&this.loadingRequests.audio==this.loadingSuccess.audio+this.loadingFailed.audio&&this.loadingRequests.fonts==this.loadingSuccess.fonts+this.loadingFailed.fonts};this.getPercentageComplete=function(){return 100*(this.loadingSuccess.scripts+
+this.loadingSuccess.json+this.loadingSuccess.images+this.loadingSuccess.audio)/(this.loadingRequests.scripts+this.loadingRequests.json+this.loadingRequests.images+this.loadingRequests.audio)};this.getImage=function(a,b){if("ok"==this.loadingStatus[a])return this.loadedImages[a];"undefined"==typeof b&&(b="Warning: Trying to get image "+a+" without loading it first");b&&wade.log(b);return wade.getImage()};this.getJson=function(a){if("ok"==this.loadingStatus[a])return this.loadedJson[a];wade.log("Warning: Trying to get JSON data "+
+a+" without loading it first");return{}};this.getAudio=function(a){if("ok"==this.loadingStatus[a])return this.loadedAudio[a];wade.log("Warning: Trying to get audio "+a+" without loading it first");return new Audio};this.getScript=function(a){if("ok"==this.loadingStatus[a])return this.loadedScripts[a];wade.log("Warning: Trying to get script "+a+" without loading it first");return""};this.getFont=function(a){if("ok"==this.loadingStatus[a])return this.loadedFonts[a];wade.log("Warning: Trying to get font "+
+a+" without loading it first");return""};this.getLoadingStatus=function(a){return(a=this.loadingStatus[a])?a:"unknown"};this.setGlobalCallback=function(a){a&&this.isFinishedLoading()?(a(),this.globalCallback=0):this.globalCallback=a};this.handleLoadingCallback=function(a,b,c){a&&a(b,c);this.globalCallback&&this.isFinishedLoading()&&(this.globalCallback(),this.setGlobalCallback(0))};this.loadFont=function(a,b,c){if("ok"==this.loadingStatus[a])b&&b(this.loadedFonts[a],a);else if("loading"!=this.loadingStatus[a]){this.loadingStatus[a]=
+"loading";this.updateAttempts(a,"fonts");var d=Math.max(a.lastIndexOf("/"),a.lastIndexOf("\\"))+1,e=a.substr(d,a.lastIndexOf(".")-d),d=new XMLHttpRequest;d.open("GET",a,!0);d.responseType="blob";var f=this;d.onload=function(){if(this.status&&200!=this.status||!this.response)f.fontLoadingError(a,b,c);else{var d=this.response,i=new FileReader;i.onloadend=function(){var d=document.createElement("style");d.id="__wade_font_"+e;d.appendChild(document.createTextNode("@font-face {font-family: '"+e+"';src: url('"+
+i.result+"') format('woff');}"));document.head.appendChild(d);var g=document.createElement("span");g.innerHTML="giItT1WQy@!-/#";g.style.position="absolute";g.style.left="-10000px";g.style.top="-10000px";g.style.fontSize="300px";g.style.fontFamily="sans-serif";g.style.fontVariant="normal";g.style.fontStyle="normal";g.style.fontWeight="normal";g.style.letterSpacing="0";document.body.appendChild(g);var h=g.offsetWidth;g.style.fontFamily=e;var k,n=0,d=function(){if(g&&g.offsetWidth!=h)return g.parentNode.removeChild(g),
+g=null,clearInterval(k),f.loadedFonts[a]=i.result,f.fontLoaded(a,b)(),!0;if(15E3<(n+=50))clearInterval(k),f.fontLoadingError(a,b,c)();return!1};d()||(k=setInterval(d,50))};i.readAsDataURL(d)}};d.send()}};this.fontLoaded=function(a,b){var c=this;return function(){"ok"!=c.loadingStatus[a]&&(c.loadingSuccess.fonts++,c.loadingStatus[a]="ok",window.wade&&wade.setFont(a,c.loadedFonts[a]),c.handleLoadingCallback(b,c.loadedFonts[a],a))}};this.fontLoadingError=function(a,b,c){var d=this;return function(){d.loadingErrors.fonts++;
+d.loadingStatus[a]="error";d.attemptsCount[a]<d.maxAttempts?(c?c():wade.log("Unable to load font "+a),d.loadingFailed.fonts++):d.loadFont(a,b,c)}}}
+function InputManager(){var a=this,b=0,c=0,d,e=[],f=[],g=[],i=[],l=[],j=5,h={},k=[],n=[],m=[],p="",q=!1,A=!1,v=!0,u=1,B=3,r,G={},E=function(a,b){"string"==typeof b&&(b=document.getElementById(b));if(null==b)return{x:0,y:0};var c;c=(c=a)?c:window.event;c=isNaN(window.scrollX)?{x:document.documentElement.scrollLeft+document.body.scrollLeft+c.clientX,y:document.documentElement.scrollTop+document.body.scrollTop+c.clientY}:{x:window.scrollX+c.clientX,y:window.scrollY+c.clientY};c.x-=b.offsetLeft+b.clientLeft+
+b.clientWidth/2;c.y-=b.offsetTop+b.clientTop+b.clientHeight/2;c.x*=b.getAttribute("width")/b.clientWidth;c.y*=b.getAttribute("height")/b.clientHeight;if(wade.isScreenRotated()){var s=c.y;c.y=-c.x;c.x=s}return c},t=function(a){v&&(a=a?a:window.event,a.stopPropagation&&a.stopPropagation(),a.preventDefault&&a.preventDefault(),a.returnValue=!1,a.cancel=!0,a.cancelBubble=!0)};this.init=function(){if(!A){r=wade.getContainerName();var a=document.getElementById(r);a.addEventListener("mousedown",this.event_mouseDown);
+window.addEventListener("mouseup",this.event_mouseUp);a.addEventListener("mousemove",this.event_mouseMove);a.addEventListener("mousewheel",this.event_mouseWheel);a.addEventListener("click",this.noEvent);a.addEventListener("dblclick",this.noEvent);a.addEventListener("contextmenu",this.noEvent);a.addEventListener("DOMMouseScroll",this.event_mouseWheel);window.addEventListener("touchstart",this.event_touchStart);window.addEventListener("touchend",this.event_touchEnd);window.addEventListener("touchmove",
+this.event_touchMove);window.addEventListener("keydown",this.event_keyDown);window.addEventListener("keyup",this.event_keyUp);window.addEventListener("keypress",this.event_keyPress);window.addEventListener("blur",this.event_blur);window.addEventListener("focus",this.event_focus);navigator.msPointerEnabled&&(a.addEventListener("MSPointerDown",this.event_pointerDown),a.addEventListener("MSPointerMove",this.event_pointerMove),a.addEventListener("MSPointerUp",this.event_pointerUp));window.tizen&&(window.addEventListener("tizenhwkey",
+function(a){"back"==a.keyName&&tizen.application.getCurrentApplication().exit()}),window.onblur=function(){wade.deleteCanvases()},window.onfocus=function(){wade.recreateCanvases()});window.DeviceOrientationEvent&&window.addEventListener("deviceorientation",this.event_deviceOrientation,!1);window.DeviceMotionEvent&&window.addEventListener("devicemotion",this.event_deviceMotion,!1);A=!0}};this.deinit=function(){if(A){var a=document.getElementById(r);a.removeEventListener("mousedown",this.event_mouseDown);
+window.removeEventListener("mouseup",this.event_mouseUp);a.removeEventListener("mousemove",this.event_mouseMove);a.removeEventListener("mousewheel",this.event_mouseWheel);a.removeEventListener("click",this.noEvent);a.removeEventListener("dblclick",this.noEvent);a.removeEventListener("contextmenu",this.noEvent);a.removeEventListener("DOMMouseScroll",this.event_mouseWheel);window.removeEventListener("touchstart",this.event_touchStart);window.removeEventListener("touchend",this.event_touchEnd);window.removeEventListener("touchmove",
+this.event_touchMove);window.removeEventListener("keydown",this.event_keyDown);window.removeEventListener("keyup",this.event_keyUp);window.removeEventListener("keypress",this.event_keyPress);window.removeEventListener("blur",this.event_blur);window.removeEventListener("focus",this.event_focus);navigator.msPointerEnabled&&(a.removeEventListener("MSPointerDown",this.event_pointerDown),a.removeEventListener("MSPointerMove",this.event_pointerMove),a.removeEventListener("MSPointerUp",this.event_pointerUp));
+window.tizen&&(window.removeEventListener("tizenhwkey"),window.onblur=window.onfocus=null);window.DeviceOrientationEvent&&window.removeEventListener("deviceorientation",this.event_deviceOrientation);window.DeviceMotionEvent&&window.removeEventListener("deviceorientation",this.event_deviceMotion);A=!1}};this.enableGamepads=function(a){"undefined"==typeof a&&(a=!0);if(a)if(wade.areGamepadsSupported()){var b=navigator.getGamepads||navigator.webkitGetGamepads;wade.setMainLoopCallback(function(){for(var a=
+b.call(navigator),s=0;s<a.length;s++){var c=a[s];n[s]||(n[s]=[]);if(c)for(var d=0;d<c.buttons.length;d++){if(c.buttons[d]!=(n[s][d]||0)){var e=c.buttons[d]?"onGamepadButtonDown":"onGamepadButtonUp",g={gamepadIndex:c.index,gamepadId:c.id,button:d};wade.app&&wade.isAppInitialized()&&!wade.processEvent(e,g)&&wade.app[e]&&wade.app[e](g)}n[s][d]=c.buttons[d]}}k=a},"__wade_gamepads")}else wade.log("Warning - Gamepads aren't supported in this browser");else wade.setMainLoopCallback(null,"__wade_gamepads")};
+this.getGamepadData=function(){return k};this.event_mouseDown=function(c){var g={screenPosition:E(c,r)};if(Math.abs(g.screenPosition.x)>wade.getScreenWidth()/2||Math.abs(g.screenPosition.y)>wade.getScreenHeight()/2)return!1;a._setLastMousePosition(g.screenPosition.x,g.screenPosition.y);var u=(new Date).getTime();if(!q&&f.mouseDown&&e.mouseDown&&u-e.mouseDown<f.mouseDown||!q&&f.mouseUp&&e.mouseUp&&u-e.mouseUp<f.mouseUp)return!1;if(q||!b){b=q?b+1:!0;l.push({x:g.screenPosition.x,y:g.screenPosition.y});
+g.button=c.button;d=c;if(wade.app&&(wade.isAppInitialized()&&!wade.processEvent("onMouseDown",g))&&wade.app.onMouseDown)wade.app.onMouseDown(g);t(c);e.mouseDown=u;m.length=0;p="";m.push({x:g.screenPosition.x,y:g.screenPosition.y})}return!1};this.event_mouseUp=function(c){var g={screenPosition:E(c,r)};if(Math.abs(g.screenPosition.x)>wade.getScreenWidth()/2||Math.abs(g.screenPosition.y)>wade.getScreenHeight()/2)return!1;a._setLastMousePosition(g.screenPosition.x,g.screenPosition.y);var u=(new Date).getTime();
+if(!q&&f.mouseUp&&e.mouseUp&&u-e.mouseUp<f.mouseUp)return!1;if(q||b){b=q?b-1:!1;g.button=c.button;d=c;if(l.length){for(var s=0;s<l.length;s++){var D=g.screenPosition.x-l[s].x,w=g.screenPosition.y-l[s].y;if(D*D+w*w<=j*j){a.event_click(g);break}}l.length--}if(wade.app&&(wade.isAppInitialized()&&!wade.processEvent("onMouseUp",g))&&wade.app.onMouseUp)wade.app.onMouseUp(g);!e.mouseUp&&(navigator&&navigator.userAgent.match(/(iPod|iPhone|iPad)/)&&navigator.userAgent.match(/AppleWebKit/))&&wade.playSilentSound();
+t(c);e.mouseUp=u;m.length=0;p=""}return!1};this.event_mouseMove=function(b){var c={screenPosition:E(b,r)};if(Math.abs(c.screenPosition.x)>wade.getScreenWidth()/2||Math.abs(c.screenPosition.y)>wade.getScreenHeight()/2)return!1;a._setLastMousePosition(c.screenPosition.x,c.screenPosition.y);var g=(new Date).getTime();if(!q&&f.mouseMove&&e.mouseMove&&g-e.mouseMove<f.mouseMove)return!1;d=b;if(wade.app&&(wade.isAppInitialized()&&!wade.processEvent("onMouseMove",c))&&wade.app.onMouseMove)wade.app.onMouseMove(c);
+e.mouseMove=g;t(b);a.isMouseDown()&&(m.push({x:c.screenPosition.x,y:c.screenPosition.y}),a.detectGestures())};this.event_mouseWheel=function(b){var b=b?b:window.event,c={screenPosition:E(b,r)};if(Math.abs(c.screenPosition.x)>wade.getScreenWidth()/2||Math.abs(c.screenPosition.y)>wade.getScreenHeight()/2)return!1;a._setLastMousePosition(c.screenPosition.x,c.screenPosition.y);var g=(new Date).getTime();if(q||!f.mouseWheel||!(e.mouseWheel&&g-e.mouseWheel<f.mouseWheel)){c.value=b.detail?-1*b.detail:b.wheelDelta/
+40;d=c;if(wade.app&&(wade.isAppInitialized()&&!wade.processEvent("onMouseWheel",c))&&wade.app.onMouseWheel)wade.app.onMouseWheel(c);e.mouseWheel=g;t(b)}};this.event_click=function(a){var b=(new Date).getTime();if(q||!f.onClick||!(e.onClick&&b-e.onClick<f.onClick)){if(wade.app&&(wade.isAppInitialized()&&!wade.processEvent("onClick",a))&&wade.app.onClick)wade.app.onClick(a);e.onClick=b}};this.event_touchStart=function(b){var d=b.touches||i;if(2==d.length){var e=d[0].pageX-d[1].pageX,s=d[0].pageY-d[1].pageY;
+c=Math.sqrt(e*e+s*s);q&&a.event_mouseDown(d[1])}else 1==d.length?a.event_mouseDown(d[0]):q&&a.event_mouseDown(d[d.length-1]);t(b)};this.event_touchEnd=function(b){if(b.changedTouches&&b.changedTouches.length)for(var c=0;c<b.changedTouches.length;c++)a.event_mouseUp(b.changedTouches[c]);else a.event_mouseUp(d);t(b)};this.event_touchMove=function(b){var d;d=b.touches||i;if(2==d.length){var e=d[0].pageX-d[1].pageX,s=d[0].pageY-d[1].pageY;if(e=Math.sqrt(e*e+s*s))s=c-e,Math.abs(s)>wade.c_epsilon&&(s=-30*
+s/Math.max(wade.getScreenWidth(),wade.getScreenHeight()),a.event_mouseWheel({clientX:d[0].pageX,clientY:d[0].pageY,detail:-s}));c=e;if(q&&b.changedTouches)for(d=0;d<b.changedTouches.length;d++)a.event_mouseMove({clientX:b.changedTouches[d].pageX,clientY:b.changedTouches[d].pageY})}else if(1==d.length)a.event_mouseMove({clientX:d[0].pageX,clientY:d[0].pageY});else if(q&&b.changedTouches)for(d=0;d<b.changedTouches.length;d++)a.event_mouseMove({clientX:b.changedTouches[d].pageX,clientY:b.changedTouches[d].pageY});
+t(b)};this.event_keyDown=function(a){var b={keyCode:"which"in a?a.which:a.keyCode,shift:a.shiftKey,ctrl:a.ctrlKey,alt:a.altKey,meta:a.metaKey};G[b.keyCode]=!0;wade.app&&wade.isAppInitialized()&&!wade.processEvent("onKeyDown",b)?wade.app.onKeyDown&&wade.app.onKeyDown(b)&&t(a):t(a)};this.event_keyUp=function(a){var b={keyCode:"which"in a?a.which:a.keyCode,shift:a.shiftKey,ctrl:a.ctrlKey,alt:a.altKey,meta:a.metaKey};G[b.keyCode]=!1;wade.app&&wade.isAppInitialized()&&!wade.processEvent("onKeyUp",b)?wade.app.onKeyUp&&
+wade.app.onKeyUp(b)&&t(a):t(a)};this.event_keyPress=function(a){var b={charCode:"charCode"in a?a.charCode:a.keyCode};wade.app&&wade.isAppInitialized()&&!wade.processEvent("onKeyPress",b)?wade.app.onKeyPress&&wade.app.onKeyPress(b)&&t(a):t(a)};this.isKeyDown=function(a){return!!G[a]};this.event_pointerDown=function(b){g[b.pointerId]||(g[b.pointerId]=1,i.push({pageX:b.pageX,pageY:b.pageY,clientX:b.clientX,clientY:b.clientY,pointerId:b.pointerId}),a.event_touchStart(b))};this.event_pointerUp=function(b){if(g[b.pointerId]){for(var c=
+0;c<i.length;c++)if(i[c].pointerId==b.pointerId){wade.removeObjectFromArrayByIndex(c,i);break}g[b.pointerId]=0;a.event_touchEnd({changedTouches:[b]})}};this.event_pointerMove=function(b){if(g[b.pointerId]){for(var c=0;c<i.length;c++)if(i[c].pointerId==b.pointerId){i[c].pageX=b.pageX;i[c].pageY=b.pageY;i[c].clientX=b.clientX;i[c].clientY=b.clientY;b.changedTouches=[i[c]];break}a.event_touchMove(b)}};this.event_deviceMotion=function(a){if(a.acceleration&&null!==a.acceleration.x){var b={acceleration:a.acceleration,
+accelerationIncludingGravity:a.accelerationIncludingGravity,rotation:a.rotationRate,refreshInterval:a.interval};wade.app&&wade.isAppInitialized()&&!wade.processEvent("onDeviceMotion",b)?wade.app.onDeviceMotion&&wade.app.onDeviceMotion(b)&&t(a):t(a)}};this.event_deviceOrientation=function(a){if(null!==a.alpha){var b={alpha:a.alpha,beta:a.beta,gamma:a.gamma};wade.app&&wade.isAppInitialized()&&!wade.processEvent("onDeviceOrientation",b)?wade.app.onDeviceOrientation&&wade.app.onDeviceOrientation(b)&&
+t(a):t(a)}};this.event_gamepadConnected=function(a){wade.app.onGamepadConnected&&wade.app.onGamepadConnected({gamepadId:a.gamepad.id})};this.event_gamepadDisconnected=function(a){wade.app.onGamepadDisconnected&&wade.app.onGamepadDisconnected({gamepadId:a.gamepad.id})};this.event_blur=function(a){var b={};wade.app&&wade.isAppInitialized()&&!wade.processEvent("onBlur",b)?wade.app.onBlur&&wade.app.onBlur(b)&&t(a):t(a)};this.event_focus=function(a){var b={};wade.app&&wade.isAppInitialized()&&!wade.processEvent("onFocus",
+b)?wade.app.onFocus&&wade.app.onFocus(b)&&t(a):t(a)};this.noEvent=function(a){t(a)};this.isMouseDown=function(){return!!b};this.setMinimumIntervalBetweenEvents=function(a,b){f[a]=b};this.setClickTolerance=function(a){j=a};this.getMousePosition=function(){return{x:h.x,y:h.y}};this.enableMultitouch=function(a){q=a};this.isMultitouchEnabled=function(){return q};this.cancelEvents=function(a){"undefined"==typeof a&&(a=!0);v=a};this._setLastMousePosition=function(a,b){if(a!=h.x||b!=h.y)wade.updateMouseInOut(h,
+{x:a,y:b}),h.x=a,h.y=b};this.detectGestures=function(){var a=0,b=0,c=0,s=0;if(!p&&m.length<3*B){for(var d=1;d<m.length&&!p;d++){var e=m[d].x-m[d-1].x||wade.c_epsilon,g=m[d].y-m[d-1].y||wade.c_epsilon,f=e/Math.abs(g),e=g/Math.abs(e);-1>f&&Math.abs(e)<=u&&++a==B&&!b&&!c&&!s?p="onSwipeLeft":1<f&&Math.abs(e)<=u&&++b==B&&!a&&!c&&!s?p="onSwipeRight":-1>e&&Math.abs(f)<=u&&++c==B&&!a&&!b&&!s?p="onSwipeUp":1<e&&(Math.abs(f)<=u&&++s==B&&!a&&!c&&!b)&&(p="onSwipeDown")}if(p&&(a=m[0],a={screenPosition:{x:a.x,
+y:a.y},screenPositions:m},wade.app&&(wade.isAppInitialized()&&!wade.processEvent(p,a))&&wade.app[p]))wade.app[p](a)}};this.setSwipeTolerance=function(a,b){u=a;B=b}}
+function Layer(a,b){this.id=a;this._sprites=[];this._movingSprites=[];this._transform={scale:1,translate:1};this._sorting="none";this._dirtyAreas=[];this._smoothing=this._clearCanvas=this._needsFullRedraw=!0;this._resolutionFactor=wade.getResolutionFactor();this._cameraPosition=wade.getCameraPosition();this._useQuadtree=!0;this._renderMode=b||"2d";this._useOffScreenTarget=!1;this._updateScaleConversionFactor();window.Float32Array&&(this._f32ViewportSize=new Float32Array([0,0]),this._f32CameraScaleTranslate=
+new Float32Array([0,0,0]));this.createCanvas();wade.isDoubleBufferingEnabled()&&this.createSecondaryCanvas();var c=wade.getScreenWidth()/2,d=wade.getScreenHeight()/2;this._worldBounds={minX:-c,minY:-d,maxX:c,maxY:d};this._initQuadTree();this._isAndroidStockBrowser=0<=navigator.userAgent.indexOf("Android")&&-1==navigator.userAgent.indexOf("Firefox")&&!(window.chrome&&window.chrome.app)&&!wade.isWebGlSupported()}Layer.prototype.getScaleFactor=function(){return this._transform.scale};
+Layer.prototype.getTranslateFactor=function(){return this._transform.translate};Layer.prototype.setTransform=function(a,b){this._transform.scale=a;this._transform.translate=b;this._updateScaleConversionFactor();this._needsFullRedraw=!0};Layer.prototype.getSorting=function(){return this._sorting};
+Layer.prototype.setSorting=function(a){if(a!=this._sorting){this._sorting=a;switch(a){case "bottomToTop":this._sortingFunction=this._spriteSorter_bottomToTop;break;case "topToBottom":this._sortingFunction=this._spriteSorter_topToBottom;break;case "none":this._sortingFunction=0;break;default:this._sortingFunction=a}this._needsFullSorting=!0}};Layer.prototype.clearDirtyAreas=function(){this._dirtyAreas.length=0;this._needsFullRedraw=!1};
+Layer.prototype.addDirtyArea=function(a){this._dirtyAreas.push({minX:a.minX,maxX:a.maxX,minY:a.minY,maxY:a.maxY})};Layer.prototype.addSprite=function(a){this._sprites.push(a);a.id=this._sprites.length;wade.expandBox(this._worldBounds,a.boundingBox);this._useQuadtree&&(this.addDirtyArea(a.boundingBox),this._addSpriteToQuadTree(a));this._movingSprites.push(a)};
+Layer.prototype.removeSprite=function(a){wade.removeObjectFromArray(a,this._sprites);this._useQuadtree&&(this.addDirtyArea(a.boundingBox),a.quadTreeNode.removeObject(a),a.quadTreeNode=0)};
+Layer.prototype.draw=function(){var a,b,c;if(this._canvas&&!(0==this._dirtyAreas.length&&!this._needsFullRedraw&&this._useQuadtree)){if(this._isAndroidStockBrowser&&this._clearCanvas||!(this._useOffScreenTarget&&"webgl"==this._renderMode))this._needsFullRedraw=!0;var d=this._needsFullRedraw&&"2d"==this._renderMode&&wade.isDoubleBufferingEnabled(),e=d?this._secondaryContext:this._context;this._needsFlipping=d;var d=wade.getScreenWidth()*this._resolutionFactor,f=wade.getScreenHeight()*this._resolutionFactor,
+g=d/2,i=f/2;if("none"!=this._sorting)if(this._needsFullSorting=this._needsFullSorting||this._movingSprites.length*this._movingSprites.length>this._sprites.length)this._sprites.sort(this._sortingFunction);else for(a=0;a<this._movingSprites.length;a++){var l=0,j=this._movingSprites[a];for(b=0;b<this._sprites.length&&j!=this._sprites[b];b++);if(b<this._sprites.length){for(c=b+1;c<this._sprites.length;c++)if(0<this._sortingFunction(j,this._sprites[c]))this._sprites[c].setDirtyArea(),this._sprites[c-1]=
+this._sprites[c],this._sprites[c]=j,l++;else break;if(!l)for(c=b-1;0<=c;c--)if(0>this._sortingFunction(j,this._sprites[c]))this._sprites[c].setDirtyArea(),this._sprites[c+1]=this._sprites[c],this._sprites[c]=j,l++;else break}}this._needsFullSorting=!1;this._movingSprites.length=0;l="webgl"==this._renderMode?"draw_gl":"draw";"webgl"==this._renderMode&&this._useOffScreenTarget&&e.bindFramebuffer(e.FRAMEBUFFER,e.mainRenderTarget);if(this._useQuadtree){a=this.canvasBoxToWorld({minX:-g,minY:-i,maxX:g,
+maxY:i});this._needsFullRedraw?(b=this._scaleConversionFactor,c=g-this._cameraPosition.x*this._transform.translate*b,j=i-this._cameraPosition.y*this._transform.translate*b,"2d"==this._renderMode?(e.restore(),e.save(),e.setTransform(b,0,0,b,Math.round(c),Math.round(j))):"webgl"==this._renderMode&&(this._f32CameraScaleTranslate[0]=b,this._f32CameraScaleTranslate[1]=this._cameraPosition.x*this._transform.translate*b,this._f32CameraScaleTranslate[2]=this._cameraPosition.y*this._transform.translate*b,
+e.uniform3fv(e.uniforms.uCameraScaleTranslate,this._f32CameraScaleTranslate)),j=wade.cloneObject(a)):j=this._joinDirtyAreas();if(!j){this.clearDirtyAreas();return}for(c=0;c<this._sprites.length;c++)this._sprites[c].needsDrawing=0;for(c=0;c.minX!=j.minX||c.minY!=j.minY||c.maxX!=j.maxX||c.maxY!=j.maxY;){if(isNaN(j.minX)||isNaN(j.minY)||isNaN(j.maxX)||isNaN(j.maxY)){wade.log("Warning: some sprites have invalid coordinates, it isn't possible to render this frame");return}this._quadTree.flagObjects(j,
+"needsDrawing");c=wade.cloneObject(j);for(b=0;b<this._sprites.length;b++)this._sprites[b].needsDrawing&&this._sprites[b].isVisible()&&wade.expandBox(j,this._sprites[b].boundingBox);wade.clampBoxToBox(j,a)}if(this._clearCanvas){var h;"2d"==this._renderMode?(e.save(),e.setTransform(1,0,0,1,0,0),this._needsFullRedraw?e.clearRect(0,0,Math.round(d),Math.round(f)):(h=this.worldBoxToCanvas(j),e.clearRect(Math.floor(h.minX+g-1),Math.floor(h.minY+i-1),Math.ceil(h.maxX-h.minX+2),Math.ceil(h.maxY-h.minY+2))),
+e.restore()):"webgl"==this._renderMode&&(this._needsFullRedraw?e.clear(e.COLOR_BUFFER_BIT):(h=this.worldBoxToCanvas(j),e.enable(e.SCISSOR_TEST),e.scissor(Math.floor(h.minX+g-1),f-Math.floor(h.minY+i-1)-Math.ceil(h.maxY-h.minY+2),Math.ceil(h.maxX-h.minX+2),Math.ceil(h.maxY-h.minY+2)),e.clear(e.COLOR_BUFFER_BIT),e.disable(e.SCISSOR_TEST)))}this.clearDirtyAreas();for(a=0;a<this._sprites.length;a++)if(this._sprites[a].needsDrawing)this._sprites[a][l](e)}else{b=this._scaleConversionFactor;c=g-this._cameraPosition.x*
+this._transform.translate*b;j=i-this._cameraPosition.y*this._transform.translate*b;"webgl"==this._renderMode?(e.clear(e.COLOR_BUFFER_BIT),this._f32CameraScaleTranslate[0]=b,this._f32CameraScaleTranslate[1]=this._cameraPosition.x*this._transform.translate*b,this._f32CameraScaleTranslate[2]=this._cameraPosition.y*this._transform.translate*b,e.uniform3fv(e.uniforms.uCameraScaleTranslate,this._f32CameraScaleTranslate)):"2d"==this._renderMode&&(e.save(),e.setTransform(1,0,0,1,0,0),e.clearRect(0,0,Math.round(d),
+Math.round(f)),e.restore(),e.setTransform(b,0,0,b,Math.round(c),Math.round(j)));this.clearDirtyAreas();for(a=0;a<this._sprites.length;a++)this._sprites[a][l](e)}"webgl"==this._renderMode&&this._useOffScreenTarget&&(e.blendFuncSeparate(e.ONE,e.ONE_MINUS_SRC_ALPHA,e.ONE,e.ONE_MINUS_SRC_ALPHA),e.pixelStorei(e.UNPACK_PREMULTIPLY_ALPHA_WEBGL,!0),this._f32CameraScaleTranslate[0]=1,this._f32CameraScaleTranslate[1]=0,this._f32CameraScaleTranslate[2]=0,e.bindFramebuffer(e.FRAMEBUFFER,null),h?(e.enable(e.SCISSOR_TEST),
+e.scissor(Math.floor(h.minX+g-1),f-Math.floor(h.minY+i-1)-Math.ceil(h.maxY-h.minY+2),Math.ceil(h.maxX-h.minX+2),Math.ceil(h.maxY-h.minY+2)),e.clear(e.COLOR_BUFFER_BIT),e.disable(e.SCISSOR_TEST)):this._clearCanvas&&e.clear(e.COLOR_BUFFER_BIT),e.uniform3fv(e.uniforms.uCameraScaleTranslate,this._f32CameraScaleTranslate),e.uniform4fv(e.uniforms.uPositionAndSize,e.mainRenderTarget.uniformValues.positionAndSize),e.uniform4fv(e.uniforms.uAnimFrameInfo,e.mainRenderTarget.uniformValues.animFrameInfo),e.uniform2fv(e.uniforms.uRotationAlpha,
+e.mainRenderTarget.uniformValues.rotationAlpha),e.bindTexture(e.TEXTURE_2D,e.mainRenderTarget.texture),e.drawArrays(e.TRIANGLE_STRIP,0,4),b=this._scaleConversionFactor,this._f32CameraScaleTranslate[0]=b,this._f32CameraScaleTranslate[1]=this._cameraPosition.x*this._transform.translate*b,this._f32CameraScaleTranslate[2]=this._cameraPosition.y*this._transform.translate*b,e.uniform3fv(e.uniforms.uCameraScaleTranslate,this._f32CameraScaleTranslate),e.bindTexture(e.TEXTURE_2D,null),e.currentImage=null,
+e.pixelStorei(e.UNPACK_PREMULTIPLY_ALPHA_WEBGL,!1),e.blendFuncSeparate(e.SRC_ALPHA,e.ONE_MINUS_SRC_ALPHA,e.ONE,e.ONE_MINUS_SRC_ALPHA))}};Layer.prototype.sort=function(a){this._sprites.sort(a||this._sortingFunction);this._needsFullRedraw=!0};
+Layer.prototype.onCameraPositionChanged=function(a){if(0!=this._transform.translate&&(a.x!=this._cameraPosition.x||a.y!=this._cameraPosition.y)||0!=this._transform.scale&&a.z!=this._cameraPosition.z)this._needsFullRedraw=!0;this._cameraPosition={x:a.x,y:a.y,z:a.z};this._updateScaleConversionFactor()};Layer.prototype.onSpritePositionChanged=function(a){this._useQuadtree&&a.quadTreeNode&&(wade.expandBox(this._worldBounds,a.boundingBox),a.quadTreeNode.removeObject(a),this._addSpriteToQuadTree(a));this._movingSprites.push(a)};
+Layer.prototype.worldPositionToScreen=function(a){return{x:this._scaleConversionFactor*(a.x-this._cameraPosition.x*this._transform.translate)/this._resolutionFactor,y:this._scaleConversionFactor*(a.y-this._cameraPosition.y*this._transform.translate)/this._resolutionFactor}};Layer.prototype.worldDirectionToScreen=function(a){return{x:this._scaleConversionFactor*a.x/this._resolutionFactor,y:this._scaleConversionFactor*a.y/this._resolutionFactor}};
+Layer.prototype.worldBoxToScreen=function(a){var b={x:(a.maxX-a.minX)/2,y:(a.maxY-a.minY)/2},a=this.worldPositionToScreen({x:a.minX+b.x,y:a.minY+b.y}),b=this.worldDirectionToScreen(b);return{minX:a.x-b.x,minY:a.y-b.y,maxX:a.x+b.x,maxY:a.y+b.y}};Layer.prototype.worldUnitToScreen=function(){return this._scaleConversionFactor/this._resolutionFactor};
+Layer.prototype.screenPositionToWorld=function(a){return{x:this._cameraPosition.x*this._transform.translate+a.x*this._resolutionFactor/this._scaleConversionFactor,y:this._cameraPosition.y*this._transform.translate+a.y*this._resolutionFactor/this._scaleConversionFactor}};Layer.prototype.screenDirectionToWorld=function(a){return{x:a.x*this._resolutionFactor/this._scaleConversionFactor,y:a.y*this._resolutionFactor/this._scaleConversionFactor}};
+Layer.prototype.screenBoxToWorld=function(a){var b={x:(a.maxX-a.minX)/2,y:(a.maxY-a.minY)/2},a=this.screenPositionToWorld({x:a.minX+b.x,y:a.minY+b.y}),b=this.screenDirectionToWorld(b);return{minX:a.x-b.x,minY:a.y-b.y,maxX:a.x+b.x,maxY:a.y+b.y}};Layer.prototype.screenUnitToWorld=function(){return this._resolutionFactor/this._scaleConversionFactor};
+Layer.prototype.worldPositionToCanvas=function(a){return{x:this._scaleConversionFactor*(a.x-this._cameraPosition.x*this._transform.translate),y:this._scaleConversionFactor*(a.y-this._cameraPosition.y*this._transform.translate)}};Layer.prototype.worldDirectionToCanvas=function(a){return{x:this._scaleConversionFactor*a.x,y:this._scaleConversionFactor*a.y}};
+Layer.prototype.worldBoxToCanvas=function(a){var b={x:(a.maxX-a.minX)/2,y:(a.maxY-a.minY)/2},a=this.worldPositionToCanvas({x:a.minX+b.x,y:a.minY+b.y}),b=this.worldDirectionToCanvas(b);return{minX:a.x-b.x,minY:a.y-b.y,maxX:a.x+b.x,maxY:a.y+b.y}};Layer.prototype.worldUnitToCanvas=function(){return this._scaleConversionFactor};
+Layer.prototype.canvasPositionToWorld=function(a){return{x:this._cameraPosition.x*this._transform.translate+a.x/this._scaleConversionFactor,y:this._cameraPosition.y*this._transform.translate+a.y/this._scaleConversionFactor}};Layer.prototype.canvasDirectionToWorld=function(a){return{x:a.x/this._scaleConversionFactor,y:a.y/this._scaleConversionFactor}};
+Layer.prototype.canvasBoxToWorld=function(a){var b={x:(a.maxX-a.minX)/2,y:(a.maxY-a.minY)/2},a=this.canvasPositionToWorld({x:a.minX+b.x,y:a.minY+b.y}),b=this.canvasDirectionToWorld(b);return{minX:a.x-b.x,minY:a.y-b.y,maxX:a.x+b.x,maxY:a.y+b.y}};Layer.prototype.canvasUnitToWorld=function(){return 1/this._scaleConversionFactor};
+Layer.prototype.resize=function(a,b){this._canvas&&(this._canvas.width=Math.round(a*this._resolutionFactor),this._canvas.height=Math.round(b*this._resolutionFactor),"webgl"==this._renderMode&&(this._f32ViewportSize[0]=this._canvas.width,this._f32ViewportSize[1]=this._canvas.height,this._context.viewport(0,0,this._canvas.width,this._canvas.height),this._context.uniform2fv(this._context.uniforms.uViewportSize,this._f32ViewportSize),this._useOffScreenTarget&&(this._context.mainRenderTarget.uniformValues.positionAndSize[2]=
+this._canvas.width,this._context.mainRenderTarget.uniformValues.positionAndSize[3]=this._canvas.height,this._context.bindTexture(this._context.TEXTURE_2D,this._context.mainRenderTarget.texture),this._context.texImage2D(this._context.TEXTURE_2D,0,this._context.RGBA,this._canvas.width,this._canvas.height,0,this._context.RGBA,this._context.UNSIGNED_BYTE,null),this._context.bindTexture(this._context.TEXTURE_2D,null)),this._context.currentImage=null));this._secondaryCanvas&&(this._secondaryCanvas.width=
+Math.round(a*this._resolutionFactor),this._secondaryCanvas.height=Math.round(b*this._resolutionFactor));this._needsFullRedraw=!0;this._smoothing||(this._smoothing=!0,this.setSmoothing(!1))};Layer.prototype.setCanvasClearing=function(a){this._clearCanvas=a};Layer.prototype.getContext=function(){return this._context};Layer.prototype.bringSpriteToFront=function(a){a.setDirtyArea();wade.removeObjectFromArray(a,this._sprites);this._sprites.push(a)};
+Layer.prototype.pushSpriteToBack=function(a){a.setDirtyArea();wade.removeObjectFromArray(a,this._sprites);this._sprites.splice(0,0,a)};Layer.prototype.putSpriteBehindSprite=function(a,b){var c=this._sprites.indexOf(b);wade.removeObjectFromArray(a,this._sprites);this._sprites.splice(c,0,a)};
+Layer.prototype.flipIfNeeded=function(){if(this._needsFlipping&&"2d"==this._renderMode){var a=this._canvas,b=this._context;this._canvas=this._secondaryCanvas;this._context=this._secondaryContext;this._secondaryCanvas=a;this._secondaryContext=b;this._canvas.style.display="inline";this._secondaryCanvas.style.display="none";this._needsFlipping=!1}};
+Layer.prototype.setCanvasStyleSize=function(a,b){if(this._canvas&&(a!=this._canvas.style.width||b!=this._canvas.style.height))this._canvas.style.width=a,this._canvas.style.height=b,this._secondaryCanvas&&(this._secondaryCanvas.style.width=a,this._secondaryCanvas.style.height=b)};Layer.prototype.compareSprites=function(a,b){return this._sortingFunction?this._sortingFunction(a,b):a.id-b.id};
+Layer.prototype.removeCanvases=function(){this._canvas&&(document.getElementById(wade.getContainerName()).removeChild(this._canvas),this._canvas=null);this.removeSecondaryCanvas()};
+Layer.prototype.createCanvas=function(){if(!this._canvas){this._canvas=wade.createCanvas(this._resolutionFactor);this._canvas.id="wade_layer_"+this.id;this._canvas.style.zIndex=-this.id;if("webgl"==this._renderMode){try{this._context=this._canvas.getContext("webgl")||this._canvas.getContext("experimental-webgl"),this._context.isWebGl=!0}catch(a){}this._context?(this._context.clearColor(0,0,0,0),this._context.clear(this._context.COLOR_BUFFER_BIT),this._setupWebGl(this._context,this._canvas)):wade.log("Unable to use WebGL in this browser, falling back to 2d canvas")}if(!this._context||
+"webgl"!=this._renderMode)this._context=this._canvas.getContext("2d"),this._renderMode="2d";this._context.imageSmoothingEnabled=this._context.mozImageSmoothingEnabled=this._context.msImageSmoothingEnabled=this._context.oImageSmoothingEnabled=this._context.webkitImageSmoothingEnabled=this._smoothing;"2d"==this._renderMode&&this._context.save();this._needsFullRedraw=!0}};Layer.prototype.getCanvas=function(){return this._canvas};
+Layer.prototype._updateScaleConversionFactor=function(){var a=wade.getCameraPosition();this._scaleConversionFactor=(this._transform.scale/a.z+1-this._transform.scale)*this._resolutionFactor};Layer.prototype._spriteSorter_bottomToTop=function(a,b){var c=a.getPosition().y+a.getSortPoint().y*a.getSize().y-b.getPosition().y-b.getSortPoint().y*b.getSize().y;return Math.abs(c)<wade.c_epsilon?a.id-b.id:c};
+Layer.prototype._spriteSorter_topToBottom=function(a,b){var c=b.getPosition().y+b.getSortPoint().y*b.getSize().y-a.getPosition().y-a.getSortPoint().y*a.getSize().y;return Math.abs(c)<wade.c_epsilon?a.id-b.id:c};Layer.prototype._initQuadTree=function(){var a=(this._worldBounds.maxX-this._worldBounds.minX)/2,b=(this._worldBounds.maxY-this._worldBounds.minY)/2,c=this._worldBounds.minX+a,d=this._worldBounds.minY+b;this._quadTree=new QuadTreeNode(0,c-1.5*a,d-1.5*b,c+1.5*a,d+1.5*b)};
+Layer.prototype._addSpriteToQuadTree=function(a){if(wade.boxContainsBox(this._quadTree,this._worldBounds))this._quadTree.addObject(a);else{this._initQuadTree();for(a=0;a<this._sprites.length;a++)this._quadTree.addObject(this._sprites[a])}};
+Layer.prototype._joinDirtyAreas=function(){if(!this._dirtyAreas.length)return{minX:0,minY:0,maxX:0,maxY:0};for(var a=wade.getScreenWidth()/2,b=wade.getScreenHeight()/2,a=this.screenBoxToWorld({minX:-a,minY:-b,maxX:a,maxY:b}),b={minX:a.maxX,minY:a.maxY,maxX:a.minX,maxY:a.minY},c=0;c<this._dirtyAreas.length;c++){var d=this._dirtyAreas[c];wade.boxIntersectsBox(a,d)&&wade.expandBox(b,d)}wade.clampBoxToBox(b,a);if(b.maxX<=b.minX||b.maxY<=b.minY)b=0;return b};
+Layer.prototype.createSecondaryCanvas=function(){this._secondaryCanvas||(this._secondaryCanvas=wade.createCanvas(this._resolutionFactor),this._secondaryCanvas.id="wade_layer_"+this.id+"_backBuffer",this._secondaryCanvas.style.zIndex=-this.id,this._secondaryCanvas.style.display="none",this._secondaryContext=this._secondaryCanvas.getContext("2d"),this._secondaryContext.imageSmoothingEnabled=this._secondaryContext.mozImageSmoothingEnabled=this._secondaryContext.msImageSmoothingEnabled=this._secondaryContext.oImageSmoothingEnabled=
+this._secondaryContext.webkitImageSmoothingEnabled=this._smoothing,this._secondaryContext.save())};Layer.prototype.removeSecondaryCanvas=function(){this._secondaryCanvas&&document.getElementById(wade.getContainerName()).removeChild(this._secondaryCanvas);this._secondaryCanvas=null};Layer.prototype.setResolutionFactor=function(a){a!=this._resolutionFactor&&(this._resolutionFactor=a,this._updateScaleConversionFactor(),this.resize(wade.getScreenWidth(),wade.getScreenHeight()))};
+Layer.prototype.getResolutionFactor=function(){return this._resolutionFactor};
+Layer.prototype.setSmoothing=function(a){a!=this._smoothing&&(this._smoothing=a,this._context.restore(),this._context.imageSmoothingEnabled=this._context.mozImageSmoothingEnabled=this._context.msImageSmoothingEnabled=this._context.oImageSmoothingEnabled=this._context.webkitImageSmoothingEnabled=a,this._context.save(),this._secondaryContext&&(this._secondaryContext.restore(),this._secondaryContext.imageSmoothingEnabled=this._secondaryContext.mozImageSmoothingEnabled=this._secondaryContext.msImageSmoothingEnabled=
+this._secondaryContext.oImageSmoothingEnabled=this._secondaryContext.webkitImageSmoothingEnabled=a,this._secondaryContext.save()),this._needsFullRedraw=!0)};Layer.prototype.getSmoothing=function(){return this._smoothing};Layer.prototype.addSpritesInAreaToArray=function(a,b){this._quadTree.addObjectsInAreaToArray(a,b)};Layer.prototype.toDataURL=function(){return this._canvas.toDataURL()};Layer.prototype.forceRedraw=function(){this._needsFullRedraw=!0};
+Layer.prototype.setOpacity=function(a){this._canvas.style.opacity=a;this._secondaryCanvas&&(this._secondaryCanvas.style.opacity=a)};Layer.prototype.getOpacity=function(){return this._canvas.style.opacity};
+Layer.prototype.clear=function(){var a=wade.getScreenWidth()*this._resolutionFactor,b=wade.getScreenHeight()*this._resolutionFactor,c=this._context;"webgl"==this._renderMode?(this._context.clear(this._context.COLOR_BUFFER_BIT),this._secondaryContext&&this._secondaryContext.clear(this._secondaryContext.COLOR_BUFFER_BIT)):(c.save(),c.setTransform(1,0,0,1,0,0),c.clearRect(0,0,Math.round(a),Math.round(b)),c.restore(),this._secondaryContext&&(c=this._secondaryContext,c.save(),c.setTransform(1,0,0,1,0,
+0),c.clearRect(0,0,Math.round(a),Math.round(b)),c.restore()))};Layer.prototype.useQuadtree=function(a){if(a!=this._useQuadtree&&(this._useQuadtree=a)){this._quadTree.empty();for(a=0;a<this._sprites.length;a++)this._addSpriteToQuadTree(this._sprites[a])}};Layer.prototype.isUsingQuadtree=function(){return this._useQuadtree};
+Layer.prototype.set3DTransform=function(a,b,c,d){var e=function(e){if(c){e.style.MozTransition="-moz-transform "+c+"s";e.style.msTransition="-ms-transform "+c+"s";e.style.OTransition="-O-transform "+c+"s";e.style.WebkitTransition="-webkit-transform "+c+"s";e.style.transition="transform "+c+"s";var g=function(){d&&d();d=null;e.removeEventListener("transitionend",g)};e.addEventListener("transitionend",g,!0)}else e.style.MozTransition="-moz-transform 0",e.style.msTransition="-ms-transform 0",e.style.OTransition=
+"-O-transform 0",e.style.WebkitTransition="-webkit-transform 0",e.style.transition="transform 0";e.style.MozTransform=e.style.msTransform=e.style.OTransform=e.style.webkitTransform=e.style.transform=a;e.style.MozTransformOrigin=e.style.msTransformOrigin=e.style.OTransformOrigin=e.style.webkitTransformOrigin=e.style.transformOrigin=b;!c&&d&&d()};this._canvas&&e(this._canvas);this._secondaryCanvas&&e(this._secondaryCanvas)};Layer.prototype.getIndexOfSprite=function(a){return this._sprites.indexOf(a)};
+Layer.prototype.setIndexOfSprite=function(a,b){var c=this._sprites.indexOf(a);if(-1!=c&&b!=c){if(b>c)for(var d=c+1;d<=b;d++)this._sprites[d].id--;else for(d=b;d<c;d++)this._sprites[d].id++;wade.removeObjectFromArrayByIndex(c,this._sprites);if(this._sprites.length>b)return this._sprites.splice(b,0,a),a.id=b+1,b;a.id=this._sprites.length+1;return this._sprites.push(a)-1}return-1};
+Layer.prototype._setupWebGl=function(a,b){var c=a.createShader(a.VERTEX_SHADER);a.shaderSource(c,"attribute vec3 aVertexPosition;\nuniform vec3 uCameraScaleTranslate;\nuniform vec2 uViewportSize;\nuniform vec4 uPositionAndSize;\nuniform vec4 uAnimFrameInfo;\nuniform vec2 uRotationAlpha;\nvarying highp vec4 uvAlpha;\nvoid main(void) {\nfloat s = sin(uRotationAlpha.x);\nfloat c = cos(uRotationAlpha.x);\nvec2 pos = aVertexPosition.xy * uPositionAndSize.zw;\npos = vec2(pos.x * c - pos.y * s, pos.y * c + pos.x * s);\npos += uPositionAndSize.xy * 2.0;\npos *= uCameraScaleTranslate.x;\npos -= uCameraScaleTranslate.yz * 2.0;\npos /= uViewportSize;\npos.y *= -1.0;\nuvAlpha.xy = (aVertexPosition.xy + 1.0) * 0.5;\nuvAlpha.x = (uAnimFrameInfo.z < 0.0)? 1.0 - uvAlpha.x : uvAlpha.x;\nuvAlpha.y = (uAnimFrameInfo.w < 0.0)? 1.0 - uvAlpha.y : uvAlpha.y;\nuvAlpha.xy *= abs(uAnimFrameInfo.zw);\nuvAlpha.xy += uAnimFrameInfo.xy;\nuvAlpha.z = uRotationAlpha.y;\ngl_Position = vec4(pos, 0.0, 1.0);\n}");a.compileShader(c);
+if(a.getShaderParameter(c,a.COMPILE_STATUS)){a.defaultVertexShader=c;var d=a.createShader(a.FRAGMENT_SHADER);a.shaderSource(d,"varying highp vec4 uvAlpha;\nuniform sampler2D uDiffuseSampler;\nvoid main(void) {\nhighp vec4 color = texture2D(uDiffuseSampler, uvAlpha.xy);\ncolor.w *= uvAlpha.z;\ngl_FragColor = color;\n}");a.compileShader(d);if(a.getShaderParameter(d,a.COMPILE_STATUS)){a.defaultPixelShader=d;var e=a.createProgram();a.attachShader(e,c);a.attachShader(e,d);a.linkProgram(e);a.getProgramParameter(e,
+a.LINK_STATUS)?(e.vertexPositionAttribute=a.getAttribLocation(e,"aVertexPosition"),a.defaultShaderProgram=e,a.useProgram(e),a.uniforms={},a.uniforms.uCameraScaleTranslate=a.getUniformLocation(e,"uCameraScaleTranslate"),a.uniforms.uViewportSize=a.getUniformLocation(e,"uViewportSize"),a.uniforms.uPositionAndSize=a.getUniformLocation(e,"uPositionAndSize"),a.uniforms.uAnimFrameInfo=a.getUniformLocation(e,"uAnimFrameInfo"),a.uniforms.uRotationAlpha=a.getUniformLocation(e,"uRotationAlpha"),a.uniforms.uDiffuseSampler=
+a.getUniformLocation(e,"uDiffuseSampler"),c=a.createBuffer(),a.enableVertexAttribArray(e.vertexPositionAttribute),a.bindBuffer(a.ARRAY_BUFFER,c),a.bufferData(a.ARRAY_BUFFER,new Float32Array([1,1,0,-1,1,0,1,-1,0,-1,-1,0]),a.STATIC_DRAW),a.vertexAttribPointer(e.vertexPositionAttribute,3,a.FLOAT,!1,0,0),a.activeTexture(a.TEXTURE0),a.uniform1i(a.uniforms.uDiffuseSampler,0),a.disable(a.DEPTH_TEST),a.enable(a.BLEND),a.blendFuncSeparate(a.SRC_ALPHA,a.ONE_MINUS_SRC_ALPHA,a.ONE,a.ONE_MINUS_SRC_ALPHA),a.pixelStorei(a.UNPACK_PREMULTIPLY_ALPHA_WEBGL,
+!1),a.textures={},a.setTextureImage=function(b,c){var d=b.imageName;if(a.currentImage!=d){if(a.textures[d])c||a.bindTexture(a.TEXTURE_2D,a.textures[d]);else{var e=a.createTexture();a.bindTexture(a.TEXTURE_2D,e);a.texParameteri(a.TEXTURE_2D,a.TEXTURE_MIN_FILTER,a.LINEAR);a.texParameteri(a.TEXTURE_2D,a.TEXTURE_MAG_FILTER,a.LINEAR);a.texParameteri(a.TEXTURE_2D,a.TEXTURE_WRAP_S,a.CLAMP_TO_EDGE);a.texParameteri(a.TEXTURE_2D,a.TEXTURE_WRAP_T,a.CLAMP_TO_EDGE);a.texImage2D(a.TEXTURE_2D,0,a.RGBA,a.RGBA,a.UNSIGNED_BYTE,
+b);a.textures[d]=e;wade.addImageUser(d,this);c&&(a.bindTexture(a.TEXTURE_2D,null),a.currentImage=null)}c||(a.currentImage=d)}},a.setActiveImage=function(b){a.bindTexture(a.TEXTURE_2D,a.textures[b]);a.texImage2D(a.TEXTURE_2D,0,a.RGBA,a.RGBA,a.UNSIGNED_BYTE,wade.getImage(b))},a.onImageUnloaded=function(b){a.deleteTexture(a.textures[b])},a.currentImage=null,this._useOffScreenTarget&&(a.mainRenderTarget=a.createFramebuffer(),a.bindFramebuffer(a.FRAMEBUFFER,a.mainRenderTarget),a.disable(a.DEPTH_TEST),
+a.mainRenderTarget.texture=a.createTexture(),a.bindTexture(a.TEXTURE_2D,a.mainRenderTarget.texture),a.texParameteri(a.TEXTURE_2D,a.TEXTURE_MIN_FILTER,a.LINEAR),a.texParameteri(a.TEXTURE_2D,a.TEXTURE_MAG_FILTER,a.LINEAR),a.texParameteri(a.TEXTURE_2D,a.TEXTURE_WRAP_S,a.CLAMP_TO_EDGE),a.texParameteri(a.TEXTURE_2D,a.TEXTURE_WRAP_T,a.CLAMP_TO_EDGE),a.texImage2D(a.TEXTURE_2D,0,a.RGBA,b.width,b.height,0,a.RGBA,a.UNSIGNED_BYTE,null),a.framebufferTexture2D(a.FRAMEBUFFER,a.COLOR_ATTACHMENT0,a.TEXTURE_2D,a.mainRenderTarget.texture,
+0),a.bindTexture(a.TEXTURE_2D,null),a.bindFramebuffer(a.FRAMEBUFFER,null),a.mainRenderTarget.uniformValues={positionAndSize:new Float32Array([0,0,b.width,b.height]),animFrameInfo:new Float32Array([0,0,1,-1]),rotationAlpha:new Float32Array([0,1])}),a.globalAlpha=1,this._f32ViewportSize[0]=this._canvas.width,this._f32ViewportSize[1]=this._canvas.height,a.viewport(0,0,b.width,b.height),a.uniform2fv(a.uniforms.uViewportSize,this._f32ViewportSize)):wade.log("Unable to initialize WebGl shaders")}else wade.log("An error occurred compiling the pixel shader: "+
+a.getShaderInfoLog(d))}else wade.log("An error occurred compiling the vertex shader: "+a.getShaderInfoLog(c))};
+var resetContext=function(a){var b=a.getParameter(a.MAX_VERTEX_ATTRIBS),c=a.createBuffer();a.bindBuffer(a.ARRAY_BUFFER,c);for(var d=0;d<b;++d)a.disableVertexAttribArray(d),a.vertexAttribPointer(d,4,a.FLOAT,!1,0,0),a.vertexAttrib1f(d,0);a.deleteBuffer(c);b=a.getParameter(a.MAX_TEXTURE_IMAGE_UNITS);for(d=0;d<b;++d)a.activeTexture(a.TEXTURE0+d),a.bindTexture(a.TEXTURE_CUBE_MAP,null),a.bindTexture(a.TEXTURE_2D,null);a.activeTexture(a.TEXTURE0);a.useProgram(null);a.bindBuffer(a.ARRAY_BUFFER,null);a.bindBuffer(a.ELEMENT_ARRAY_BUFFER,
+null);a.bindFramebuffer(a.FRAMEBUFFER,null);a.bindRenderbuffer(a.RENDERBUFFER,null);a.disable(a.BLEND);a.disable(a.CULL_FACE);a.disable(a.DEPTH_TEST);a.disable(a.DITHER);a.disable(a.SCISSOR_TEST);a.blendColor(0,0,0,0);a.blendEquation(a.FUNC_ADD);a.blendFunc(a.ONE,a.ZERO);a.clearColor(0,0,0,0);a.clearDepth(1);a.clearStencil(-1);a.colorMask(!0,!0,!0,!0);a.cullFace(a.BACK);a.depthFunc(a.LESS);a.depthMask(!0);a.depthRange(0,1);a.frontFace(a.CCW);a.hint(a.GENERATE_MIPMAP_HINT,a.DONT_CARE);a.lineWidth(1);
+a.pixelStorei(a.PACK_ALIGNMENT,4);a.pixelStorei(a.UNPACK_ALIGNMENT,4);a.pixelStorei(a.UNPACK_FLIP_Y_WEBGL,!1);a.pixelStorei(a.UNPACK_PREMULTIPLY_ALPHA_WEBGL,!1);a.UNPACK_COLORSPACE_CONVERSION_WEBGL&&a.pixelStorei(a.UNPACK_COLORSPACE_CONVERSION_WEBGL,a.BROWSER_DEFAULT_WEBGL);a.polygonOffset(0,0);a.sampleCoverage(1,!1);a.scissor(0,0,a.canvas.width,a.canvas.height);a.stencilFunc(a.ALWAYS,0,4294967295);a.stencilMask(4294967295);a.stencilOp(a.KEEP,a.KEEP,a.KEEP);a.viewport(0,0,a.canvas.width,a.canvas.height);
+a.clear(a.COLOR_BUFFER_BIT|a.DEPTH_BUFFER_BIT|a.STENCIL_BUFFER_BIT);for(var e in a.textures)a.textures.hasOwnProperty(e)&&(wade.removeImageUser(e,a),a.deleteTexture(a.textures[e]));delete a.textures};
+Layer.prototype.setRenderMode=function(a,b){var c=b&&b.offScreenTarget;if(a!=this._renderMode||c!=this._useOffScreenTarget)"webgl"==this._renderMode&&this._context&&resetContext(this._context),this._renderMode=a,this._useOffScreenTarget=c,this.removeCanvases(),this.createCanvas(),wade.isDoubleBufferingEnabled()&&this.createSecondaryCanvas()};Layer.prototype.getRenderMode=function(){return this._renderMode};
+function QuadTreeNode(a,b,c,d,e){this._level=a;this.minX=b;this.minY=c;this.maxX=d;this.maxY=e;this._children=[];this._objects=[]}QuadTreeNode.prototype.c_idealObjectCountPerLevel=1;QuadTreeNode.prototype.c_maxLevels=8;
+QuadTreeNode.prototype.addObject=function(a){if(!this._insertInChild(a)&&(a.quadTreeNode=this,this._objects.push(a),this._objects.length>this.c_idealObjectCountPerLevel&&!this._children.length&&this._level<this.c_maxLevels)){var a=this.minX+(this.maxX-this.minX)/2,b=this.minY+(this.maxY-this.minY)/2;this._children.push(new QuadTreeNode(this._level+1,this.minX,this.minY,a,b));this._children.push(new QuadTreeNode(this._level+1,a,this.minY,this.maxX,b));this._children.push(new QuadTreeNode(this._level+
+1,this.minX,b,a,this.maxY));this._children.push(new QuadTreeNode(this._level+1,a,b,this.maxX,this.maxY));for(a=this._objects.length-1;0<=a;a--)this._insertInChild(this._objects[a])&&this.removeObject(this._objects[a])}};QuadTreeNode.prototype.removeObject=function(a){wade.removeObjectFromArray(a,this._objects)};
+QuadTreeNode.prototype.getObjects=function(a){if(wade.boxIntersectsBox(this,a)){for(var b=[].concat(this._objects),c=0;c<this._children.length;c++)b=b.concat(this._children[c].getObjects(a));return b}return[]};
+QuadTreeNode.prototype.addObjectsInAreaToArray=function(a,b){if(wade.boxIntersectsBox(this,a)){for(var c=0;c<this._objects.length;c++)wade.boxIntersectsBox(a,this._objects[c].boundingBox)&&b.push(this._objects[c]);for(c=0;c<this._children.length;c++)this._children[c].addObjectsInAreaToArray(a,b)}};QuadTreeNode.prototype.countObjects=function(a){if(wade.boxIntersectsBox(this,a)){for(var b=this._objects.length,c=0;c<this._children.length;c++)b+=this._children[c].countObjects(a);return b}return 0};
+QuadTreeNode.prototype.flagObjects=function(a,b){if(wade.boxIntersectsBox(this,a)){for(var c=0;c<this._objects.length;c++)wade.boxIntersectsBox(a,this._objects[c].boundingBox)&&(this._objects[c][b]=1);for(c=0;c<this._children.length;c++)this._children[c].flagObjects(a,b)}};QuadTreeNode.prototype.empty=function(){for(var a=this._objects.length=0;a<this._children.length;a++)this._children[a].empty()};
+QuadTreeNode.prototype._insertInChild=function(a){for(var b=0;b<this._children.length;b++)if(wade.boxContainsBox(this._children[b],a.boundingBox))return this._children[b].addObject(a),!0;return!1};
+function Renderer(){var a={},b=[],c=0,d=0,e=0,f="full",g=1920,i=1080,l=0,j=0,h=0,k=0,n=1,m={},p=!0,q=!1,A=0,v=0;this._createLayerIfNeeded=function(c){a[c]||(a[c]=new Layer(c),p||a[c].setSmoothing(p),b.push(a[c]),b.sort(this._layerSorter))};this.removeLayer=function(c){a[c]&&(wade.removeObjectFromArray(a[c],b),b.sort(this._layerSorter),a[c].removeCanvases(),a[c]=null)};this.init=function(a){e=a;a=$("#"+wade.getContainerName());c=parseInt(a.attr("width"));d=parseInt(a.attr("height"))};this.draw=function(a){var h,
+r,k;if(e.getSimulationDirtyState()||a){wade.numDrawCalls=0;var n=wade.logDrawTime&&console.time&&console.timeEnd&&0.02>Math.random();n&&console.time("Draw");var m=document.getElementById(wade.getContainerName()),p=wade.getForcedOrientation();h=wade.getContainerWidth();r=wade.getContainerHeight();var C=q;switch(p){case "landscape":r>h&&(q=!q);break;case "portrait":h>r&&(q=!q);break;default:q=!1}if(q!=C){var y=q?"rotateZ(90deg)":"translate3d(0, 0, 0)";m.style.MozTransform=y;m.style.msTransform=y;m.style.OTransform=
+y;m.style.webkitTransform=y;m.style.transform=y}y=!1;h=wade.getContainerWidth();r=wade.getContainerHeight();var s=A!=h||v!=r;if(s){var D={width:h,height:r};e.processEvent("onContainerResize",D)||wade.app.onContainerResize&&wade.app.onContainerResize(D)}var w,z;if("full"==f){var D=c,F=d;c=Math.max(Math.min(h,g),l);d=Math.max(Math.min(r,i),j);c>h||d>r?c/h>d/r?(d=Math.max(Math.min(Math.min(d,r)*c/h,i),j),w=h+"px",z=Math.floor(h*d/c)+"px"):(c=Math.max(Math.min(Math.min(c,h)*d/r,g),l),w=Math.floor(r*c/
+d)+"px",z=r+"px"):c<h&&d<r?c/h>d/r?(z=Math.floor(h*d/c)+"px",w=h+"px"):(z=r+"px",w=Math.floor(r*c/d)+"px"):(z=d+"px",w=c+"px");if(D!=c||F!=d)m.setAttribute("width",c.toString()),m.setAttribute("height",d.toString()),e.onResize(D,F,c,d),y=!0}else if("stretchToFit"==f)h/c>r/d?(w=Math.floor(r*c/d)+"px",z=h+"px"):(w=h+"px",z=Math.floor(h*d/c)+"px");else if("container"==f&&(D=c,F=d,c=m.getAttribute("width"),d=m.getAttribute("height"),y=D!=c||F!=d))w=c+"px",z=d+"px",k=!0,e.onResize(D,F,c,d);if(k=k||w&&
+z&&(w!=m.style.width||z!=m.style.height)||q!=C||q&&s)m.style.width=w,m.style.height=z,q?(C=$(m),"landscape"==p?(p=(C.outerWidth(!0)-C.innerWidth())/2,m.style.marginLeft=p+"px",m.style.marginTop="auto"):"portrait"==p&&(p=(C.outerHeight(!0)-C.innerHeight())/2,m.style.marginTop=p+"px",m.style.marginLeft="auto")):m.style.margin="auto";v=r;A=h;for(h=0;h<b.length;h++)r=b[h],1!=r.getResolutionFactor()&&w&&z&&w==z&&"auto"==w?r.setCanvasStyleSize(m.getAttribute("width")+"px",m.getAttribute("height")+"px"):
+k&&r.setCanvasStyleSize(w,z),y&&r.resize(c,d),(!a||!("number"==typeof a&&a!=r.id||a.indexOf&&-1==a.indexOf(r.id)))&&r.draw();if(!y)for(h=0;h<b.length;h++)r=b[h],r.flipIfNeeded();n&&(console.timeEnd("Draw"),console.log("Number of draw calls: "+wade.numDrawCalls));e.clearSimulationDirtyState()}};this.addSprite=function(a){a.getLayer().addSprite(a)};this.removeSprite=function(a){a.getLayer().removeSprite(a)};this._layerSorter=function(a,b){return b.id-a.id};this.getLayer=function(b){this._createLayerIfNeeded(b);
+return a[b]};this.getLayerSorting=function(b){return a[b].getSorting()};this.setLayerSorting=function(b,c){this._createLayerIfNeeded(b);a[b].setSorting(c)};this.setLayerTransform=function(b,c,d){this._createLayerIfNeeded(b);a[b].setTransform(c,d)};this.setLayerResolutionFactor=function(b,c){this._createLayerIfNeeded(b);a[b].setResolutionFactor(c)};this.getLayerResolutionFactor=function(b){return a[b]&&a[b].getResolutionFactor()};this.setResolutionFactor=function(a){for(var c=0;c<b.length;c++)b[c].setResolutionFactor(a)};
+this.setLayerSmoothing=function(b,c){this._createLayerIfNeeded(b);a[b].setSmoothing(c)};this.getLayerSmoothing=function(b){return a[b]&&a[b].getSmoothing()};this.setSmoothing=function(a){p=a;for(a=0;a<b.length;a++)b[a].setSmoothing(p)};this.getSmoothing=function(){return p};this.getScreenWidth=function(){return c};this.getScreenHeight=function(){return d};this.setScreenSize=function(a,e){if(a!=c||e!=d){c=a;d=e;for(var g=0;g<b.length;g++)b[g].resize(c,d)}};this.getMaxScreenWidth=function(){return g};
+this.getMaxScreenHeight=function(){return i};this.setMaxScreenSize=function(a,b){g=a;i=b;if(c>g||d>i)e.setSimulationDirtyState(),this.draw()};this.getMinScreenWidth=function(){return l};this.getMinScreenHeight=function(){return j};this.setMinScreenSize=function(a,b){l=a;j=b;if(c<l||d<j)e.setSimulationDirtyState(),this.draw()};this.setCanvasClearing=function(b,c){this._createLayerIfNeeded(b);a[b].setCanvasClearing(c)};this.setWindowMode=function(a){f=a};this.getWindowMode=function(){return f};this.getCameraPosition=
+function(){return{x:h,y:k,z:n}};this.setCameraPosition=function(a){h=a.x;k=a.y;n=a.z;for(var c=0;c<b.length;c++)b[c].onCameraPositionChanged(a)};this.worldPositionToScreen=function(a,b){return this.getLayer(a).worldPositionToScreen(b)};this.worldDirectionToScreen=function(a,b){return this.getLayer(a).worldDirectionToScreen(b)};this.worldBoxToScreen=function(a,b){return this.getLayer(a).worldBoxToScreen(b)};this.worldUnitToScreen=function(a){return this.getLayer(a).worldUnitToScreen()};this.screenPositionToWorld=
+function(a,b){return this.getLayer(a).screenPositionToWorld(b)};this.screenDirectionToWorld=function(a,b){return this.getLayer(a).screenDirectionToWorld(b)};this.screenUnitToWorld=function(a){return this.getLayer(a).screenUnitToWorld()};this.screenBoxToWorld=function(a,b){return this.getLayer(a).screenBoxToWorld(b)};this.worldPositionToCanvas=function(a,b){return this.getLayer(a).worldPositionToCanvas(b)};this.worldDirectionToCanvas=function(a,b){return this.getLayer(a).worldDirectionToCanvas(b)};
+this.worldBoxToCanvas=function(a,b){return this.getLayer(a).worldBoxToCanvas(b)};this.worldUnitToCanvas=function(a){return this.getLayer(a).worldUnitToCanvas()};this.canvasPositionToWorld=function(a,b){return this.getLayer(a).canvasPositionToWorld(b)};this.canvasDirectionToWorld=function(a,b){return this.getLayer(a).canvasDirectionToWorld(b)};this.canvasUnitToWorld=function(a){return this.getLayer(a).canvasUnitToWorld()};this.canvasBoxToWorld=function(a,b){return this.getLayer(a).canvasBoxToWorld(b)};
+this.removeCanvases=function(){for(var a=0;a<b.length;a++)b[a].removeCanvases()};this.getNumExistingLayers=function(){return b.length};this.recreateCanvases=function(){for(var a=0;a<b.length;a++)b[a].createCanvas()};this.enableDoubleBuffering=function(a){if(a)for(a=0;a<b.length;a++)b[a].createSecondaryCanvas();else for(a=0;a<b.length;a++)b[a].removeSecondaryCanvas()};this.isScreenRotated=function(){return q};this.addSpritesInAreaToArray=function(c,d,e){if("undefined"!=typeof e)a[e].addSpritesInAreaToArray(c,
+d);else for(e=0;e<b.length;e++)b[e].addSpritesInAreaToArray(c,d)};this.addObjectsInAreaToArray=function(a,b,c){var d=[];this.addSpritesInAreaToArray(a,d,c);for(a=0;a<d.length;a++)c=d[a].getSceneObject(),-1==b.lastIndexOf(c)&&b.push(c)};this.addSpritesInScreenAreaToArray=function(a,c){for(var d=0;d<b.length;d++){var e=wade.screenBoxToWorld(b[d].id,a);b[d].addSpritesInAreaToArray(e,c)}};this.addObjectsInScreenAreaToArray=function(a,b){var c=[];this.addSpritesInScreenAreaToArray(a,c);for(var d=0;d<c.length;d++){var e=
+c[d].getSceneObject();-1==b.lastIndexOf(e)&&b.push(e)}};this.forceRedraw=function(a){if(a)b[a].forceRedraw();else for(a=0;a<b.length;a++)b[a].forceRedraw()};this.getActiveLayerIds=function(){for(var a=[],c=0;c<b.length;c++)a.push(b[c].id);return a};this.addImageUser=function(a,b){m[a]||(m[a]=[]);m[a].push(b)};this.removeImageUser=function(a,b){m[a]&&wade.removeObjectFromArray(b,m[a])};this.removeAllImageUsers=function(a){m[a]&&(m[a].length=0)};this.getImageUsers=function(a){return m[a]};this.updateImageUsers=
+function(a){var b=m[a];if(b)for(var c=0;c<b.length;c++)b[c].setDirtyArea&&b[c].setDirtyArea(),b[c].setActiveImage(a)};this.getLayerSettings=function(){for(var a=[],c=0;c<b.length;c++){var d=b[c];a[d.id]={scaleFactor:d.getScaleFactor(),translateFactor:d.getTranslateFactor(),renderMode:d.getRenderMode(),useQuadtree:d.isUsingQuadtree(),resolutionFactor:d.getResolutionFactor()}}return a}}
+function SceneManager(){var a=[],b={onMouseDown:[],onMouseUp:[],onMouseMove:[],onMouseWheel:[],onClick:[],onMouseIn:[],onMouseOut:[],onKeyDown:[],onKeyUp:[],onKeyPress:[],onAppTimer:[],onSimulationStep:[],onUpdate:[],onResize:[],onContainerResize:[],onDeviceMotion:[],onDeviceOrientation:[],onSwipeLeft:[],onSwipeRight:[],onSwipeUp:[],onSwipeDown:[],onBlur:[],onFocus:[]},c=wade.cloneObject(b),d=0,e=!1,f={};this.init=function(){this.renderer=new Renderer;this.renderer.init(this)};this.addSceneObject=
+function(c,d,e){a.push(c);c.autoListen=d;c.addToSceneParams=e?jQuery.extend(!0,{},e):null;c.addSpritesToRenderer(this.renderer);this.addNamedObject(c);if(d&&!c.isTemplate())for(var f in b)if(b.hasOwnProperty(f)){var h=c[f];if(!h)for(var k=c.getBehaviors(),d=0;d<k.length&&!h;d++)h=k[d][f];h&&wade.addEventListener(c,f)}if(c.isTemplate()){f=c.getSpriteCount();for(d=0;d<f;d++)c.getSprite(d).setVisible(!1)}c.processEvent("onAddToScene",e)};this.addNamedObject=function(a){var b=a.getName();b&&(f[b]?wade.log("Warning: a scene object named "+
+b+" is already present in the scene"):f[b]=a)};this.removeNamedObject=function(a){a&&delete f[a]};this.changeObjectName=function(a,b){this.removeNamedObject(b);this.addNamedObject(a)};this.getObjectByName=function(a){return f[a]};this.getSceneObjects=function(b,c){if(b){var d=[],e;if("undefined"==typeof c)for(e=0;e<a.length;e++)"undefined"!=typeof a[e][b]&&d.push(a[e]);else for(e=0;e<a.length;e++)a[e][b]==c&&d.push(a[e]);return d}return wade.cloneArray(a)};this.removeEventListener=function(a,c){wade.removeObjectFromArray(a,
+b[c])};this.removeGlobalEventListener=function(a,b){wade.removeObjectFromArray(a,c[b])};this.removeSceneObject=function(d){if(d){d.processEvent("onRemoveFromScene");wade.removeObjectFromArray(d,a);var e=d.getName();e&&this.removeNamedObject(e);for(var f in b)b.hasOwnProperty(f)&&(b[f].length&&this.removeEventListener(d,f),c[f].length&&this.removeGlobalEventListener(d,f));d.unscheduleAll();d.removeSpritesFromRenderer()}};this.clear=function(){for(var b=a.length-1;0<=b;b--)this.removeSceneObject(a[b])};
+this.step=function(){var a=wade.logSimulationTime&&console.time&&console.timeEnd&&0.02>Math.random();a&&console.time("Simulation");for(var c=b.onSimulationStep,f=0;f<c.length;f++)c[f].step();d+=wade.c_timeStep;this.processEvent("onUpdate");a&&console.timeEnd("Simulation");e=!0};this.addEventListener=function(a,d){!b[d]&&(b[d]=[]);!c[d]&&(c[d]=[]);b[d].push(a)};this.addGlobalEventListener=function(a,d){!b[d]&&(b[d]=[]);!c[d]&&(c[d]=[]);c[d].push(a)};this.getEventListeners=function(a,c){var d=[],e,
+f;switch(a){case "onMouseDown":case "onMouseUp":case "onMouseMove":case "onMouseWheel":case "onClick":case "onMouseIn":case "onMouseOut":case "onSwipeLeft":case "onSwipeRight":case "onSwipeUp":case "onSwipeDown":var k={x:c.screenPosition.x,y:c.screenPosition.y};for(e=b[a].length-1;0<=e;e--){f=b[a][e];var n=f.getSpriteAtPosition(k);n.isPresent&&(f.eventResponse={spriteIndex:n.spriteIndex,position:n.relativeWorldPosition,screenPosition:k,topLayer:n.topLayer,button:c.button,value:c.value},d.push(f))}d.sort(this.eventListenersSorter);
+break;default:for(e=b[a].length-1;0<=e;e--)f=b[a][e],f.eventResponse=c,d.push(f)}return d};this.eventListenersSorter=function(a,b){return a.eventResponse.topLayer-b.eventResponse.topLayer||-wade.getLayer(a.eventResponse.topLayer).compareSprites(a.getSprite(a.eventResponse.spriteIndex),b.getSprite(b.eventResponse.spriteIndex))};this.isObjectListeneningForEvent=function(a,c){var d=b[c];return!!(d&&0<=d.indexOf(a))};this.onResize=function(b,c,d,e){for(var f=0;f<a.length;f++){var k=a[f],n=k.getPosition(),
+m=k.getAlignment(),p=0,q=0;switch(m.x){case "right":p=(d-b)/2;break;case "left":p=-(d-b)/2}switch(m.y){case "top":q=-(e-c)/2;break;case "bottom":q=(e-c)/2}k.setPosition(n.x+p,n.y+q);if(k.isMoving()&&(p||q))(n=k.getTargetPosition())&&k.moveTo(n.x+p,n.y+q,k.getMovementSpeed())}b={width:d,height:e};this.processEvent("onResize",b)||wade.app.onResize&&wade.app.onResize(b)};this.processEvent=function(a,b){for(var d=this.getEventListeners(a,b),e=!1,f=0;f<d.length;f++){var k=d[f];if(k.processEvent(a,k.eventResponse)){e=
+!0;break}}d=b&&wade.cloneObject(b)||{};d.global=!0;for(f=0;f<c[a].length;f++)c[a][f].processEvent(a,d);return e};this.appTimerEvent=function(){for(var a=0;a<b.onAppTimer.length;a++)b.onAppTimer[a].processEvent("onAppTimer")};this.updateMouseInOut=function(a,b){var c,d,e="undefined"!=typeof a.x;if(e){var f=this.getEventListeners("onMouseOut",{screenPosition:a});for(c=0;c<f.length&&!(d=f[c],!d.getSpriteAtPosition(b).isPresent&&d.processEvent("onMouseOut",d.eventResponse));c++);}f=this.getEventListeners("onMouseIn",
+{screenPosition:b});for(c=0;c<f.length&&!(d=f[c],(!e||!d.getSpriteAtPosition(a).isPresent)&&d.processEvent("onMouseIn",d.eventResponse));c++);};this.getAppTime=function(){return d};this.getSimulationDirtyState=function(){return e};this.clearSimulationDirtyState=function(){e=!1};this.setSimulationDirtyState=function(){e=!0};this.draw=function(a){this.renderer.draw(a)};this.exportSceneObjects=function(b,c){for(var d=[],e=0;e<a.length;e++)(!b||!(-1!=b.indexOf(a[e])||a[e].getName()&&-1!=b.indexOf(a[e].getName())))&&
+d.push(a[e].serialize(!1,null,c));return d};this.getSceneObjectIndex=function(b){return a.indexOf(b)};this.setSceneObjectIndex=function(b,c){var d=a.indexOf(b);return-1!=d&&c!=d?(wade.removeObjectFromArrayByIndex(d,a),a.length>c?(a.splice(c,0,b),c):a.push(b)-1):-1}}
+function SceneObject(a,b,c,d,e){this._behaviors=[];this._spriteOffsets=[];this._moving=!1;this._linearVelocity={x:0,y:0};this._animationsPlaying=this._targetPosition=0;this._inScene=!1;this._angularVelocity=this._renderer=0;this._isTemplate=!1;this._rotationTarget={valid:!1,value:0};this._timeouts=[];this.addToSceneParams=null;this.autoListen=!1;var f="object"==typeof a&&!$.isArray(a)&&!(a instanceof Sprite)&&!(a instanceof TextSprite)&&a;if(f){this._position={x:a.position&&a.position.x||0,y:a.position&&
+a.position.y||0};this._rotation=a.rotation||0;this._alignment={x:a.alignment&&a.alignment.x||0,y:a.alignment&&a.alignment.y||0};this._name=a.name;this._isTemplate=a.isTemplate;this._behaviorClasses=[];this._sprites=[];if((b=wade.isDebugMode())&&!this._name)wade.unnamedSceneObjectsCount=(wade.unnamedSceneObjectsCount||0)+1,this._name="Unnamed_Scene_Object_"+wade.unnamedSceneObjectsCount;if(a.behaviors)for(c=0;c<a.behaviors.length;c++)a.behaviors[c].name&&this._behaviorClasses.push(window[a.behaviors[c].name]);
+if(a.sprites)for(c=0;c<a.sprites.length;c++)d="TextSprite"==a.sprites[c].type?new TextSprite(a.sprites[c]):new Sprite(a.sprites[c]),this.addSprite(d,a.spriteOffsets&&a.spriteOffsets[c]);if(a.functions){var c="",g;for(g in a.functions)if(a.functions.hasOwnProperty(g))if(b)c+="\nthis."+g+" = "+a.functions[g];else try{eval("this."+g+" = "+a.functions[g])}catch(i){wade.log("Script error in "+this._name+"."+g+": "+i.message)}if(b){c+="\n//# sourceURL=SceneObject_"+this._name+".js";try{eval(c)}catch(l){for(g in a.functions)if(a.functions.hasOwnProperty(g))try{eval("this."+
+g+" = "+a.functions[g])}catch(j){wade.log("Script error in "+this._name+"."+g+": "+j.message)}}}}if(a.properties)for(var h in a.properties)if(a.properties.hasOwnProperty(h))try{this[h]=JSON.parse(JSON.stringify(a.properties[h]))}catch(k){}}else this._position={x:c?c:0,y:d?d:0},this._behaviorClasses=b,this._sprites=a,this._alignment={x:0,y:0},this._rotation=0,this._name=e||"";if(this._sprites){jQuery.isArray(this._sprites)||(this._sprites=[this._sprites]);for(g=0;g<this._sprites.length;g++)this._sprites[g].setSceneObject(this),
+(b=this._spriteOffsets[g])?(b.originalX=b.x=b.x||0,b.originalY=b.y=b.y||0,b.angle=b.angle||0,this._rotation&&wade.vec2.rotateInPlace(b,this._rotation),this._sprites[g].setPosition(this._position.x+b.x,this._position.y+b.y),this._sprites[g].setRotation(this._rotation+b.angle)):(this._sprites[g].setPosition(this._position),this._spriteOffsets.push({x:0,y:0,originalX:0,originalY:0,angle:0}),this._sprites[g].setRotation(this._rotation)),this._sprites[g].getAnimation&&this._sprites[g].getAnimation().isPlaying()&&
+this._animationsPlaying++}else this._sprites=[];if(this._behaviorClasses){jQuery.isArray(this._behaviorClasses)||(this._behaviorClasses=[this._behaviorClasses]);for(g=0;g<this._behaviorClasses.length;g++)this._behaviors[g]=new this._behaviorClasses[g],this._behaviors[g].owner=this}if(f){"undefined"!=typeof a.visible&&this.setVisible(a.visible);if(a.behaviors)for(g=0;g<a.behaviors.length;g++)if(a.behaviors[g].properties)for(h in a.behaviors[g].properties)a.behaviors[g].properties.hasOwnProperty(h)&&
+(this._behaviors[g][h]=a.behaviors[g].properties[h]);a.addToScene&&(a=a.addToScene,wade.addSceneObject(this,a.autoListen,a.params))}}SceneObject.prototype.setPosition=function(a,b){var c,d;"object"==typeof a?(c=a.x,d=a.y):(c=a,d=b);this._position.x=c;this._position.y=d;for(c=0;c<this._sprites.length;c++)this._sprites[c].setPosition(this._position.x+this._spriteOffsets[c].x,this._position.y+this._spriteOffsets[c].y)};SceneObject.prototype.getPosition=function(){return{x:this._position.x,y:this._position.y}};
+SceneObject.prototype.setRotation=function(a){this._rotation=a;for(var b=0;b<this._sprites.length;b++){var c=this._spriteOffsets[b];this._sprites[b].setRotation(a+c.angle);if(c.originalX||c.originalY){var d=wade.vec2.rotate({x:c.originalX,y:c.originalY},a);c.x=d.x;c.y=d.y;this._sprites[b].setPosition(this._position.x+c.x,this._position.y+c.y)}}};SceneObject.prototype.getRotation=function(){return this._rotation};
+SceneObject.prototype.moveTo=function(a,b,c){this._targetPosition={x:a,y:b};var d=a-this._position.x,e=b-this._position.y,f=Math.sqrt(d*d+e*e);f>c*wade.c_timeStep?(this._linearVelocity={x:d*c/f,y:e*c/f},!this._animationsPlaying&&(!this._moving&&!this._angularVelocity)&&wade.simulateSceneObject(this,!0),this._moving=!0):(this.setPosition(a,b),this.stopMoving())};
+SceneObject.prototype.rotateTo=function(a,b){this._rotation%=6.28318530718;a%=6.28318530718;0>a&&(a+=6.28318530718);var c=(a-this._rotation)%6.28318530718;0>c&&(c+=6.28318530718);c>b*wade.c_timeStep?(this.setAngularVelocity(b),this._rotationTarget.value=a,this._rotationTarget.valid=!0):(this.setRotation(a),this.setAngularVelocity(0))};
+SceneObject.prototype.stopMoving=function(){!this._animationsPlaying&&(!this._angularVelocity&&this._moving)&&wade.simulateSceneObject(this,!1);this._moving=!1;this._targetPosition=0;this._linearVelocity.x=this._linearVelocity.y=0;this.processEvent("onMoveComplete")};
+SceneObject.prototype.step=function(){if(this._moving)if(this._targetPosition){var a=this._position.x-this._targetPosition.x,b=this._position.y-this._targetPosition.y;(this._linearVelocity.x*this._linearVelocity.x+this._linearVelocity.y*this._linearVelocity.y)*wade.c_timeStep*wade.c_timeStep<a*a+b*b?this.setPosition(this._position.x+this._linearVelocity.x*wade.c_timeStep,this._position.y+this._linearVelocity.y*wade.c_timeStep):(this.setPosition(this._targetPosition.x,this._targetPosition.y),this.stopMoving())}else this.setPosition(this._position.x+
+this._linearVelocity.x*wade.c_timeStep,this._position.y+this._linearVelocity.y*wade.c_timeStep);if(a=this._angularVelocity){var a=a*wade.c_timeStep,c=this._rotation,b=c+a;if(this._rotationTarget.valid){var d=this._rotationTarget.value,c=d-c;0>c&&(c+=6.28318530718);Math.abs(c)<Math.abs(a)?(this.setRotation(d),this.setAngularVelocity(0),this.processEvent("onRotationComplete")):(b%=6.28318530718,0>b&&(b+=6.28318530718),this.setRotation(b))}else b%=6.28318530718,0>b&&(b+=6.28318530718),this.setRotation(b)}if(this._animationsPlaying)for(a=
+0;a<this._sprites.length;a++)this._sprites[a].step()};SceneObject.prototype.playAnimation=function(a,b){for(var c=0;c<this._sprites.length;c++)this._sprites[c].playAnimation(a,b)};SceneObject.prototype.stopAnimation=function(){for(var a=0;a<this._sprites.length;a++)this._sprites[a].stopAnimation()};SceneObject.prototype.resumeAnimation=function(){for(var a=0;a<this._sprites.length;a++)this._sprites[a].resumeAnimation()};
+SceneObject.prototype.getBehavior=function(a){if(a){for(var b=0;b<this._behaviors.length;b++)if(this._behaviors[b].name==a)return this._behaviors[b];return null}return this._behaviors[0]};SceneObject.prototype.getBehaviorByIndex=function(a){return this._behaviors[a||0]};SceneObject.prototype.getBehaviors=function(){return wade.cloneArray(this._behaviors)};SceneObject.prototype.getAlignment=function(){return{x:this._alignment.x,y:this._alignment.y}};
+SceneObject.prototype.setAlignment=function(a,b){this._alignment.x=a;this._alignment.y=b};
+SceneObject.prototype.processEvent=function(a,b){if(this._isTemplate)return!1;switch(a){case "onAnimationStart":!this._animationsPlaying&&(!this._moving&&!this._angularVelocity)&&wade.simulateSceneObject(this,!0);b.restarting||this._animationsPlaying++;break;case "onAnimationEnd":1==this._animationsPlaying&&(!this._moving&&!this._angularVelocity)&&wade.simulateSceneObject(this,!1),this._animationsPlaying--}return this.process(a,b)};
+SceneObject.prototype.process=function(a,b){var c=!1;this[a]&&(c=this[a](b));for(var d=0;d<this._behaviors.length;d++)this._behaviors[d][a]&&(c=c||this._behaviors[d][a](b));return c};
+SceneObject.prototype.getSpriteAtPosition=function(a){for(var b={isPresent:!1,topLayer:9999,spriteIndex:0},c=0;c<this._sprites.length;c++){var d=this._sprites[c];if(d.containsScreenPoint(a)&&d.isVisible()){var e=d.getLayer(),f=!b.isPresent||e.id<b.topLayer;e.id==b.topLayer&&b.isPresent&&(f=0<e.compareSprites(d,this._sprites[b.spriteIndex]));f&&(b={isPresent:!0,topLayer:e.id,spriteIndex:c},d=d.getWorldOffset(a),e=this._spriteOffsets[c],d.x+=e.x,d.y+=e.y,b.relativeWorldPosition=d)}}return b};
+SceneObject.prototype.setSpriteOffsets=function(a){var b;if(jQuery.isArray(a))for(b=this._spriteOffsets.length=0;b<a.length;b++){var c=this._spriteOffsets[b]=a[b];c.x=c.originalX=c.x||0;c.y=c.originalY=c.y||0;c.angle=c.angle||0;this._rotation&&wade.vec2.rotateInPlace(c,this._rotation)}else a.x=a.originalX=a.x||0,a.y=a.originalY=a.y||0,a.angle=a.angle||0,this._spriteOffsets=[a],this._rotation&&wade.vec2.rotateInPlace(a,this._rotation);for(b=0;b<this._spriteOffsets.length;b++)this._sprites[b]&&(this._sprites[b].setPosition(this._position.x+
+this._spriteOffsets[b].x,this._position.y+this._spriteOffsets[b].y),this._sprites[b].setRotation(this._rotation+this._spriteOffsets[b].angle))};SceneObject.prototype.getSpriteOffset=function(a){a=this._spriteOffsets[a];return{x:a.x,y:a.y,angle:a.angle}};
+SceneObject.prototype.setSpriteOffset=function(a,b){var c=this._spriteOffsets[a];c.x=c.originalX=b.x||0;c.y=c.originalY=b.y||0;c.angle=b.angle||0;this._rotation&&wade.vec2.rotateInPlace(c,this._rotation);this._sprites[a]&&(this._sprites[a].setPosition(this._position.x+c.x,this._position.y+c.y),this._sprites[a].setRotation(this._rotation+c.angle))};SceneObject.prototype.isMoving=function(){return this._moving};SceneObject.prototype.setVisible=function(a){for(var b=0;b<this._sprites.length;b++)this._sprites[b].setVisible(a)};
+SceneObject.prototype.addSprite=function(a,b,c){"undefined"==typeof c?c=this._sprites.length:c>this._sprites.length&&(c=this._sprites.length);a.setSceneObject(this);this._sprites.splice(c,0,a);b=b?{x:b.x||0,y:b.y||0,angle:b.angle||0,originalX:b.x||0,originalY:b.y||0}:{x:0,y:0,angle:0,originalX:0,originalY:0};this._rotation&&wade.vec2.rotateInPlace(b,this._rotation);this._spriteOffsets.splice(c,0,b);a.setPosition(this._position.x+b.x,this._position.y+b.y);a.setRotation(this._rotation+b.angle);this._inScene&&
+this._renderer.addSprite(a);return c};SceneObject.prototype.removeSpriteByIndex=function(a){this._renderer.removeSprite(this._sprites[a]);wade.removeObjectFromArrayByIndex(a,this._sprites);wade.removeObjectFromArrayByIndex(a,this._spriteOffsets)};SceneObject.prototype.removeSprite=function(a){for(var b=0;b<this._sprites.length;b++)if(this._sprites[b]==a){this.removeSpriteByIndex(b);break}};
+SceneObject.prototype.removeAllSprites=function(){for(var a=this._sprites.length-1;0<=a;a--)this._renderer.removeSprite(this._sprites[a]);this._spriteOffsets.length=0;this._sprites.length=0};SceneObject.prototype.getSprite=function(a){return this._sprites[a?a:0]};SceneObject.prototype.getSpriteByName=function(a){for(var b=0;b<this._sprites.length;b++)if(this._sprites[b].getName()==a)return this._sprites[b];return null};SceneObject.prototype.getSpriteIndex=function(a){return this._sprites.indexOf(a)};
+SceneObject.prototype.isInScene=function(){return this._inScene};SceneObject.prototype.getSpriteCount=function(){return this._sprites.length};SceneObject.prototype.addBehavior=function(a){this._behaviorClasses?this._behaviorClasses.push(a):this._behaviorClasses=[a];a=new a;a.owner=this;this._behaviors.push(a);return a};
+SceneObject.prototype.removeBehavior=function(a){for(var b=0;b<this._behaviors.length;b++)if(a==this._behaviors[b].name)return wade.removeObjectFromArrayByIndex(b,this._behaviors),wade.removeObjectFromArrayByIndex(b,this._behaviorClasses),!0;return!1};SceneObject.prototype.removeBehaviorByIndex=function(a){wade.removeObjectFromArrayByIndex(a,this._behaviors)};SceneObject.prototype.isAnimating=function(){return this._animationsPlaying?!0:!1};
+SceneObject.prototype.getTargetPosition=function(){return this._targetPosition?{x:this._targetPosition.x,y:this._targetPosition.y}:null};SceneObject.prototype.getTargetRotation=function(){return this._rotationTarget.valid?this._rotationTarget.value:this._rotation};SceneObject.prototype.getMovementSpeed=function(){return Math.sqrt(this._linearVelocity.x*this._linearVelocity.x+this._linearVelocity.y*this._linearVelocity.y)};
+SceneObject.prototype.overlapsSprite=function(a){for(var b=0;b<this._sprites.length;b++)if(this._sprites[b].overlapsSprite(a))return!0;return!1};SceneObject.prototype.overlapsObject=function(a){for(var b=a.getSpriteCount(),c=0;c<b;c++)if(this.overlapsSprite(a.getSprite(c)))return!0;return!1};
+SceneObject.prototype.clone=function(){var a=new SceneObject;jQuery.extend(a,this);a._inScene=0;a._isTemplate=!1;a._name="";a._sprites=[];for(var b=0;b<this._sprites.length;b++){var c=this._sprites[b].clone();c._sceneObject=a;this._isTemplate&&c.setVisible(!0);a._sprites.push(c)}a._position={x:this._position.x,y:this._position.y};a._linearVelocity={x:this._linearVelocity.x,y:this._linearVelocity.y};a._targetPosition=this._targetPosition?{x:this._targetPosition.x,y:this._targetPosition.y}:0;a._alignment=
+{x:this._alignment.x,y:this._alignment.y};a._spriteOffsets=jQuery.extend(!0,[],this._spriteOffsets);a._timeouts=[];for(b=0;b<this._timeouts.length;b++)c=this._timeouts[b].time-((new Date).getTime()-this._timeouts[b].startTime),0<=c&&a.schedule(this._timeouts[b].name,c);a._behaviors=[];if(a._behaviorClasses)for(b=0;b<a._behaviorClasses.length;b++)a._behaviors[b]="function"==typeof this._behaviors[b].clone?this._behaviors[b].clone(a):new this._behaviorClasses[b],a._behaviors[b].owner=a;this.simulated&&
+(a.simulated=!1,wade.simulateSceneObject(a,!0));return a};
+SceneObject.prototype.serialize=function(a,b,c){for(var d=0;d<this._behaviors.length;d++)this._behaviors[d].preSerialize&&this._behaviors[d].preSerialize();var e={type:"SceneObject",position:{x:this._position.x,y:this._position.y},rotation:this._rotation,behaviors:[],sprites:[],spriteOffsets:[],alignment:{x:this._alignment.x||"center",y:this._alignment.y||"center"},name:this._name,isTemplate:this._isTemplate,addToScene:this._inScene?{autoListen:this.autoListen,params:this.addToSceneParams}:null,properties:{}};
+if(this._behaviorClasses)for(d=0;d<this._behaviorClasses.length;d++){var f=this._behaviors[d].name||this._behaviorClasses[d].name;if(f){var g;if(this._behaviors[d].serialize)g=this._behaviors[d].serialize();else{g={};for(var i in this._behaviors[d])if(this._behaviors[d].hasOwnProperty(i)&&"_"!=i[0]&&"name"!=i)try{var l=JSON.stringify(this._behaviors[d][i]);g[i]=JSON.parse(l)}catch(j){}}f={name:f};g&&(f.properties=g);e.behaviors.push(f)}else{for(var h in window)try{if(window.hasOwnProperty(h)&&"function"==
+typeof window[h]&&window[h]==this._behaviorClasses[d]){f=h;break}}catch(k){}f||wade.log("Warning - trying to export a scene object with an unnamed behavior, which will be skipped. Add a 'name' property to your behaviors to correct this.")}}for(d=0;d<this._spriteOffsets.length;d++)e.spriteOffsets.push({x:this._spriteOffsets[d].x,y:this._spriteOffsets[d].y,angle:this._spriteOffsets[d].angle});for(d=0;d<this._sprites.length;d++)e.sprites.push(this._sprites[d].serialize());d=["autoListen","addToSceneParams",
+"simulated","eventResponse"];b&&(d=d.concat(b));for(var n in this)if(this.hasOwnProperty(n)&&"_"!=n[0]&&-1==d.indexOf(n))if(c&&"function"==typeof this[n])e.functions=e.functions||{},e.functions[n]=this[n].toString();else try{var m=JSON.stringify(this[n]);e.properties[n]=JSON.parse(m)}catch(p){}for(d=this._behaviors.length-1;0<=d;d--)this._behaviors[d].postSerialize&&this._behaviors[d].postSerialize();return a?JSON.stringify(e):e};
+SceneObject.prototype.getOverlappingObjects=function(a,b){for(var c=[],d=0;d<this._sprites.length;d++)for(var e=this._sprites[d].getOverlappingObjects(a,b),f=0;f<e.length;f++)(0==d||-1==c.indexOf(e[f]))&&c.push(e[f]);return c};
+SceneObject.prototype.setAngularVelocity=function(a){a?!this._animationsPlaying&&(!this._moving&&!this._angularVelocity)&&wade.simulateSceneObject(this,!0):(this._angularVelocity&&(!this._animationsPlaying&&!this._moving)&&wade.simulateSceneObject(this,!1),this._rotationTarget.valid=!1);this._angularVelocity=a};SceneObject.prototype.getAngularVelocity=function(){return this._angularVelocity};
+SceneObject.prototype.setVelocity=function(a){a.x||a.y?(this._linearVelocity.x=a.x,this._linearVelocity.y=a.y,this._targetPosition=0,!this._animationsPlaying&&(!this._moving&&!this._angularVelocity)&&wade.simulateSceneObject(this,!0),this._moving=!0):(this._linearVelocity.x||this._linearVelocity.y)&&this.stopMoving()};SceneObject.prototype.getVelocity=function(){return{x:this._linearVelocity.x,y:this._linearVelocity.y}};
+SceneObject.prototype.schedule=function(a,b,c){if(this.isInScene()){var d=this;this._timeouts.push({handle:setTimeout(function(){d.process(b,c)},a),name:b,time:a,startTime:(new Date).getTime()})}else wade.log("Warning - Trying to schedule an event for an object that is not in the scene.")};SceneObject.prototype.unschedule=function(a){for(var b=this._timeouts.length;0<=b;b--)this._timeouts[b].name==a&&(clearTimeout(this._timeouts[b].handle),wade.removeObjectFromArrayByIndex(b,this._timeouts))};
+SceneObject.prototype.unscheduleAll=function(){for(var a=0;a<this._timeouts.length;a++)clearTimeout(this._timeouts[a].handle);this._timeouts.length=0};SceneObject.prototype.setName=function(a){if(!this._name||this._name!=a){var b=this._name;this._name=a;wade.onObjectNameChange(this,b,this._name)}};SceneObject.prototype.getName=function(){return this._name};SceneObject.prototype.listenFor=function(a){wade.addEventListener(this,a)};
+SceneObject.prototype.stopListeningFor=function(a){wade.removeEventListener(this,a)};SceneObject.prototype.isListeningFor=function(a){return wade.isEventListener(this,a)};SceneObject.prototype.isTemplate=function(){return this._isTemplate};SceneObject.prototype.setAsTemplate=function(a){"undefined"==typeof a&&(a=!0);this._isTemplate=a};SceneObject.prototype.addSpritesToRenderer=function(a){this._inScene=!0;this._renderer=a;for(var b=0;b<this._sprites.length;b++)a.addSprite(this._sprites[b])};
+SceneObject.prototype.removeSpritesFromRenderer=function(){if(this._inScene){this._inScene=!1;for(var a=0;a<this._sprites.length;a++)this._sprites[a].isVisible()&&this._sprites[a].setDirtyArea(),this._renderer.removeSprite(this._sprites[a])}};
+function Sprite(a,b){this._animations={};this._currentAnimation="default";var c=new Animation(a);c.sprite=this;c.name=this._currentAnimation;c.isDefault=!0;this._animations[this._currentAnimation]=c;this._numAnimations=1;this._scaleFactor={x:1,y:1};this._name="";this._drawModifiers=[];this.draw=this.drawStatic;this.draw_gl=this.drawStatic_gl;var d;if(c="object"==typeof a&&a){var e=a;this._sortPoint=e.sortPoint||{x:0,y:0};this._layer=wade.getLayer(e.layer||wade.defaultLayer);d=this._animations[this._currentAnimation].getFrameSize();
+this._size=e.size?{x:e.size.x,y:e.size.y}:d;this._sizeWasSet=!e.autoResize;this._name=e.name||"";this._staticImageName=e.image;this._visible="undefined"==typeof e.visible?!0:e.visible;d=e.image;if(e.animations)for(var f in e.animations)e.animations.hasOwnProperty(f)&&this.addAnimation(new Animation(e.animations[f]),!0);if(e.properties)for(var g in e.properties)if(e.properties.hasOwnProperty(g))try{this[g]=JSON.parse(JSON.stringify(e.properties[g]))}catch(i){}}else this._staticImageName=a,this._sortPoint=
+{x:0,y:0},this._layer=wade.getLayer(b?b:wade.defaultLayer),this._size=this._animations[this._currentAnimation].getImageSize(),this._sizeWasSet=!1,this._visible=!0,d=a;this._sceneObject=null;this._position={x:0,y:0};this._rotation=this._cornerY=this._cornerX=0;window.Float32Array&&(this._f32PositionAndSize=new Float32Array([0,0,0,0]),this._f32AnimFrameInfo=new Float32Array([0,0,1,1]),this._f32RotationAlpha=new Float32Array([0,0]));this.orientedBoundingBox={};this.boundingBox={};this.updateBoundingBox();
+this.setActiveImage(wade.getFullPathAndFileName(d));c&&e.drawModifiers&&this.setDrawModifiers(e.drawModifiers);c&&(a.currentAnimation&&a.animations&&a.animations[a.currentAnimation]&&!a.animations[a.currentAnimation].stopped)&&this.playAnimation(a.currentAnimation,a.animations[a.currentAnimation].playMode)}
+Sprite.prototype.setPosition=function(a,b){var c,d;"object"==typeof a?(c=a.x,d=a.y):(c=a,d=b);this.setDirtyArea();this._position.x=c;this._position.y=d;this.updateBoundingBox();this._cornerX=c-this._size.x/2;this._cornerY=d-this._size.y/2;this.setDirtyArea()};Sprite.prototype.getPosition=function(){return{x:this._position.x,y:this._position.y}};
+Sprite.prototype.setRotation=function(a){a!=this._rotation&&(this.setDirtyArea(),this._rotation=a,this.updateOrientedBoundingBox(),this.updateBoundingBox(),this.setDirtyArea())};Sprite.prototype.getRotation=function(){return this._rotation};
+Sprite.prototype.setSize=function(a,b){this._sizeWasSet=!0;if(a!=this._size.x||b!=this._size.y){this.setDirtyArea();this._size={x:a,y:b};var c=this._animations[this._currentAnimation];c.getRelativeImageName()?(c=c.getFrameSize(),this._scaleFactor.x=this._size.x/c.x,this._scaleFactor.y=this._size.y/c.y):this._scaleFactor.x=this._scaleFactor.y=1;this._cornerX=this._position.x-a/2;this._cornerY=this._position.y-b/2;this._rotation&&this.updateOrientedBoundingBox();this.updateBoundingBox();this.setDirtyArea()}};
+Sprite.prototype.getSize=function(){return{x:this._size.x,y:this._size.y}};Sprite.prototype.setSortPoint=function(a,b){this._sortPoint.x=a;this._sortPoint.y=b};Sprite.prototype.getSortPoint=function(){return{x:this._sortPoint.x,y:this._sortPoint.y}};
+Sprite.prototype.addAnimation=function(a,b,c){"string"!=typeof a&&a instanceof Animation&&(c=b,b=a,a="");a=a||b.name;a||(wade.unnamedAnimationCount=wade.unnamedAnimationCount+1||1,a="__wade_unnamed_anim_"+wade.unnamedAnimationCount);var d=1==this._numAnimations&&!this._animations[this._currentAnimation].getImageName(),e=!c&&!this._sizeWasSet&&d;d&&!c&&(delete this._animations[this._currentAnimation],this._numAnimations=0);this._animations[a]||this._numAnimations++;this._animations[a]=b;b.name=a;b.sprite=
+this;1==this._numAnimations&&!c&&(this.playAnimation(a),e&&"ok"==wade.getLoadingStatus(b.getImageName())&&(a=b.getFrameSize(),this.setSize(a.x,a.y)),this.updateBoundingBox());this.draw==this.drawStatic&&(this.draw=this.drawAnimated,this.draw_gl=this.drawAnimated_gl)};Sprite.prototype.getAnimation=function(a){return this._animations[a||this._currentAnimation]};
+Sprite.prototype.playAnimation=function(a,b){var c=this._animations[a];if(c){a!=this._currentAnimation&&this.setDirtyArea();this._currentAnimation=a;c.play(b);var d=c.getFrameSize();this._scaleFactor.x=this._size.x/d.x;this._scaleFactor.y=this._size.y/d.y;this.setActiveImage(c.getImageName());this.updateBoundingBox()}};Sprite.prototype.getScaleFactor=function(){return{x:this._scaleFactor.x,y:this._scaleFactor.y}};
+Sprite.prototype.step=function(){var a=this._animations[this._currentAnimation];a&&a.isPlaying()&&a.step()};Sprite.prototype.setSceneObject=function(a){if(a!=this._sceneObject){var b=this._animations[this._currentAnimation];b&&b.isPlaying()&&(a&&a.processEvent("onAnimationStart",this._currentAnimation),this._sceneObject&&this._sceneObject.processEvent("onAnimationEnd",this._currentAnimation));this._sceneObject=a}};Sprite.prototype.getSceneObject=function(){return this._sceneObject};
+Sprite.prototype.getScreenPositionAndExtents=function(){var a=this._layer.worldDirectionToScreen(this.getSize()),b=this._layer.worldPositionToScreen(this._position);return{extents:{x:a.x/2,y:a.y/2},position:b}};
+Sprite.prototype.containsScreenPoint=function(a){if(this._rotation)return a=wade.screenPositionToWorld(this._layer.id,a),wade.orientedBoxContainsPoint(this.orientedBoundingBox,a);var b=this.getScreenPositionAndExtents(),c=b.position.y-b.extents.y,d=b.position.x+b.extents.x,e=b.position.y+b.extents.y;return a.x>=b.position.x-b.extents.x&&a.x<=d&&a.y>=c&&a.y<=e};Sprite.prototype.getWorldOffset=function(a){a=this._layer.screenPositionToWorld(a);return{x:a.x-this._position.x,y:a.y-this._position.y}};
+Sprite.prototype.setDirtyArea=function(){this._layer.isUsingQuadtree()&&this._layer.addDirtyArea(this.boundingBox)};Sprite.prototype.setVisible=function(a){a!=this._visible&&(this._visible=a,this.setDirtyArea())};Sprite.prototype.isVisible=function(){return this._visible};
+Sprite.prototype.setImageFile=function(a,b){this.setDirtyArea();this._animations[this._currentAnimation]=new Animation(a,1,1,0);if(b||!this._sizeWasSet){var c=this._animations[this._currentAnimation].getFrameSize();this.setSize(c.x,c.y)}this._staticImageName=a;this.setActiveImage(wade.getFullPathAndFileName(a));this.setDirtyArea()};
+Sprite.prototype.bringToFront=function(){!this._sceneObject||!this._sceneObject.isInScene()?wade.log("Cannot change the order of sprites before they are added to the scene"):this._layer.bringSpriteToFront(this)};Sprite.prototype.pushToBack=function(){!this._sceneObject||!this._sceneObject.isInScene()?wade.log("Cannot change the order of sprites before they are added to the scene"):this._layer.pushSpriteToBack(this)};
+Sprite.prototype.putBehindSprite=function(a){this._layer!=a._layer?wade.log("Cannot put a sprite behind another sprite that is on a different layer"):!this._sceneObject||!this._sceneObject.isInScene()||!a._sceneObject||!a._sceneObject.isInScene()?wade.log("Cannot change the order of sprites before they are added to the scene"):this._layer.putSpriteBehindSprite(this,a)};Sprite.prototype.getCurrentAnimation=function(){return this._animations[this._currentAnimation]};
+Sprite.prototype.getCurrentAnimationName=function(){return this._currentAnimation};Sprite.prototype.hasAnimation=function(a){return this._animations[a]?!0:!1};Sprite.prototype.setDrawFunction=function(a){this.draw=this.draw_gl=a;this.setDirtyArea()};Sprite.prototype.getDrawFunction=function(){return"webgl"==this.getLayer().getRenderMode()?this.draw_gl:this.draw};
+Sprite.prototype.setDrawModifiers=function(a){var b="webgl"==this._layer.getRenderMode()?Sprite.prototype.draw_gl:Sprite.prototype.draw;if(a)for(b=this._drawModifiers.length=0;b<a.length;b++){var c=a[b];this._drawModifiers.push(wade.cloneObject(c));switch(c.type){case "alpha":1!=c.alpha&&this.setDrawFunction(wade.drawFunctions.alpha_(c.alpha,this.getDrawFunction()));break;case "fadeOpacity":this.setDrawFunction(wade.drawFunctions.fadeOpacity_(c.start,c.end,c.time,this.getDrawFunction()));break;case "mirror":this.setDrawFunction(wade.drawFunctions.mirror_(this.getDrawFunction()));
+break;case "flip":this.setDrawFunction(wade.drawFunctions.flip_(this.getDrawFunction()));break;case "blink":this.setDrawFunction(wade.drawFunctions.blink_(c.timeOn,c.timeOff,this.getDrawFunction()))}}else this.setDrawFunction(b)};Sprite.prototype.getDrawModifiers=function(){return wade.cloneArray(this._drawModifiers)};
+Sprite.prototype.overlapsSprite=function(a){var b=this._layer.id,c=a.getLayer().id;if(b==c)return wade.boxIntersectsBox(this.boundingBox,a.boundingBox);b=wade.worldBoxToScreen(b,this.boundingBox);a=wade.worldBoxToScreen(c,a.boundingBox);return wade.boxIntersectsBox(b,a)};Sprite.prototype.getImageName=function(){return this._activeImage};
+Sprite.prototype.setLayer=function(a){this._sceneObject&&this._sceneObject.isInScene()?(this._layer&&this._layer.removeSprite(this),this._layer=wade.getLayer(a?a:1),this._layer.addSprite(this)):this._layer=wade.getLayer(a?a:1)};
+Sprite.prototype.drawToImage=function(a,b,c,d,e){var f=c||{x:0,y:0},c=document.createElement("canvas"),g=c.getContext("2d");b||"ok"!=wade.getLoadingStatus(a)?(c.width=this.boundingBox.maxX-this.boundingBox.minX+Math.abs(f.x),c.height=this.boundingBox.maxY-this.boundingBox.minY+Math.abs(f.y)):(b=wade.getImage(a),c.width=b.width,c.height=b.height,g.drawImage(b,0,0));b={x:this._position.x,y:this._position.y};this._position.x=f.x+c.width/(2*(d&&d.horizontalScale||1));this._position.y=f.y+c.height/(2*
+(d&&d.verticalScale||1));this._cornerX=this._position.x-this._size.x/2;this._cornerY=this._position.y-this._size.y/2;f=g.globalCompositeOperation;e&&(g.globalCompositeOperation=e);d?(g.save(),g.setTransform(d.horizontalScale,d.horizontalSkew,d.verticalSkew,d.verticalScale,d.horizontalTranslate,d.verticalTranslate),this.draw(g),g.restore()):this.draw(g);g.globalCompositeOperation=f;this._position=b;this._cornerX=this._position.x-this._size.x/2;this._cornerY=this._position.y-this._size.y/2;wade.setImage(a,
+c)};Sprite.prototype.stopAnimation=function(){var a=this._animations[this._currentAnimation];a&&a.stop()};Sprite.prototype.resumeAnimation=function(){var a=this._animations[this._currentAnimation];a&&a.resume()};
+Sprite.prototype.clone=function(){var a=new Sprite(null,this._layer.id);jQuery.extend(a,this);a._sceneObject=0;a.quadTreeNode=0;if(this._animations){a._animations={};for(var b in this._animations)this._animations.hasOwnProperty(b)&&(a._animations[b]=this._animations[b].clone(),a._animations[b].sprite=a)}a._position={x:this._position.x,y:this._position.y};a._sortPoint={x:this._sortPoint.x,y:this._sortPoint.y};a._size={x:this._size.x,y:this._size.y};a._scaleFactor={x:this._scaleFactor.x,y:this._scaleFactor.y};
+a.boundingBox=jQuery.extend({},this.boundingBox);a.orientedBoundingBox=jQuery.extend({},this.orientedBoundingBox);window.Float32Array&&(a._f32AnimFrameInfo=this._f32AnimFrameInfo?new Float32Array([this._f32AnimFrameInfo[0],this._f32AnimFrameInfo[1],this._f32AnimFrameInfo[2],this._f32AnimFrameInfo[3]]):new Float32Array([0,0,1,1]),a._f32PositionAndSize=this._f32PositionAndSize?new Float32Array([this._f32PositionAndSize[0],this._f32PositionAndSize[1],this._f32PositionAndSize[2],this._f32PositionAndSize[3]]):
+new Float32Array([0,0,1,1]),a._f32RotationAlpha=this._f32RotationAlpha?new Float32Array([this._f32RotationAlpha[0],this._f32RotationAlpha[1]]):new Float32Array([0,0]));a._activeImage&&wade.addImageUser(a._activeImage,a);return a};
+Sprite.prototype.serialize=function(a,b){var c={type:"Sprite",animations:{},currentAnimation:this.getCurrentAnimationName(),sortPoint:{x:this._sortPoint.x,y:this._sortPoint.y},layer:this._layer.id,size:{x:this._size.x,y:this._size.y},autoResize:!this._sizeWasSet,visible:this._visible,image:this._staticImageName||"",name:this._name,drawModifiers:wade.cloneArray(this._drawModifiers),properties:{}},d;for(d in this._animations)this._animations.hasOwnProperty(d)&&!this._animations[d].isDefault&&(c.animations[d]=
+this._animations[d].serialize());d=["sceneObject","boundingBox","orientedBoundingBox","id","needsDrawing"];b&&(d=d.concat(b));for(var e in this)if(this.hasOwnProperty(e)&&"_"!=e[0]&&-1==d.indexOf(e))try{var f=JSON.stringify(this[e]);c.properties[e]=JSON.parse(f)}catch(g){}return a?JSON.stringify(c):c};Sprite.prototype.setName=function(a){this._name=a};Sprite.prototype.getName=function(){return this._name};
+Sprite.prototype.getOverlappingObjects=function(a,b){var c;if("axis-aligned"==(b||"axis-aligned")){var d;a?(c=wade.worldBoxToScreen(this._layer.id,this.boundingBox),d=wade.getObjectsInScreenArea(c)):d=wade.getObjectsInArea(this.boundingBox,this._layer.id);this._sceneObject&&wade.removeObjectFromArray(this._sceneObject,d);return d}c=[];d=[];a?(c=wade.worldBoxToScreen(this._layer.id,this.boundingBox),c=wade.getSpritesInScreenArea(c)):c=wade.getSpritesInArea(this.boundingBox,this._layer.id);for(var e=
+this._rotation?"orientedBox":"box",f=this._rotation?this.orientedBoundingBox:this.boundingBox,g=0;g<c.length;g++){var i=c[g];i!=this&&(i.getRotation()?wade[e+"IntersectsOrientedBox"](f,i.orientedBoundingBox)&&(d.push(i),d.push(i)):wade[e+"IntersectsBox"](f,i.boundingBox)&&d.push(i))}for(e=c.length=0;e<d.length;e++)f=d[e].getSceneObject(),-1==c.lastIndexOf(f)&&c.push(f);return c};Sprite.prototype.getLayerId=function(){return this._layer.id};
+Sprite.prototype.cache=function(){wade.spriteCacheCount=wade.spriteCacheCount+1||1;var a="__wade_sprite_cache"+wade.spriteCacheCount,b=this._rotation;b&&(this._rotation=0,this.updateOrientedBoundingBox(),this.updateBoundingBox());this.drawToImage(a,!0);b&&(this._rotation=b,this.updateOrientedBoundingBox(),this.updateBoundingBox());this.setImageFile(a,!0);a=this._animations[this._currentAnimation];this.draw=(a=!(a&&a.isPlaying()))?Sprite.prototype.drawStatic:Sprite.prototype.draw;this.draw_gl=a?Sprite.prototype.drawStatic_gl:
+Sprite.prototype.draw_gl;this.setDirtyArea()};Sprite.prototype.getIndexInLayer=function(){return this._layer.getIndexOfSprite(this)};Sprite.prototype.setIndexInLayer=function(a){this.setDirtyArea();return this._layer.setIndexOfSprite(this,a)};Sprite.prototype.getLayer=function(){return this._layer};Sprite.prototype.onAnimationStart=function(a,b){this._sceneObject&&this._sceneObject.processEvent("onAnimationStart",{name:a,restarting:b})};
+Sprite.prototype.onAnimationEnd=function(a){this._sceneObject&&this._sceneObject.processEvent("onAnimationEnd",{name:a})};
+Sprite.prototype.updateBoundingBox=function(){var a=this._animations[this._currentAnimation].getOffset_ref();if(this._rotation)this.boundingBox.minX=this._position.x-this.orientedBoundingBox.rx-wade.c_epsilon+a.x,this.boundingBox.minY=this._position.y-this.orientedBoundingBox.ry-wade.c_epsilon+a.y,this.boundingBox.maxX=this._position.x+this.orientedBoundingBox.rx+wade.c_epsilon+a.x,this.boundingBox.maxY=this._position.y+this.orientedBoundingBox.ry+wade.c_epsilon+a.y;else{var b=this._size.x/2,c=this._size.y/
+2;this.boundingBox.minX=this._position.x-b-wade.c_epsilon+a.x;this.boundingBox.minY=this._position.y-c-wade.c_epsilon+a.y;this.boundingBox.maxX=this._position.x+b+wade.c_epsilon+a.x;this.boundingBox.maxY=this._position.y+c+wade.c_epsilon+a.y}this.orientedBoundingBox.centerX=this._position.x+a.x;this.orientedBoundingBox.centerY=this._position.y+a.y;this._f32PositionAndSize&&(this._f32PositionAndSize[0]=this._position.x+a.x,this._f32PositionAndSize[1]=this._position.y+a.y,this._f32PositionAndSize[2]=
+this._size.x,this._f32PositionAndSize[3]=this._size.y);this._sceneObject&&this._sceneObject.isInScene()&&this._layer.onSpritePositionChanged(this)};
+Sprite.prototype.updateOrientedBoundingBox=function(){var a=this._size.x/2,b=this._size.y/2,c=Math.cos(this._rotation),d=Math.sin(this._rotation),e=a*c,f=a*d,d=b*d,c=b*c,g=e+d,i=f-c,l=e-d,j=f+c;this.orientedBoundingBox.rx=Math.max(Math.abs(g),Math.abs(l));this.orientedBoundingBox.ry=Math.max(Math.abs(i),Math.abs(j));this.orientedBoundingBox.rx0=g;this.orientedBoundingBox.ry0=i;this.orientedBoundingBox.rx1=l;this.orientedBoundingBox.ry1=j;this.orientedBoundingBox.axisXx=e;this.orientedBoundingBox.axisXy=
+f;this.orientedBoundingBox.axisYx=-d;this.orientedBoundingBox.axisYy=c;this.orientedBoundingBox.rotation=this._rotation;this.orientedBoundingBox.halfWidth=a;this.orientedBoundingBox.halfHeight=b;this._f32RotationAlpha&&(this._f32RotationAlpha[0]=this._rotation)};
+Sprite.prototype.drawStatic=function(a){a.isWebGl?this.drawStatic_gl(a):this._visible&&(wade.numDrawCalls++,this._rotation&&(a.save(),a.translate(this._position.x,this._position.y),a.rotate(this._rotation),a.translate(-this._position.x,-this._position.y)),a.drawImage(this._image,this._cornerX,this._cornerY,this._size.x,this._size.y),this._rotation&&a.restore())};
+Sprite.prototype.drawStatic_gl=function(a){a.isWebGl?this._visible?(wade.numDrawCalls++,this._f32RotationAlpha[1]=a.globalAlpha,"lighter"==a.globalCompositeOperation&&a.blendFuncSeparate(a.SRC_ALPHA,a.ONE,a.SRC_ALPHA,a.ONE),a.uniform4fv(a.uniforms.uPositionAndSize,this._f32PositionAndSize),a.uniform4fv(a.uniforms.uAnimFrameInfo,this._f32AnimFrameInfo),a.uniform2fv(a.uniforms.uRotationAlpha,this._f32RotationAlpha),a.setTextureImage(this._image),a.drawArrays(a.TRIANGLE_STRIP,0,4),a.globalCompositeOperation&&
+"sourceOver"!=a.globalCompositeOperation&&a.blendFuncSeparate(a.SRC_ALPHA,a.ONE_MINUS_SRC_ALPHA,a.ONE,a.ONE_MINUS_SRC_ALPHA)):a.setTextureImage(this._image,!0):this.drawStatic(a)};
+Sprite.prototype.drawAnimated=function(a){if(a.isWebGl)this.drawAnimated_gl(a);else if(this._visible){var b=this._animations[this._currentAnimation];b&&(this._rotation&&(a.save(),a.translate(this._position.x,this._position.y),a.rotate(this._rotation),a.translate(-this._position.x,-this._position.y)),b.draw(a,this._position,this._size),this._rotation&&a.restore())}};
+Sprite.prototype.drawAnimated_gl=function(a){if(a.isWebGl){var b=this._animations[this._currentAnimation];b&&(this._visible?("lighter"==a.globalCompositeOperation&&a.blendFuncSeparate(a.SRC_ALPHA,a.ONE,a.SRC_ALPHA,a.ONE),this._f32RotationAlpha[1]=a.globalAlpha,b.draw_gl(a,this._f32PositionAndSize,this._f32RotationAlpha),a.globalCompositeOperation&&"sourceOver"!=a.globalCompositeOperation&&a.blendFuncSeparate(a.SRC_ALPHA,a.ONE_MINUS_SRC_ALPHA,a.ONE,a.ONE_MINUS_SRC_ALPHA)):a.setTextureImage(wade.getImage(b.getImageName()),
+!0))}else this.drawAnimated(a)};Sprite.prototype.draw=Sprite.prototype.drawAnimated;Sprite.prototype.draw_gl=Sprite.prototype.drawAnimated_gl;
+Sprite.prototype.setActiveImage=function(a){var b=this._activeImage;this._activeImage&&b!=a&&wade.removeImageUser(this._activeImage,this);this._activeImage=a;this._image=wade.getImage(a,"");a&&(b!=a&&wade.addImageUser(a,this),"ok"!=wade.getLoadingStatus(a)?(wade.log("Loading "+a),wade.preloadImage(a)):((a=this._animations[this._currentAnimation].getImageName()==wade.getFullPathAndFileName(a))&&this._animations[this._currentAnimation].refreshImage(),this._sizeWasSet||(a?(a=this._animations[this._currentAnimation].getFrameSize(),
+this.setSize(a.x,a.y)):this.setSize(this._image.width,this._image.height))))};
+function TextSprite(a,b,c,d,e){"object"==typeof a&&a?(b=a,a=b.text,this._font=b.font||"12px Arial",this._alignment=b.alignment||"left",this._color=b.color||"#000",this._visible="undefined"!=typeof b.visible?b.visible:!0,this._layer=wade.getLayer(b.layer||wade.defaultLayer),this._maxWidth=b.maxWidth||0,this._shadowColor=b.shadowColor||"#000",this._shadowBlur=b.shadowBlur||0,this._shadowOffset={x:b.shadowOffset&&b.shadowOffset.x,y:b.shadowOffset&&b.shadowOffset.y},this._lineSpacing=b.lineSpacing||1,
+this._maxLines=b.maxLines||0,this._outlineColor=b.outlineColor||"#000",this._outlineWidth=b.outlineWidth||0,this._boundsScale={x:b.boundsScale&&b.boundsScale.x,y:b.boundsScale&&b.boundsScale.y},this._sortPoint={x:b.sortPoint&&b.sortPoint.x,y:b.sortPoint&&b.sortPoint.y},this._fixedSize="undefined"==typeof b.fixedSize?!1:b.fixedSize,this._name=b.name||""):(this._font=b||"12px Arial",this._alignment=d||"left",this._color=c||"#000",this._visible=!0,this._layer=wade.getLayer(e||wade.defaultLayer),this._maxWidth=
+0,this._shadowColor="#000",this._shadowBlur=0,this._shadowOffset={x:0,y:0},this._lineSpacing=1,this._maxLines=0,this._outlineColor="#000",this._outlineWidth=0,this._boundsScale={x:1,y:1},this._sortPoint={x:0,y:0},this._fixedSize=!1,this._name="");this._sceneObject=this._cornerY=this._cornerX=this._image=0;this._position={x:0,y:0};this._centerOffset={x:0,y:0};this._size={x:0,y:0};this._numLines=1;this._lines=[];this._lineHeight=12;this._rotation=0;this.orientedBoundingBox={};this.boundingBox={minX:0,
+minY:0,maxX:0,maxY:0};window.Float32Array&&(this._f32PositionAndSize=new Float32Array([0,0,0,0]),this._f32AnimFrameInfo=new Float32Array([0,0,1,1]),this._f32RotationAlpha=new Float32Array([0,0]));this.setText(a||"")}TextSprite.prototype.setPosition=Sprite.prototype.setPosition;TextSprite.prototype.getPosition=Sprite.prototype.getPosition;TextSprite.prototype.setSortPoint=Sprite.prototype.setSortPoint;TextSprite.prototype.getSortPoint=Sprite.prototype.getSortPoint;TextSprite.prototype.getLayer=Sprite.prototype.getLayer;
+TextSprite.prototype.getLayerId=Sprite.prototype.getLayerId;TextSprite.prototype.getScreenBox=Sprite.prototype.getScreenBox;TextSprite.prototype.containsScreenPoint=Sprite.prototype.containsScreenPoint;TextSprite.prototype.getWorldOffset=Sprite.prototype.getWorldOffset;TextSprite.prototype.updateOrientedBoundingBox=Sprite.prototype.updateOrientedBoundingBox;TextSprite.prototype.setVisible=Sprite.prototype.setVisible;TextSprite.prototype.isVisible=Sprite.prototype.isVisible;
+TextSprite.prototype.bringToFront=Sprite.prototype.bringToFront;TextSprite.prototype.pushToBack=Sprite.prototype.pushToBack;TextSprite.prototype.putBehindSprite=Sprite.prototype.putBehindSprite;TextSprite.prototype.setDrawFunction=Sprite.prototype.setDrawFunction;TextSprite.prototype.getDrawFunction=Sprite.prototype.getDrawFunction;TextSprite.prototype.overlapsSprite=Sprite.prototype.overlapsSprite;TextSprite.prototype.getRotation=Sprite.prototype.getRotation;TextSprite.prototype.setRotation=Sprite.prototype.setRotation;
+TextSprite.prototype.getSceneObject=Sprite.prototype.getSceneObject;TextSprite.prototype.getOverlappingObjects=Sprite.prototype.getOverlappingObjects;TextSprite.prototype.setName=Sprite.prototype.setName;TextSprite.prototype.getName=Sprite.prototype.getName;TextSprite.prototype.getIndexInLayer=Sprite.prototype.getIndexInLayer;TextSprite.prototype.setIndexInLayer=Sprite.prototype.setIndexInLayer;TextSprite.prototype.setDrawModifiers=Sprite.prototype.setDrawModifiers;
+TextSprite.prototype.getDrawModifiers=Sprite.prototype.getDrawModifiers;TextSprite.prototype.setDirtyArea=function(){Sprite.prototype.setDirtyArea.apply(this)};
+TextSprite.prototype.drawToImage=function(a,b,c,d,e){var f=c||{x:0,y:0},c=document.createElement("canvas"),g=c.getContext("2d");b||"ok"!=wade.getLoadingStatus(a)?(c.width=this.boundingBox.maxX-this.boundingBox.minX+Math.abs(f.x),c.height=this.boundingBox.maxY-this.boundingBox.minY+Math.abs(f.y)):(b=wade.getImage(a),c.width=b.width,c.height=b.height,g.drawImage(b,0,0));b={x:this._position.x,y:this._position.y};this._position.x=f.x+c.width/(2*(d&&d.horizontalScale||1))-this._centerOffset.x;this._position.y=
+f.y+c.height/(2*(d&&d.verticalScale||1))-this._centerOffset.y;this._cornerX=this._position.x-this._size.x/2+this._centerOffset.x;this._cornerY=this._position.y-this._size.y/2+this._centerOffset.y;f=g.globalCompositeOperation;e&&(g.globalCompositeOperation=e);d?(g.save(),g.setTransform(d.horizontalScale,d.horizontalSkew,d.verticalSkew,d.verticalScale,d.horizontalTranslate,d.verticalTranslate),this.draw(g),g.restore()):this.draw(g);g.globalCompositeOperation=f;this._position=b;this._cornerX=this._position.x-
+this._size.x/2+this._centerOffset.x;this._cornerY=this._position.y-this._size.y/2+this._centerOffset.y;wade.setImage(a,c)};
+TextSprite.prototype.cache=function(){this._cachedImageName||(wade.textSpriteCacheCount=wade.textSpriteCacheCount+1||1,this._cachedImageName="__wade_TextSprite_cache_"+wade.textSpriteCacheCount);var a=this._rotation;a&&(this._rotation=0,this.updateOrientedBoundingBox(),this.updateBoundingBox());this.drawToImage(this._cachedImageName,!0);a&&(this._rotation=a,this.updateOrientedBoundingBox(),this.updateBoundingBox());this._image=wade.getImage(this._cachedImageName);wade.releaseImageReference(this._cachedImageName)};
+TextSprite.prototype.getImageName=function(){return this._cachedImageName||"__wade_TextSprite_no_image"};TextSprite.prototype.setActiveImage=function(){};
+TextSprite.prototype.getScreenPositionAndExtents=function(){var a={x:(this.boundingBox.maxX+this.boundingBox.minX)/2,y:(this.boundingBox.maxY+this.boundingBox.minY)/2},b=this._layer.worldDirectionToScreen({x:this.boundingBox.maxX-this.boundingBox.minX,y:this.boundingBox.maxY-this.boundingBox.minY}),a=this._layer.worldPositionToScreen(a);return{extents:{x:b.x/2,y:b.y/2},position:a}};
+TextSprite.prototype.updateBoundingBox=function(){if(this._rotation)this.boundingBox.minX=this._position.x-this.orientedBoundingBox.rx-wade.c_epsilon+this._centerOffset.x,this.boundingBox.minY=this._position.y-this.orientedBoundingBox.ry-wade.c_epsilon+this._centerOffset.y,this.boundingBox.maxX=this._position.x+this.orientedBoundingBox.rx+wade.c_epsilon+this._centerOffset.x,this.boundingBox.maxY=this._position.y+this.orientedBoundingBox.ry+wade.c_epsilon+this._centerOffset.y;else{var a=this._size.x/
+2,b=this._size.y/2;this.boundingBox.minX=this._position.x-a-wade.c_epsilon+this._centerOffset.x;this.boundingBox.minY=this._position.y-b-wade.c_epsilon+this._centerOffset.y;this.boundingBox.maxX=this._position.x+a+wade.c_epsilon+this._centerOffset.x;this.boundingBox.maxY=this._position.y+b+wade.c_epsilon+this._centerOffset.y}this.orientedBoundingBox.centerX=this._position.x+this._centerOffset.x;this.orientedBoundingBox.centerY=this._position.y+this._centerOffset.y;this._f32PositionAndSize&&(this._f32PositionAndSize[0]=
+this.orientedBoundingBox.centerX,this._f32PositionAndSize[1]=this.orientedBoundingBox.centerY,this._f32PositionAndSize[2]=this._size.x,this._f32PositionAndSize[3]=this._size.y);this._sceneObject&&this._sceneObject.isInScene()&&this._layer.onSpritePositionChanged(this)};TextSprite.prototype.setText=function(a){this.setDirtyArea();this._text=a.toString();this._fixedSize||(this._updateSize(),this.setDirtyArea());this._image=0};TextSprite.prototype.getText=function(){return this._text};
+TextSprite.prototype.setMaxWidth=function(a){this._maxWidth=a;!this._fixedSize&&this._updateSize();this._image=0};TextSprite.prototype.setMaxLines=function(a){if(this._maxLines!=a){if(this._maxLines=a)this._numLines=Math.min(this._numLines,this._maxLines);!this._fixedSize&&this._updateSize();this._image=0}};TextSprite.prototype.setColor=function(a){this._color=a;this.setDirtyArea();this._image=0};
+TextSprite.prototype.setShadow=function(a,b,c,d){this._shadowColor=a;this._shadowBlur=b;this._shadowOffset={x:c?c:0,y:d?d:0};this.setDirtyArea();this._fixedSize||(this._updateSize(),this.setDirtyArea());this._image=0};TextSprite.prototype.setFont=function(a){this._font=a;this.setDirtyArea();this._fixedSize||(this._updateSize(),this.setDirtyArea());this._image=0};
+TextSprite.prototype.setLineSpacing=function(a){this._lineSpacing=a;this.setDirtyArea();this._fixedSize||(this._updateSize(),this.setDirtyArea());this._image=0};TextSprite.prototype.setAlignment=function(a){this._alignment=a;this.setDirtyArea();this._fixedSize||(this._updateSize(),this.setDirtyArea());this._image=0};TextSprite.prototype.getLine=function(a){return this._lines[a].text};TextSprite.prototype.getNumLines=function(){return this._numLines};TextSprite.prototype.getLineWidth=function(a){return this._lines[a].width};
+TextSprite.prototype.setOutline=function(a,b){this._outlineWidth=a;this._outlineColor=b||"#000";this.setDirtyArea();this._image=0};
+TextSprite.prototype.clone=function(){var a=new TextSprite;jQuery.extend(a,this);a._sceneObject=0;a.quadTreeNode=0;a._position={x:this._position.x,y:this._position.y};a._sortPoint={x:this._sortPoint.x,y:this._sortPoint.y};a._boundsScale={x:this._boundsScale.x,y:this._boundsScale.y};a._shadowOffset={x:this._shadowOffset.x,y:this._shadowOffset.y};a._centerOffset={x:this._centerOffset.x,y:this._centerOffset.y};a._size={x:this._size.x,y:this._size.y};a.boundingBox=jQuery.extend({},this.boundingBox);a.orientedBoundingBox=
+jQuery.extend({},this.orientedBoundingBox);window.Float32Array&&(a._f32AnimFrameInfo=this._f32AnimFrameInfo?new Float32Array([this._f32AnimFrameInfo[0],this._f32AnimFrameInfo[1],this._f32AnimFrameInfo[2],this._f32AnimFrameInfo[3]]):new Float32Array([0,0,1,1]),a._f32PositionAndSize=this._f32PositionAndSize?new Float32Array([this._f32PositionAndSize[0],this._f32PositionAndSize[1],this._f32PositionAndSize[2],this._f32PositionAndSize[3]]):new Float32Array([0,0,1,1]),a._f32RotationAlpha=this._f32RotationAlpha?
+new Float32Array([this._f32RotationAlpha[0],this._f32RotationAlpha[1]]):new Float32Array([0,0]));this._cachedImageName&&(a._cachedImageName=0,a.cache());return a};
+TextSprite.prototype.serialize=function(a,b){var c={type:"TextSprite",text:this._text,name:this._name,font:this._font,alignment:this._alignment,color:this._color,visible:this._visible,layer:this._layer.id,maxWidth:this._maxWidth,shadowColor:this._shadowColor,shadowBlur:this._shadowBlur,shadowOffset:{x:this._shadowOffset.x,y:this._shadowOffset.y},lineSpacing:this._lineSpacing,maxLines:this._maxLines,outlineColor:this._outlineColor,outlineWidth:this._outlineWidth,boundsScale:{x:this._boundsScale.x,
+y:this._boundsScale.y},sortPoint:{x:this._sortPoint.x,y:this._sortPoint.y},fixedSize:this._fixedSize,properties:{}},d;for(d in this._animations)this._animations.hasOwnProperty(d)&&!this._animations[d].isDefault&&(c.animations[d]=this._animations[d].serialize());d=["sceneObject","boundingBox","orientedBoundingBox","id","needsDrawing"];b&&(d=d.concat(b));for(var e in this)if(this.hasOwnProperty(e)&&"_"!=e[0]&&-1==d.indexOf(e))try{var f=JSON.stringify(this[e]);c.properties[e]=JSON.parse(f)}catch(g){}return a?
+JSON.stringify(c):c};TextSprite.prototype.scaleBounds=function(a,b){this._boundsScale={x:a,y:b};this._updateSize();this._image=0};TextSprite.prototype.setFixedSize=function(a){"undefined"==typeof a&&(a=!0);this._fixedSize=a};TextSprite.prototype.getSize=function(){return{x:this._size.x,y:this._size.y}};
+TextSprite.prototype._updateSize=function(){var a=wade.getInternalContext();this._lines.length=0;var b=$('<span style="white-space:nowrap">'+this._text.replace("<","< ")+"</span>").css({font:this._font}),c=$('<div style="display: inline-block; width: 1px; height: 0px;"></div>'),d=$('<div style="white-space:nowrap"></div>');d.append(b,c);$("body").append(d);c.css({verticalAlign:"bottom"});var e=c.offset().top-b.offset().top;c.css({verticalAlign:"baseline"});e||(e=3*a.measureText("m").width+this._outlineWidth);
+this._centerOffset.y=e/2+(b.offset().top-c.offset().top);d.remove();this._lineHeight=e;this._refresh(0,this._lines,a);this._numLines=this._lines.length;for(b=a=0;b<this._lines.length;b++)a=Math.max(a,this._lines[b].width);this._size.x=a;this._size.y=e+(this._numLines-1)*this._lineSpacing*e;this._centerOffset.y+=(this._size.y-e)/2;switch(this._alignment){case "left":this._centerOffset.x=a/2;break;case "right":this._centerOffset.x=-a/2;break;case "center":this._centerOffset.x=0}this._shadowColor&&(this._size.x+=
+Math.abs(this._shadowOffset.x)+Math.max(8,2*this._shadowBlur),this._size.y+=Math.abs(this._shadowOffset.y)+Math.max(8,2*this._shadowBlur));this._outlineWidth&&(this._size.x+=this._outlineWidth,this._size.y+=this._outlineWidth);this._size.x+=3;this._size.y+=3;this._size.x*=this._boundsScale.x;this._size.y*=this._boundsScale.y;this.updateBoundingBox()};TextSprite.prototype._calculateHeight=function(){return height};
+TextSprite.prototype.draw=function(a){if(a.isWebGl)TextSprite.prototype.draw_gl.call(this,a);else if(this._visible&&this._text)if(this._image){this._cornerX=this._position.x-this._size.x/2+this._centerOffset.x;this._cornerY=this._position.y-this._size.y/2+this._centerOffset.y;var b=this._position.x,c=this._position.y;this._position.x=this.orientedBoundingBox.centerX;this._position.y=this.orientedBoundingBox.centerY;Sprite.prototype.drawStatic.call(this,a);this._position.x=b;this._position.y=c}else this._refresh(1,
+0,a)};TextSprite.prototype.draw_gl=function(a){a.isWebGl?this._visible&&this._text&&(this._image||this.cache(),this._activeImage=this._cachedImageName,this._cornerX=this.boundingBox.minX,this._cornerY=this.boundingBox.minY,Sprite.prototype.drawStatic_gl.call(this,a)):TextSprite.prototype.draw.call(this,a)};TextSprite.prototype.step=function(){};TextSprite.prototype.playAnimation=function(){};TextSprite.prototype.setSceneObject=function(a){this._sceneObject=a};
+TextSprite.prototype._refresh=function(a,b,c){c=c||wade.getInternalContext();this._rotation&&(c.save(),c.translate(this._position.x+this._centerOffset.x,this._position.y+this._centerOffset.y),c.rotate(this._rotation),c.translate(-this._position.x-this._centerOffset.x,-this._position.y-this._centerOffset.y));c.font=this._font;c.fillStyle=this._color;c.textAlign=this._alignment;this._shadowColor&&(c.shadowColor=this._shadowColor,c.shadowBlur=this._shadowBlur,c.shadowOffsetX=this._shadowOffset.x,c.shadowOffsetY=
+this._shadowOffset.y);if(this._outlineWidth){var d=c.strokeStyle,e=c.lineWidth;c.lineWidth=this._outlineWidth;c.strokeStyle=this._outlineColor}if(!this._maxWidth&&0>this._text.indexOf("\n"))a&&(c.fillText(this._text,this._position.x,this._position.y),this._outlineWidth&&c.strokeText(this._text,this._position.x,this._position.y)),b&&b.push({width:c.measureText(this._text).width+this._outlineWidth,text:this._text});else{for(var f=0,g=this._text.split("\n"),i=0;i<g.length&&(!this._maxLines||f<this._maxLines);i++){for(var l=
+g[i].split(" "),j=1,h;0<l.length&&j<=l.length&&(!this._maxLines||f<this._maxLines);)h=l.slice(0,j).join(" "),c.measureText(h).width+this._outlineWidth>this._maxWidth&&0<this._maxWidth?(1==j&&(j=2),h=l.slice(0,j-1).join(" "),a&&(c.fillText(h,this._position.x,this._position.y+this._lineHeight*this._lineSpacing*f),this._outlineWidth&&c.strokeText(this._text,this._position.x,this._position.y)),b&&b.push({width:c.measureText(h).width+this._outlineWidth,text:h}),f++,l=l.splice(j-1),j=1):j++;0<j&&(h=l.join(" "),
+a&&(c.fillText(h,this._position.x,this._position.y+this._lineHeight*this._lineSpacing*f),this._outlineWidth&&c.strokeText(this._text,this._position.x,this._position.y)),b&&b.push({width:c.measureText(h).width+this._outlineWidth,text:h}),f++)}this._numLines=f}this._shadowColor&&(c.shadowColor="rgba(0, 0, 0, 0)");this._outlineWidth&&(c.strokeStyle=d,c.lineWidth=e);this._rotation&&c.restore()};
+function Wade(){var a=0,b=0,c=0,d=0,e=0,f=0,g=!1,i=!1,l="",j=1,h=[],k=[],n=0,m=!1,p=1,q="none",A=new Image,v=[],u,B,r,G,E,t,x,C=1,y="wade_main_div";A.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII=";this.app=0;this.c_timeStep=1/60;this.defaultLayer=1;this._appData=0;this.c_epsilon=1E-4;this.init=function(s,e,g){var g=g||{},f=g.forceReload,F=g.updateCallback;y=g.container||"wade_main_div";var h=function(){var a=window.applicationCache;
+if(a)if(a.status==a.UPDATEREADY)wade.log("a new version of the app is available"),F?F():(alert("A new version is available.\nPlease press OK to restart."),a.swapCache(),window.location.reload(!0),window.location=window.location);else{try{a.update()}catch(b){}a.addEventListener("updateready",h,!1)}};h();s&&(l=s.substr(0,Math.max(s.lastIndexOf("/"),s.lastIndexOf("\\"))+1));for(var H=0,i=["ms","moz","webkit","o"],j=0;j<i.length&&!window.requestAnimationFrame;j++)window.requestAnimationFrame=window[i[j]+
+"RequestAnimationFrame"],window.cancelAnimationFrame=window[i[j]+"CancelAnimationFrame"]||window[i[j]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(a){var b=(new Date).getTime(),c=Math.max(0,16-(b-H)),s=window.setTimeout(function(){a(b+c)},c);H=b+c;return s});window.cancelAnimationFrame||(window.cancelAnimationFrame=function(a){clearTimeout(a)});i="undefined"==typeof g.audio||g.audio;x=g.audioContext;if(i&&!x){try{window.AudioContext=window.AudioContext||
+window.webkitAudioContext;x=new AudioContext;var k=XMLHttpRequest&&"string"===typeof(new XMLHttpRequest).responseType}catch(m){}k||wade.log("Warning: the WebAudio API is not supported by this browser. Audio functionality will be limited")}b=new AssetLoader;b.init(!1);c=new AssetLoader;c.init(!0);a=new SceneManager;a.init();d=new InputManager;("undefined"==typeof g.input||g.input)&&d.init();r=document.createElement("canvas");r.width=r.height=256;G=r.getContext("2d");this.proceduralImages.init();t=
+!!g.debug;this._appData=e?e:{};s?b.loadAppScript(s,f):window.App?this.instanceApp():wade.log("Warning - App is not defined.");this.event_mainLoop()};this.stop=function(){e&&cancelAnimationFrame(e);f&&clearTimeout(f);this.setLoadingImages([]);wade.stopInputEvents()};this.stopInputEvents=function(){d.deinit()};this.restartInputEvents=function(){d.init()};this.cancelInputEvents=function(a){d.cancelEvents(a)};this.getBasePath=function(){return l};this.setBasePath=function(a){l=a||""};this.getFullPathAndFileName=
+function(a){if(!a||"procedural_"==a.substr(0,11))return a;var b=a[0];return"\\"==b||"/"==b||-1!=a.indexOf(":")?a:l+a};this.loadScript=function(a,c,d,e,g){a=this.getFullPathAndFileName(a);b.loadScript(a,c,d,e,g)};this.preloadScript=function(a,b,d,e,g){a=this.getFullPathAndFileName(a);c.loadScript(a,b,d,e,g)};this.getScript=function(a){a=this.getFullPathAndFileName(a);return b.getScript(a)};this.setScript=function(a,d,e){a=this.getFullPathAndFileName(a);b.setScript(a,d);e&&c.setScript(a,d)};this.loadJson=
+function(a,c,d,e,g){a=this.getFullPathAndFileName(a);b.loadJson(a,c,d,e,g)};this.preloadJson=function(a,b,d,e,g){a=this.getFullPathAndFileName(a);c.loadJson(a,b,d,e,g)};this.getJson=function(a){a=this.getFullPathAndFileName(a);return b.getJson(a)};this.setJson=function(a,d,e){a=this.getFullPathAndFileName(a);b.setJson(a,d);e&&c.setJson(a,d)};this.loadImage=function(a,c,d){a=this.getFullPathAndFileName(a);b.loadImage(a,c,d)};this.loadImages=function(a){for(var b=0;b<a.length;b++)this.loadImage(a[b])};
+this.preloadImage=function(a,b,d){a=this.getFullPathAndFileName(a);c.loadImage(a,b,d)};this.unloadImage=function(a){a=this.getFullPathAndFileName(a);b.unloadImage(a);c.unloadImage(a)};this.unloadAllImages=function(){b.unloadAllImages();c.unloadAllImages()};this.getImage=function(a,c){if(a){var d=this.getFullPathAndFileName(a);return b.getImage(d,c)}return A};this.setImage=function(d,e,g){d=this.getFullPathAndFileName(d);b.setImage(d,e);g&&c.setImage(d,e);a.renderer.updateImageUsers(d)};this.loadAudio=
+function(a,c,d,e,g){a=this.getFullPathAndFileName(a);b.loadAudio(a,c,d,e,g)};this.preloadAudio=function(a,b,d,e,g){a=this.getFullPathAndFileName(a);c.loadAudio(a,b,d,e,g)};this.unloadAudio=function(a){a=this.getFullPathAndFileName(a);b.unloadAudio(a);c.unloadAudio(a)};this.unloadAllAudio=function(){b.unloadAllAudio();c.unloadAllAudio()};this.setAudio=function(a,d,e,g){a=this.getFullPathAndFileName(a);b.setAudio(a,d,e);g&&c.setAudio(a,d,e)};this.playAudio=function(a,b,c){var d=this.getAudio(a);if(x){var e=
+x.createBufferSource();e.buffer=d;e.loop=!!b;e.connect(x.destination);e.endEventFired=!1;e.onended=function(){e.endEventFired=!0;c&&(c(),c=null)};e.start(0);v.push(e);if(c&&!b){var g=function(){e.playbackState!=e.FINISHED_STATE?setTimeout(g,wade.c_timeStep):e.onended&&!e.endEventFired&&(e.endEventFired=!0,e.onended())};e.checkEnded=setTimeout(g,1E3*e.buffer.duration+wade.c_timeStep)}}else d.alreadyPlayed&&!d.ended&&(d=new Audio(d.src),this.setAudio(a,d)),d.loop=b,d.alreadyPlayed=!0,b&&d.addEventListener("ended",
+function(){this.currentTime=0;this.play()},!1),d.play(),v.push(d);return v.length};this.stopAudio=function(a){if("undefined"==typeof a)for(a=0;a<v.length;a++)v[a]&&(v[a].stop(),v[a].checkEnded&&clearTimeout(v[a].checkEnded));else if(a=v[a-1])a.stop(),a.checkEnded&&clearTimeout(a.checkEnded)};this.playAudioIfAvailable=function(a,b,c){return"ok"==this.getLoadingStatus(this.getFullPathAndFileName(a))?this.playAudio(a,b,c):0};this.playAudioSegment=function(a,b,c,d){b=b||0;a=this.getAudio(this.getFullPathAndFileName(a));
+if(x){var e=x.createBufferSource();e.buffer=a;e.connect(x.destination);e.endEventFired=!1;e.onended=function(){e.endEventFired=!0;d&&(d(),d=null)};e.start(b);if(d){var g=function(){e.playbackState!=e.FINISHED_STATE?setTimeout(g,wade.c_timeStep):e.onended&&!e.endEventFired&&(e.endEventFired=!0,e.onended())};e.checkEnded=setTimeout(g,1E3*(e.buffer.duration-b)+wade.c_timeStep)}c&&e.stop(c);v.push(e)}else c=c||a.duration,a.alreadyPlayed&&!a.ended&&(a=new Audio(a.src)),a.addEventListener("timeupdate",
+function(){this.currentTime>=c&&(this.pause(),this.ended=!0,d&&d())},!1),a.alreadyPlayed=!0,a.play(),v.push(a);return v.length-1};this.playAudioSegmentIfAvailable=function(a,b,c,d){"ok"==this.getLoadingStatus(this.getFullPathAndFileName(a))&&this.playAudioSegment(a,b,c,d)};this.loadFont=function(a,c,d){a=this.getFullPathAndFileName(a);b.loadFont(a,c,d)};this.preloadFont=function(a,b,d){a=this.getFullPathAndFileName(a);c.loadFont(a,b,d)};this.getFont=function(a){a=this.getFullPathAndFileName(a);return b.getFont(a)};
+this.setFont=function(a,d,e){a=this.getFullPathAndFileName(a);b.setFont(a,d);e&&c.setFont(a,d)};this.getLoadingStatus=function(a){a=this.getFullPathAndFileName(a);return b.getLoadingStatus(a)};this.instanceApp=function(){this.app=new App;this.app.appData=this._appData;this.app.load&&this.app.load();g=!1;i=!0};this.initializeApp=function(){g=!0;var a=0<=navigator.userAgent.indexOf("Android")&&-1==navigator.userAgent.indexOf("Firefox")&&!(window.chrome&&window.chrome.app)&&!this.isWebGlSupported();
+this.enableDoubleBuffering(a);this.app.init?(this.app.init(),f=setTimeout(function(){wade.event_appTimerEvent()},1E3*j)):wade.log("Warning: Unable to initialize app. App.init function is missing.")};this.processEvent=function(b,c){return a.processEvent(b,c)};this.addEventListener=function(b,c){a.addEventListener(b,c)};this.removeEventListener=function(b,c){a.removeEventListener(b,c)};this.isEventListener=function(b,c){return a.isObjectListeneningForEvent(b,c)};this.addGlobalEventListener=function(b,
+c){a.addGlobalEventListener(b,c)};this.removeGlobalEventListener=function(b,c){a.removeGlobalEventListener(b,c)};this.getCameraPosition=function(){return a.renderer.getCameraPosition()};this.setCameraPosition=function(b){a.renderer.setCameraPosition(b)};this.getAppTime=function(){return a.getAppTime()};this.setAppTimerInterval=function(a){j=a};this.removeObjectFromArrayByIndex=function(a,b){if(0<=a){var c=b.slice(a+1||b.length);b.length=a;return b.push.apply(b,c)}return b};this.removeObjectFromArray=
+function(a,b){var c=b.lastIndexOf(a);return-1!=c?this.removeObjectFromArrayByIndex(c,b):b};this.addSceneObject=function(b,c,d){a.addSceneObject(b,c,d);return b};this.removeSceneObject=function(b){a.removeSceneObject("string"==typeof b?this.getSceneObject(b):b)};this.removeSceneObjects=function(b){for(var c=0;c<b.length;c++)a.removeSceneObject(b[c])};this.clearScene=function(){a.clear()};this.getLayerSorting=function(b){return a.renderer.getLayerSorting(b)};this.setLayerSorting=function(b,c){a.renderer.setLayerSorting(b,
+c)};this.setLayerTransform=function(b,c,d){a.renderer.setLayerTransform(b,c,d)};this.setLayerResolutionFactor=function(b,c){a.renderer.setLayerResolutionFactor(b,c)};this.getLayerResolutionFactor=function(b){return a.renderer.getLayerResolutionFactor(b)};this.setResolutionFactor=function(b){p=b;a.renderer.setResolutionFactor(p)};this.getResolutionFactor=function(){return p};this.getScreenWidth=function(){return a.renderer.getScreenWidth()};this.getScreenHeight=function(){return a.renderer.getScreenHeight()};
+this.setScreenSize=function(b,c){a.renderer.setScreenSize(b,c)};this.getContainerWidth=function(){return this.isScreenRotated()?window.innerHeight:window.innerWidth};this.getContainerHeight=function(){return this.isScreenRotated()?window.innerWidth:window.innerHeight};this.setCanvasClearing=function(b,c){a.renderer.setCanvasClearing(b,c)};this.setWindowMode=function(b){a.renderer.setWindowMode(b)};this.getWindowMode=function(){return a.renderer.getWindowMode()};this.loadPage=function(a){self.location=
+a};this.cloneObject=function(a){return jQuery.extend(!0,{},a)};this.cloneArray=function(a){return jQuery.extend(!0,[],a)};this.simulateSceneObject=function(b,c){c?b.simulated||(a.addEventListener(b,"onSimulationStep"),b.simulated=!0):b.simulated&&(a.removeEventListener(b,"onSimulationStep"),b.simulated=!1)};this.setMaxScreenSize=function(b,c){a.renderer.setMaxScreenSize(b,c)};this.getMaxScreenWidth=function(){return a.renderer.getMaxScreenWidth()};this.getMaxScreenHeight=function(){return a.renderer.getMaxScreenHeight()};
+this.setMinScreenSize=function(b,c){return a.renderer.setMinScreenSize(b,c)};this.getMinScreenWidth=function(){return a.renderer.getMinScreenWidth()};this.getMinScreenHeight=function(){return a.renderer.getMinScreenHeight()};this.createCanvas=function(a){var a=a||1,b=document.getElementById(y),c=$("#"+y),d=parseInt(c.attr("width")),c=parseInt(c.attr("height")),e=document.createElement("canvas");e.width=Math.round(d*a);e.height=Math.round(c*a);e.style.position=b.style.position;e.style.margin="auto";
+e.style.top=0;e.style.left=0;e.style.right=0;e.style.bottom=0;e.style.backfaceVisibility=e.style.WebkitBackfaceVisibility=e.style.MozBackfaceVisibility=e.style.OBackfaceVisibility="hidden";var a=e.style.width.toString().toLowerCase(),g=e.style.height.toString().toLowerCase();a==g&&"auto"==a?(e.style.width=d+"px",e.style.height=c+"px"):(e.style.width=b.style.width,e.style.height=b.style.height);e.style.MozTransform=e.style.msTransform=e.style.OTransform=e.style.WebkitTransform=e.style.transform="translate3d(0,0,0)";
+b.appendChild(e);return e};this.deleteCanvases=function(){a.renderer.removeCanvases()};this.recreateCanvases=function(){a.renderer.recreateCanvases()};this.isAppInitialized=function(){return g};this.boxContainsBox=function(a,b){return a.minX<b.minX&&a.maxX>b.maxX&&a.minY<b.minY&&a.maxY>b.maxY};this.boxIntersectsBox=function(a,b){return!(a.maxX<b.minX||a.minX>b.maxX||a.maxY<b.minY||a.minY>b.maxY)};this.boxContainsPoint=function(a,b){return b.x>=a.minX&&b.x<=a.maxX&&b.y>=a.minY&&b.y<=a.maxY};this.orientedBoxContainsPoint=
+function(a,b){var c=Math.sin(a.rotation),d=Math.cos(a.rotation),e=b.x-a.centerX,g=b.y-a.centerY,f=d*e+c*g,c=d*g-c*e;return f>=-a.halfWidth&&f<=a.halfWidth&&c>=-a.halfHeight&&c<=a.halfHeight};this.orientedBoxIntersectsOrientedBox=function(a,b){var c=b.centerX-a.centerX,d=b.centerY-a.centerY,e=a.axisXx,g=a.axisXy,f=a.axisYx,h=a.axisYy,i=b.axisXx,j=b.axisXy,k=b.axisYx,l=b.axisYy;return!(Math.abs(c*e+d*g)>e*e+g*g+Math.abs(i*e+j*g)+Math.abs(k*e+l*g)||Math.abs(c*f+d*h)>f*f+h*h+Math.abs(i*f+j*h)+Math.abs(k*
+f+l*h)||Math.abs(c*i+d*j)>i*i+j*j+Math.abs(i*e+j*g)+Math.abs(i*f+j*h)||Math.abs(c*k+d*l)>k*k+l*l+Math.abs(k*e+l*g)+Math.abs(k*f+l*h))};this.boxIntersectsOrientedBox=function(a,b){var c=(a.minX+a.maxX)/2-b.centerX,d=(a.minY+a.maxY)/2-b.centerY,e=(a.maxX-a.minX)/2,g=(a.maxY-a.minY)/2,f=b.axisXx,h=b.axisXy,i=b.axisYx,j=b.axisYy;return!(Math.abs(c*e)>e*e+Math.abs(f*e)+Math.abs(i*e)||Math.abs(d*g)>g*g+Math.abs(h*g)+Math.abs(j*g)||Math.abs(c*f+d*h)>f*f+h*h+Math.abs(f*e)+Math.abs(h*g)||Math.abs(c*i+d*j)>
+i*i+j*j+Math.abs(i*e)+Math.abs(j*g))};this.orientedBoxIntersectsBox=function(a,b){return this.boxIntersectsOrientedBox(b,a)};this.expandBox=function(a,b){a.minX=Math.min(a.minX,b.minX);a.minY=Math.min(a.minY,b.minY);a.maxX=Math.max(a.maxX,b.maxX);a.maxY=Math.max(a.maxY,b.maxY)};this.clampBoxToBox=function(a,b){a.minX=Math.max(a.minX,b.minX);a.minY=Math.max(a.minY,b.minY);a.maxX=Math.min(a.maxX,b.maxX);a.maxY=Math.min(a.maxY,b.maxY)};this.postObject=function(a,b,c,d){b={data:JSON.stringify(b)};d&&
+jQuery.extend(b,d);$.ajax({type:"POST",url:a,data:b,complete:c,dataType:"json"})};this.setGlobalLoadingCallback=function(a){b.setGlobalCallback(a)};this.setMainLoopCallback=function(a,b,c){for(var b=b||"_wade_default",d=0;d<k.length&&k[d].name!=b;d++);k[d]={func:a,name:b,priority:c||0};k.sort(function(a,b){return b.priority-a.priority})};this.setLoadingImages=function(a,b){for(var c=0;c<h.length;c++)document.body.removeChild(h[c]);h.length=0;jQuery.isArray(a)||(a=[a]);for(c=0;c<a.length;c++){var d=
+document.createElement("img");d.className="loadingImage_class";d.style.display="none";var e=document.getElementById("container");document.body.insertBefore(d,e);d.src=this.getFullPathAndFileName(a[c]);h.push(d);b&&d.addEventListener("click",function(){window.open(b,"_blank")})}};this.worldPositionToScreen=function(b,c){return a.renderer.worldPositionToScreen(b,c)};this.worldDirectionToScreen=function(b,c){return a.renderer.worldDirectionToScreen(b,c)};this.worldBoxToScreen=function(b,c){return a.renderer.worldBoxToScreen(b,
+c)};this.worldUnitToScreen=function(b){return a.renderer.worldUnitToScreen(b)};this.screenPositionToWorld=function(b,c){return a.renderer.screenPositionToWorld(b,c)};this.screenDirectionToWorld=function(b,c){return a.renderer.screenDirectionToWorld(b,c)};this.screenBoxToWorld=function(b,c){return a.renderer.screenBoxToWorld(b,c)};this.screenUnitToWorld=function(b){return a.renderer.screenUnitToWorld(b)};this.worldPositionToCanvas=function(b,c){return a.renderer.worldPositionToCanvas(b,c)};this.worldDirectionToCanvas=
+function(b,c){return a.renderer.worldDirectionToCanvas(b,c)};this.worldBoxToCanvas=function(b,c){return a.renderer.worldBoxToCanvas(b,c)};this.worldUnitToCanvas=function(b){return a.renderer.worldUnitToCanvas(b)};this.canvasPositionToWorld=function(b,c){return a.renderer.canvasPositionToWorld(b,c)};this.canvasDirectionToWorld=function(b,c){return a.renderer.canvasDirectionToWorld(b,c)};this.canvasBoxToWorld=function(b,c){return a.renderer.canvasBoxToWorld(b,c)};this.canvasUnitToWorld=function(b){return a.renderer.canvasUnitToWorld(b)};
+this.setMinimumInputEventInterval=function(a,b){d.setMinimumIntervalBetweenEvents(a,b)};this.isMouseDown=function(){return d.isMouseDown()};this.isKeyDown=function(a){return d.isKeyDown(a)};this.unpackSpriteSheet=function(a,b,c,d,e){for(var c=c||1,d=d||1,g=this.getImage(a),f=g.width/c,g=g.height/d,h=0;h<b.length&&h<c*d;h++){var i=document.createElement("canvas");i.width=f;i.height=g;(new Animation(a,c,d,1,!1,h,h)).draw(i.getContext("2d"),{x:f/2,y:g/2},{x:f,y:g});wade.setImage(b[h]||a+"_"+h,i)}e&&
+this.unloadImage(a)};this.storeLocalObject=function(a,b){localStorage.setItem(a,JSON.stringify(b))};this.retrieveLocalObject=function(a){return(a=localStorage.getItem(a))&&JSON.parse(a)};this.enableDoubleBuffering=function(b){"undefined"==typeof b&&(b=!0);m!=b&&(a.renderer.enableDoubleBuffering(b),m=b)};this.isDoubleBufferingEnabled=function(){return m};this.setFullScreen=function(a){var b=document.documentElement;a||"undefined"==typeof a?a=b.requestFullScreen||b.requestFullscreen||b.mozRequestFullScreen||
+b.mozRequestFullscreen||b.webkitRequestFullScreen||b.webkitRequestFullscreen||b.msRequestFullScreen||b.msRequestFullscreen:(b=document,a=b.exitFullscreen||b.msExitFullscreen||b.mozCancelFullScreen||b.webkitCancelFullScreen);a&&a.call(b)};this.setLayerSmoothing=function(b,c){"undefined"==typeof c&&(c=!0);a.renderer.setLayerSmoothing(b,c)};this.getLayerSmoothing=function(b){return a.renderer.getLayerSmoothing(b)};this.setSmoothing=function(b){"undefined"==typeof b&&(b=!0);a.renderer.setSmoothing(b)};
+this.getSmoothing=function(){return a.renderer.getSmoothing()};this.setClickTolerance=function(a){d.setClickTolerance(a)};this.getMousePosition=function(){return d.getMousePosition()};this.isWebAudioSupported=function(){return!!x};this.forceOrientation=function(b){if(q!=b){switch(b){case "landscape":q="landscape";break;case "portrait":q="portrait";break;default:q="none"}a.setSimulationDirtyState();a.draw()}};this.getForcedOrientation=function(){return q};this.isScreenRotated=function(){return a.renderer.isScreenRotated()};
+this.moveCamera=function(a,b,c){"object"!=typeof a||"number"!=typeof a.x||"number"!=typeof a.y||"number"!=typeof a.z?wade.log("Warning - invalid destination for wade.moveCamera(). It needs to be an object with x, y, and z fields."):"number"!=typeof b&&"function"!=typeof b?wade.log("Warning - invalid speed for wade.moveCamera(). It needs to be a number, or a function that returns a number."):this.setMainLoopCallback(function(){var d=wade.getCameraPosition(),e=a.x-d.x,g=a.y-d.y,f=a.z-d.z,h=Math.sqrt(e*
+e+g*g+f*f),i="number"==typeof b?b:b(h)||0;h<=i*wade.c_timeStep?(wade.setCameraPosition(a),wade.setMainLoopCallback(0,"_wade_camera"),c&&c(),wade.app.onCameraMoveComplete&&wade.app.onCameraMoveComplete()):wade.setCameraPosition({x:d.x+e*i*wade.c_timeStep/h,y:d.y+g*i*wade.c_timeStep/h,z:d.z+f*i*wade.c_timeStep/h})},"_wade_camera")};this.setCameraTarget=function(a,b,c){a?(b=b||0,c=c||{x:0,y:0},this.setMainLoopCallback(function(){if(a.isInScene()){var d=a.getPosition(),e=wade.getCameraPosition();d.x+=
+c.x;d.y+=c.y;d.z=e.z;if(b){var e={x:d.x*(1-b)+e.x*b,y:d.y*(1-b)+e.y*b,z:d.z*(1-b)+e.z*b},g=e.x-d.x,f=e.y-d.y,h=e.z-d.z;g*g+f*f+h*h>b*b&&(d=e)}wade.setCameraPosition(d)}},"_wade_cameraTarget")):this.setMainLoopCallback(0,"_wade_cameraTarget")};this.getObjectsInArea=function(b,c){var d=[];a.renderer.addObjectsInAreaToArray(b,d,c);return d};this.getObjectsInScreenArea=function(b){var c=[];a.renderer.addObjectsInScreenAreaToArray(b,c);return c};this.getSpritesInArea=function(b,c){var d=[];a.renderer.addSpritesInAreaToArray(b,
+d,c);return d};this.getSpritesInScreenArea=function(b){var c=[];a.renderer.addSpritesInScreenAreaToArray(b,c);return c};this.getSceneObject=function(b){return a.getObjectByName(b)};this.getSceneObjects=function(b,c){return a.getSceneObjects(b,c)};this.getImageData=function(a,c,d,e,g){var f=this.getFullPathAndFileName(a),f=b.getImage(f),h;if(f.getContext)h=f.getContext("2d");else{var i=f,f=document.createElement("canvas");f.width=i.width;f.height=i.height;h=f.getContext("2d");h.drawImage(i,0,0);wade.setImage(a,
+f)}return h.getImageData(c||0,d||0,e||f.width,g||f.height)};this.putImageData=function(c,d,e,g,f,h,i,j){var e=e||0,g=g||0,f=f||0,h=h||0,i=i||d.width,j=j||d.height,k=this.getFullPathAndFileName(c),l,m;if("ok"==b.getLoadingStatus(k))if(l=b.getImage(k),l.getContext)m=l.getContext("2d");else{var n=l;l=document.createElement("canvas");l.width=n.width;l.height=n.height;m=l.getContext("2d");m.drawImage(n,0,0);wade.setImage(c,l)}else l=document.createElement("canvas"),l.width=i,l.height=j,m=l.getContext("2d"),
+wade.setImage(c,l);m.putImageData(d,f,h,e,g,i,j);a.renderer.updateImageUsers(k)};this.enableMultitouch=function(a){"undefined"==typeof a&&(a=!0);d.enableMultitouch(a)};this.isMultitouchEnabled=function(){return d.isMultitouchEnabled()};this.getVersion=function(){return"2.1"};this.requireVersion=function(a,b,c){for(var d=["2","1"],e=a.split("."),g=0;g<e.length;g++){var f=d[g]||0;if(f>e[g])break;else if(f<e[g]){c=c||"A newer version of WADE is required ("+a+")";switch(b){case "alert":alert(c);break;
+case "console":wade.log(c)}return!1}}return!0};this.getLoadingPercentage=function(){return b.getPercentageComplete()};this.setLoadingBar=function(a,b,c,d){if(a){var a=document.createElement("div"),e=document.createElement("div");a.style.backgroundColor=c||"red";a.style.borderRadius="13px";a.style.padding="3px";a.style.width="50%";a.style.height="20px";a.style.position="absolute";a.style.left=b?2*b.x+"px":0;a.style.right=0;a.style.top=b?2*b.y+"px":0;a.style.bottom=0;a.style.margin="auto";e.style.backgroundColor=
+d||"orange";e.style.borderRadius="10px";e.style.height="20px";e.style.width=0;a.appendChild(e);a.id="__wade_loading_bar";u=a;u.inner=e;document.body.appendChild(a)}else u&&document.body.removeChild(u),u=null};this.areGamepadsSupported=function(){return!(!navigator.webkitGetGamepads&&!navigator.getGamepads)};this.enableGamepads=function(){d.enableGamepads()};this.getImageDataURL=function(a){var b=wade.getImage(a);if(b.toDataURL)return b.toDataURL();(new Sprite(a)).drawToImage(a,!0);return wade.getImage(a).toDataURL()};
+this.getLayerDataURL=function(a){return this.getLayer(a).toDataURL()};this.log=function(a){console.log(a)};this.forceRedraw=function(b){a.setSimulationDirtyState();a.renderer.forceRedraw(b)};this.forEachPixel=function(a,b,c){for(var d=this.getImageData(a),e=0;e<d.width;e++)for(var g=0;g<d.height;g++){var f=4*(e+g*d.width),h=b(d.data[f],d.data[f+1],d.data[f+2],d.data[f+3],e,g);h&&(d.data[f]=h.r||0,d.data[f+1]=h.g||0,d.data[f+2]=h.b||0,d.data[f+3]=h.a||0)}wade.putImageData(c||a,d)};this.getLayerCanvas=
+function(a){return wade.getLayer(a||1).getCanvas()};this.drawLayerToImage=function(a,b,c,d,e,g){var f=wade.getLayerCanvas(a),h="__wade_layer"+a;wade.setImage(h,f);f=new Sprite(h);h=wade.getLayerOpacity(a);1!=h&&f.setDrawFunction(wade.drawFunctions.alpha_(h,f.draw));e||(a=this.getLayerResolutionFactor(a),e={horizontalScale:1/a,verticalScale:1/a,horizontalSkew:0,verticalSkew:0,horizontalTranslate:0,verticalTranslate:0});f.drawToImage(b,c,d,e,g)};this.screenCapture=function(b){var c=a.renderer.getActiveLayerIds();
+if(c.length){var d=new Sprite(null,c[0]);d.setSize(wade.getScreenWidth(),wade.getScreenHeight());d.setDrawFunction(wade.drawFunctions.transparent_());d.drawToImage(b,!0);for(d=0;d<c.length;d++)wade.drawLayerToImage(c[d],b)}};this.setLayerOpacity=function(a,b){this.getLayer(a).setOpacity(b)};this.getLayerOpacity=function(a){a=parseFloat(this.getLayer(a).getOpacity());return isNaN(a)?1:a};this.getContainerName=function(){return y};this.fadeInLayer=function(a,b,c){var d="__wade_fadeLayer_"+a;wade.setLayerOpacity(a,
+0);this.setMainLoopCallback(function(){var e=wade.getLayerOpacity(a),e=Math.min(1,e+wade.c_timeStep/b);1-e<wade.c_epsilon&&(e=1);wade.setLayerOpacity(a,e);1==e&&(wade.setMainLoopCallback(null,d),c&&c())},d)};this.fadeOutLayer=function(a,b,c){var d="__wade_fadeLayer_"+a;wade.setLayerOpacity(a,1);this.setMainLoopCallback(function(){var e=wade.getLayerOpacity(a),e=Math.max(0,e-wade.c_timeStep/b);e<wade.c_epsilon&&(e=0);wade.setLayerOpacity(a,e);0==e&&(wade.setMainLoopCallback(null,d),c&&c())},d)};this.clearCanvas=
+function(a){this.getLayer(a).clear()};this.draw=function(b){a.draw(b)};this.exportScene=function(b,c,d){c={sceneObjects:a.exportSceneObjects(c,d)};c.layers=a.renderer.getLayerSettings();c.minScreenSize={x:wade.getMinScreenWidth(),y:wade.getMinScreenHeight()};c.maxScreenSize={x:wade.getMaxScreenWidth(),y:wade.getMaxScreenHeight()};c.orientation=wade.getForcedOrientation();c.windowMode=wade.getWindowMode();c.defaultLayer=wade.defaultLayer||1;return b?JSON.stringify(c):c};this.importScene=function(a,
+b,c,d,e){b&&wade.setLoadingBar(!0,b.position,b.backColor,b.foreColor);var g=a.sceneObjects;if(g){for(var b=a.images||[],f=0;f<g.length;f++)if(g[f].sprites)for(var h=0;h<g[f].sprites.length;h++)if(g[f].sprites[h].image&&-1==b.indexOf(g[f].sprites[h].image)&&"procedural_"!=g[f].sprites[h].image.substr(0,11)&&b.push(g[f].sprites[h].image),g[f].sprites[h].animations)for(var i in g[f].sprites[h].animations)if(g[f].sprites[h].animations.hasOwnProperty(i)){var j=g[f].sprites[h].animations[i].image;j&&"procedural_"!=
+j.substr(0,11)&&-1==b.indexOf(j)&&b.push(j)}var l=0,k=b.length;i=function(){if(++l==k){e&&wade.clearScene();if(a.scripts)for(var b=0;b<a.scripts.length;b++)eval.call(window,wade.getScript(a.scripts[b]));a.minScreenSize&&wade.setMinScreenSize(a.minScreenSize.x,a.minScreenSize.y);a.maxScreenSize&&wade.setMaxScreenSize(a.maxScreenSize.x,a.maxScreenSize.y);a.windowMode&&wade.setWindowMode(a.windowMode);a.orientation&&wade.forceOrientation(a.orientation);if(a.layers)for(b=0;b<a.layers.length;b++)if(a.layers[b]){var d=
+"undefined"!=typeof a.layers[b].useQuadtree?a.layers[b].useQuadtree:!0,f="number"!=typeof a.layers[b].resolutionFactor?1:a.layers[b].resolutionFactor;wade.setLayerTransform(b,"number"!=typeof a.layers[b].scaleFactor?1:a.layers[b].scaleFactor,"number"!=typeof a.layers[b].translateFactor?1:a.layers[b].translateFactor);wade.setLayerRenderMode(b,"webgl"==a.layers[b].renderMode?"webgl":"2d");wade.useQuadtree(b,d);wade.setLayerResolutionFactor(b,f)}a.defaultLayer&&(wade.defaultLayer=a.defaultLayer);for(b=
+0;b<g.length;b++)new SceneObject(g[b]);c&&c()}};d=d?"pre":"";if(a.json){k+=a.json.length;for(f=0;f<a.json.length;f++)if(a.json.indexOf(a.json[f])==f)wade[d+"loadJson"](a.json[f],null,i);else k--}if(a.audio&&(!a.webAudioOnly||wade.isWebAudioSupported())){k+=a.audio.length;for(f=0;f<a.audio.length;f++)if(a.audio.indexOf(a.audio[f])==f)wade[d+"loadAudio"](a.audio[f],!1,!1,i);else k--}if(a.fonts){k+=a.fonts.length;for(f=0;f<a.fonts.length;f++)if(a.fonts.indexOf(a.fonts[f])==f)wade[d+"loadFont"](a.fonts[f],
+i);else k--}if(a.scripts){k+=a.scripts.length;for(f=0;f<a.scripts.length;f++)if(a.scripts.indexOf(a.scripts[f])==f)wade[d+"loadScript"](a.scripts[f],i,!1,null,!0);else k--}if(b.length)for(f=0;f<b.length;f++)if(b.indexOf(b[f])==f)wade[d+"loadImage"](b[f],i);else k--;k||(k=1,i())}else c&&setTimeout(c,0)};this.loadScene=function(a,b,c,d){wade.loadJson(a,null,function(a){wade.importScene(a,b,c,!1,d)})};this.preloadScene=function(a,b,c,d){wade.preloadJson(a,null,function(a){wade.importScene(a,b,c,!0,d)})};
+this.useQuadtree=function(a,b){"undefined"==typeof b&&(b=!0);this.getLayer(a).useQuadtree(b)};this.isUsingQuadtree=function(a){return this.getLayer(a).isUsingQuadtree()};this.pauseSimulation=function(a){if(a)for(var b=0;b<k.length;b++){if(k[b].name==a){k[b].paused=!0;break}}else B=!0};this.resumeSimulation=function(a){var b;if(a)for(b=0;b<k.length;b++){if(k[b].name==a){k[b].paused=!1;break}}else{for(b=0;b<k.length;b++)k[b].paused=!1;B=!1}};this.setCatchUpBuffer=function(a){C=a};this.getCatchUpBuffer=
+function(){return C};this.preventIframe=function(){if(!window.location||!window.top.location||!location||!top.location||window.location!==window.top.location||location!==top.location)wade=0};this.siteLock=function(a){var b="localhost";try{b=top.location.hostname}catch(c){try{b=this.getHostName(top.location.origin)}catch(d){try{b=this.getHostName(top.location.href)}catch(e){}}}b=b.toLowerCase();b!=a.toLowerCase()&&("localhost"!=b&&"127.0.0.1"!=b)&&(wade=0)};this.getHostName=function(a){var b=URL||
+webkitURL;try{a=(new b(a)).hostname}catch(c){b=a.indexOf("//"),-1!=b&&(a=a.substr(b+2)),b=a.indexOf("/"),-1!=b&&(a=a.substr(0,b)),b=a.indexOf(":"),-1!=b&&(a=a.substr(0,b)),b=a.indexOf("?"),-1!=b&&(a=a.substr(0,b))}return a};this.whitelistReferrers=function(a){var b=document.referrer;if(b){var b=this.getHostName(b),c;if("string"==typeof a)c=[a.toLowerCase()];else if($.isArray(a)){c=[];for(var d=0;d<a.length;d++)c.push(a[d].toLowerCase())}else return;b&&-1==c.indexOf(b.toLowerCase())&&(wade=0)}};this.blacklistReferrers=
+function(a){var b=document.referrer;if(b&&(b=this.getHostName(b))){var c;if("string"==typeof a)c=[a.toLowerCase()];else if($.isArray(a)){c=[];for(var d=0;d<a.length;d++)c.push(a[d].toLowerCase())}else return;b&&-1!=c.indexOf(b.toLowerCase())&&(wade=0)}};this.removeLayer=function(b){a.renderer.removeLayer(b)};this.setLayer3DTransform=function(a,b,c,d,e){this.getLayer(a).set3DTransform(b||"translate3d(0, 0, 0)",c||"50% 50%",d,e)};this.skipMissedFrames=function(){n=(new Date).getTime()};this.getSceneObjectIndex=
+function(b){return a.getSceneObjectIndex(b)};this.setSceneObjectIndex=function(b,c){return a.setSceneObjectIndex(b,c)};this.setSwipeTolerance=function(a,b){d.setSwipeTolerance(a,b||3)};this.setLayerRenderMode=function(a,b){this.getLayer(a).setRenderMode(b)};this.getLayerRenderMode=function(a){return this.getLayer(a).getRenderMode()};this.isWebGlSupported=function(){if("undefined"!=typeof E)return!!E;try{var a=document.createElement("canvas"),b=a.getContext("webgl")||a.getContext("experimental-webgl")}catch(c){return E=
+!1}E=!!b;return!!b};this.isDebugMode=function(){return!!t};this.getWebAudioContext=function(){return x};this.doNothing=function(){};this.getAudio=function(a){a=this.getFullPathAndFileName(a);return b.getAudio(a)};this.playSilentSound=function(){if(x){var a=x.createOscillator();a.frequency.value=440;var b=x.createGainNode();b.gain.value=0;a.connect(b);b.connect(x.destination);a.start?a.start(0):a.noteOn(0);a.stop?a.stop(0.001):a.noteOff(0.001)}else{a=new Audio;a.src="data:audio/wav;base64,UklGRjoAAABXQVZFZm10IBAAAAABAAEA6AcAANAPAAACABAAZGF0YQYAAAAAAAAAAAA%3D";
+try{a.play()}catch(c){}}};this.event_mainLoopCallback_=function(){var a=this;return function(){a.event_mainLoop()}};this.event_mainLoop=function(){var c;e=requestAnimationFrame(this.event_mainLoopCallback_());if(b.isFinishedLoading()){for(c=0;c<h.length;c++)"none"!=h[c].style.display&&(h[c].style.display="none");u&&"none"!=u.style.display&&(u.style.display="none");if(g){a.draw();c=(new Date).getTime();var d=0,f=Math.round((c-n)/(1E3*wade.c_timeStep));n?d=Math.min(3,f):n=c;d&&(f>C/wade.c_timeStep?
+(d=1,n=c):n+=1E3*d*wade.c_timeStep);for(c=0;c<d&&!B;c++){a.step();for(f=0;f<k.length;f++)if(!k[f].paused){var j=k[f].func;j&&j()}}B&&a.setSimulationDirtyState()}else i&&this.initializeApp()}else{n=(new Date).getTime();for(c=0;c<h.length;c++)h[c].src&&(h[c].style.display="inline");u&&(u.inner.style.width=this.getLoadingPercentage()+"%")}};this.event_appTimerEvent=function(){f=setTimeout("wade.event_appTimerEvent();",1E3*j);a.appTimerEvent()};this.onObjectNameChange=function(b,c){b.isInScene()&&a.changeObjectName(b,
+c)};this.getLayer=function(b){return a.renderer.getLayer(b)};this.updateMouseInOut=function(b,c){a.updateMouseInOut(b,c)};this.addImageUser=function(b,c){a.renderer.addImageUser(b,c)};this.removeImageUser=function(b,c){a.renderer.removeImageUser(b,c)};this.removeAllImageUsers=function(b){a.renderer.removeAllImageUsers(b)};this.getInternalContext=function(){return G};this.getImageUsers=function(b){return a.renderer.getImageUsers(b)};this.releaseImageReference=function(a){b.releaseImageReference(this.getFullPathAndFileName(a))};
+window.console||(window.console={});window.console.log||(window.console.log=function(){})}wade=new Wade;
+function Wade_drawFunctions(){this.gradientFill_=function(a,b){return function(c){if(this._visible)if(c.isWebGl)wade.log("wade.drawFunctions.gradientFill_ is not available in webgl mode");else{var d=!this._gradient||this._gradient.colors!=b||this._gradient.direction!=a||this._gradient.size.x!=this._size.x||this._gradient.size.y!=this._size.y||this._gradient.position.x!=this._position.x||this._gradient.position.y!=this._position.y,e=0.5*wade.screenUnitToWorld(this._layer.id);if(d&&2<=b.length){this._gradient=
+{colors:b,direction:a,size:{x:this._size.x,y:this._size.y},position:{x:this._position.x,y:this._position.y}};this._gradient.gradient=c.createLinearGradient((this._position.x-this._size.x/2+e)*a.x,(this._position.y-this._size.y/2+e)*a.y,(this._position.x+this._size.x/2-e)*a.x,(this._position.y+this._size.y/2-e)*a.y);for(d=0;d<b.length;d++)this._gradient.gradient.addColorStop(d/(b.length-1),b[d])}this._gradient&&this._gradient.gradient?(c.save(),this._rotation&&(c.translate(this._position.x,this._position.y),
+c.rotate(this._rotation),c.translate(-this._position.x,-this._position.y)),c.fillStyle=this._gradient.gradient,c.fillRect(this._position.x-this._size.x/2+e,this._position.y-this._size.y/2+e,this._size.x-e,this._size.y-e),c.restore()):wade.log("Warning: attempting to draw a sprite with an invalid linear gradient")}}};this.solidFill_=function(a){return function(b){if(this._visible)if(b.isWebGl)wade.log("wade.drawFunctions.solidFill_ is not available in webgl mode");else{this._rotation&&(b.save(),b.translate(this._position.x,
+this._position.y),b.rotate(this._rotation),b.translate(-this._position.x,-this._position.y));var c=b.fillStyle,d=0.5*wade.screenUnitToWorld(this._layer.id);b.fillStyle=a;b.fillRect(this._position.x-this._size.x/2+d,this._position.y-this._size.y/2+d,this._size.x-d,this._size.y-d);b.fillStyle=c;this._rotation&&b.restore()}}};this.solidFillInt_=function(a){return function(b){if(this._visible)if(b.isWebGl)wade.log("wade.drawFunctions.solidFillInt_ is not available in webgl mode");else{this._rotation&&
+(b.save(),b.translate(this._position.x,this._position.y),b.rotate(this._rotation),b.translate(-this._position.x,-this._position.y));var c=b.fillStyle,d=0.5*wade.screenUnitToWorld(this._layer.id);b.fillStyle=a;b.fillRect(Math.floor(this._position.x-this._size.x/2+d),Math.floor(this._position.y-this._size.y/2+d),Math.floor(this._size.x-d),Math.floor(this._size.y-d));b.fillStyle=c;this._rotation&&b.restore()}}};this.drawRect_=function(a,b){return function(c){if(this._visible)if(c.isWebGl)wade.log("wade.drawFunctions.drawRect_ is not available in webgl mode");
+else{this._rotation&&(c.save(),c.translate(this._position.x,this._position.y),c.rotate(this._rotation),c.translate(-this._position.x,-this._position.y));var d=c.fillStyle,e=c.lineWidth,f=0.5*wade.screenUnitToWorld(this._layer.id);c.strokeStyle=a;c.lineWidth=b;c.strokeRect(this._position.x-this._size.x/2+b+f,this._position.y-this._size.y/2+b+f,this._size.x-2*b-f,this._size.y-2*b-f);c.fillStyle=d;c.lineWidth=e;this._rotation&&c.restore()}}};this.radialGradientCircle_=function(a,b){b=b||"rgba(0, 0, 0, 0)";
+return function(c){if(this._visible)if(c.isWebGl)wade.log("wade.drawFunctions.radialGradientCircle_ is not available in webgl mode");else{var d=0.5*wade.screenUnitToWorld(this._layer.id),e=Math.min(this._size.x,this._size.y)/2-d;if(!this._gradient||this._gradient.colors!=a||this._gradient.minRadius!=e||this._gradient.position.x!=this._position.x||this._gradient.position.y!=this._position.y){this._gradient={colors:a,minRadius:e,position:{x:this._position.x,y:this._position.y}};this._gradient.gradient=
+c.createRadialGradient(this._position.x,this._position.y,0,this._position.x,this._position.y,e);for(e=0;e<a.length;e++)this._gradient.gradient.addColorStop(e/a.length,a[e]);this._gradient.gradient.addColorStop(1,b)}c.save();this._rotation&&(c.translate(this._position.x,this._position.y),c.rotate(this._rotation),c.translate(-this._position.x,-this._position.y));c.fillStyle=this._gradient.gradient;c.fillRect(this._position.x-this._size.x/2+d,this._position.y-this._size.y/2+d,this._size.x-d,this._size.y-
+d);c.restore()}}};this.solidFade_=function(a,b,c,d,e,f,g,i,l,j){var h=0;return function(k){if(this._visible)if(k.isWebGl)wade.log("wade.drawFunctions.solidFade_ is not available in webgl mode");else{if(!this._animations.__fade){var n=new Animation("",1,1,1,!0);this.addAnimation("__fade",n)}this.playAnimation("__fade");var n=k.fillStyle,m=h/l,p=Math.floor(a*(1-m)+e*m),q=Math.floor(b*(1-m)+f*m),A=Math.floor(c*(1-m)+g*m),m=d*(1-m)+i*m;this._rotation&&(k.save(),k.translate(this._position.x,this._position.y),
+k.rotate(this._rotation),k.translate(-this._position.x,-this._position.y));k.fillStyle="rgba("+p+","+q+","+A+","+m+")";p=0.5*wade.screenUnitToWorld(this._layer.id);k.fillRect(this._position.x-this._size.x/2+p,this._position.y-this._size.y/2+p,this._size.x-p,this._size.y-p);k.fillStyle=n;this._rotation&&k.restore();h<l&&(h++,h==l&&j&&j())}}};this.grid_=function(a,b,c,d){return function(e){if(this._visible)if(e.isWebGl)wade.log("wade.drawFunctions.grid_ is not available in webgl mode");else{d=d||1;
+e.save();e.lineWidth=d;e.strokeStyle=c;e.lineJoin="round";e.lineCap="round";this._rotation&&(e.translate(this._position.x,this._position.y),e.rotate(this._rotation),e.translate(-this._position.x,-this._position.y));for(var f=0.5*wade.screenUnitToWorld(this._layer.id)*d,g=(this._size.x-2*f)/a,i=(this._size.y-2*f)/b,l=this._position.x-this._size.x/2+f,j=this._position.y-this._size.y/2+f,h=this._position.x+this._size.x/2-f,f=this._position.y+this._size.y/2-f,k=l,n=j,m=0;m<=b;m++)e.beginPath(),e.moveTo(l,
+n),e.lineTo(h,n),e.stroke(),n+=i;for(i=0;i<=a;i++)e.beginPath(),e.moveTo(k,j),e.lineTo(k,f),e.stroke(),k+=g;e.restore()}}};this.alpha_=function(a,b){return function(c){if(this._visible){var d=c.globalAlpha;c.globalAlpha=a;b.call(this,c);c.globalAlpha=d}}};this.blink_=function(a,b,c){var d=1,e=a;return function(f){if(this._visible){if(0>(e-=wade.c_timeStep))e=d?b:a,d=!d;d&&c.call(this,f);this.setDirtyArea()}}};this.fadeOpacity_=function(a,b,c,d,e){var f=(b-a)*wade.c_timeStep/c,g=a,d=d||Sprite.prototype.draw,
+i=function(c){if(this._visible){var j=g;g=Math[b>a?"min":"max"](b,g+f);var h=c.globalAlpha;c.globalAlpha=g;d.call(this,c);c.globalAlpha=h;g==b&&1==g?this.getDrawFunction()==i&&this.setDrawFunction(d):g!=j&&this.setDirtyArea();g==b&&(e&&e(),e=null)}};return i};this.resizeOverTime_=function(a,b,c,d,e,f,g){var i=(c-a)*wade.c_timeStep/e,l=a,j=(d-b)*wade.c_timeStep/e,h=b,f=f||Sprite.prototype.draw,k=function(e){this._visible&&(l=Math[c>a?"min":"max"](c,l+i),h=Math[d>b?"min":"max"](d,h+j),this.setSize(l,
+h),f.call(this,e),l==c&&h==d&&(k==this.getDrawFunction()&&this.setDrawFunction(f),g&&g(),g=null))};return k};this.resizePeriodically_=function(a,b,c,d,e,f){var g=1,i=(c-a)*wade.c_timeStep/e,l=a,j=(d-b)*wade.c_timeStep/e,h=b,f=f||Sprite.prototype.draw;return function(e){if(this._visible){var n=1==g?c:a,m=1==g?b:d,p=1==g?d:b;l=Math[n>(1==g?a:c)?"min":"max"](n,l+i*g);h=Math[p>m?"min":"max"](p,h+j*g);this.setSize(l,h);f.call(this,e);l==n&&h==p&&(g*=-1)}}};this.mirror_=function(a){a=a||Sprite.prototype.draw;
+return function(b){b.isWebGl?(this._f32AnimFrameInfo[2]*=-1,this._animations[this._currentAnimation].mirror()):b.scale(-1,1);var c=this._position.x,d=this._cornerX;this._position.x*=-1;this._cornerX=this._position.x-this._size.x/2;a.call(this,b);this._position.x=c;this._cornerX=d;b.isWebGl?(this._f32AnimFrameInfo[2]*=-1,this._animations[this._currentAnimation].mirror()):b.scale(-1,1)}};this.flip_=function(a){a=a||Sprite.prototype.draw;return function(b){b.isWebGl?(this._f32AnimFrameInfo[3]*=-1,this._animations[this._currentAnimation].flip()):
+b.scale(1,-1);var c=this._position.y,d=this._cornerY;this._position.y*=-1;this._cornerY=this._position.y-this._size.y/2;a.call(this,b);this._position.y=c;this._cornerY=d;b.isWebGl?(this._f32AnimFrameInfo[3]*=-1,this._animations[this._currentAnimation].flip()):b.scale(1,-1)}};this.composite_=function(a,b){b=b||Sprite.prototype.draw;return function(c){if(a!=c.globalCompositeOperation){var d=c.globalCompositeOperation;c.globalCompositeOperation=a;b.call(this,c);c.globalCompositeOperation=d}else b.call(this,
+c)}};this.boundingBox_=function(a,b,c){a=a||"red";b=b||"blue";c=c||Sprite.prototype.draw;return function(d){if(this._visible)if(d.isWebGl)wade.log("wade.drawFunctions.boundingBox_ is not available in webgl mode");else{d.save();d.lineWidth=1;var e=0.5*wade.screenUnitToWorld(this._layer.id);if(this._rotation){d.strokeStyle=b;d.lineJoin="round";d.lineCap="round";d.beginPath();var f=-this.orientedBoundingBox.axisXx-this.orientedBoundingBox.axisYx,g=-this.orientedBoundingBox.axisXx+this.orientedBoundingBox.axisYx,
+i=this.orientedBoundingBox.axisXx+this.orientedBoundingBox.axisYx,l=this.orientedBoundingBox.axisXx-this.orientedBoundingBox.axisYx,j=-this.orientedBoundingBox.axisXy-this.orientedBoundingBox.axisYy,h=-this.orientedBoundingBox.axisXy+this.orientedBoundingBox.axisYy,k=this.orientedBoundingBox.axisXy+this.orientedBoundingBox.axisYy,n=this.orientedBoundingBox.axisXy-this.orientedBoundingBox.axisYy,f=f+(0<f?-e:e),g=g+(0<g?-e:e),l=l+(0<l?-e:e),i=i+(0<i?-e:e),j=j+(0<j?-e:e),h=h+(0<h?-e:e),n=n+(0<n?-e:e),
+k=k+(0<k?-e:e);d.moveTo(this.orientedBoundingBox.centerX+f,this.orientedBoundingBox.centerY+j);d.lineTo(this.orientedBoundingBox.centerX+g,this.orientedBoundingBox.centerY+h);d.lineTo(this.orientedBoundingBox.centerX+i,this.orientedBoundingBox.centerY+k);d.lineTo(this.orientedBoundingBox.centerX+l,this.orientedBoundingBox.centerY+n);d.lineTo(this.orientedBoundingBox.centerX+f,this.orientedBoundingBox.centerY+j);d.stroke()}d.strokeStyle=a;d.beginPath();d.moveTo(this.boundingBox.minX+e,this.boundingBox.minY+
+e);d.lineTo(this.boundingBox.maxX-e,this.boundingBox.minY+e);d.lineTo(this.boundingBox.maxX-e,this.boundingBox.maxY-e);d.lineTo(this.boundingBox.minX+e,this.boundingBox.maxY-e);d.lineTo(this.boundingBox.minX+e,this.boundingBox.minY+e);d.stroke();d.restore();c.call(this,d)}}};this.transparent_=function(){return function(){}}}wade.drawFunctions=new Wade_drawFunctions;
+function Wade_vec2(){this.add=function(a,b){return{x:a.x+b.x,y:a.y+b.y}};this.sub=function(a,b){return{x:a.x-b.x,y:a.y-b.y}};this.mul=function(a,b){return{x:a.x*b.x,y:a.y*b.y}};this.div=function(a,b){return{x:a.x/b.x,y:a.y/b.y}};this.dot=function(a,b){return a.x*b.x+a.y*b.y};this.lengthSquared=function(a){return a.x*a.x+a.y*a.y};this.length=function(a){return Math.sqrt(a.x*a.x+a.y*a.y)};this.normalize=function(a){var b=Math.sqrt(a.x*a.x+a.y*a.y);return{x:a.x/b,y:a.y/b}};this.normalizeIfPossible=function(a){var b=
+Math.sqrt(a.x*a.x+a.y*a.y);return b<wade.c_epsilon?{x:a.x,y:a.y}:{x:a.x/b,y:a.y/b}};this.scale=function(a,b){return{x:a.x*b,y:a.y*b}};this.clamp=function(a,b,c){return{x:Math.min(Math.max(a.x,b),c),y:Math.min(Math.max(a.y,b),c)}};this.rotate=function(a,b){var c=Math.sin(b),d=Math.cos(b);return{x:d*a.x-c*a.y,y:c*a.x+d*a.y}};this.addInPlace=function(a,b){a.x+=b.x;a.y+=b.y};this.subInPlace=function(a,b){a.x-=b.x;a.y-=b.y};this.mulInPlace=function(a,b){a.x*=b.x;a.y*=b.y};this.divInPlace=function(a,b){a.x/=
+b.x;a.y/=b.y};this.normalizeInPlace=function(a){var b=Math.sqrt(a.x*a.x+a.y*a.y);a.x/=b;a.y/=b};this.normalizeInPlaceIfPossible=function(a){var b=Math.sqrt(a.x*a.x+a.y*a.y);b>=wade.c_epsilon&&(a.x/=b,a.y/=b)};this.scaleInPlace=function(a,b){a.x*=b;a.y*=b};this.clampInPlace=function(a,b,c){a.x=Math.min(Math.max(a.x,b),c);a.y=Math.min(Math.max(a.y,b),c)};this.rotateInPlace=function(a,b){var c=Math.sin(b),d=Math.cos(b),e=c*a.x+d*a.y;a.x=d*a.x-c*a.y;a.y=e}}wade.vec2=new Wade_vec2;
+wade.proceduralImages=new function(){var a=[];this.init=function(){var b=new Sprite;b.setSize(32,32);b.setDrawFunction(wade.drawFunctions.solidFill_("white"));b.drawToImage("procedural_square",!0);a.push("procedural_square");b.setDrawFunction(function(a){var b=this.getPosition();a.closePath();a.beginPath();a.fillStyle="white";a.arc(b.x,b.y,16,0,2*Math.PI,!1);a.fill()});b.drawToImage("procedural_circle",!0);a.push("procedural_circle");b.setDrawFunction(wade.drawFunctions.radialGradientCircle_(["white"],
+"rgba(255, 255, 255, 0)"));b.drawToImage("procedural_fadingCircle",!0);a.push("procedural_fadingCircle");b.setDrawFunction(function(a){var b=this.getPosition();a.closePath();a.beginPath();a.fillStyle="white";a.moveTo(-32/6+b.x,-32/6+b.y);a.lineTo(0+b.x,-16+b.y);a.lineTo(32/6+b.x,-32/6+b.y);a.lineTo(16+b.x,0+b.y);a.lineTo(32/6+b.x,32/6+b.y);a.lineTo(0+b.x,16+b.y);a.lineTo(-32/6+b.x,32/6+b.y);a.lineTo(-16+b.x,0+b.y);a.lineTo(-32/6+b.x,-32/6+b.y);a.fill()});b.drawToImage("procedural_star",!0);a.push("procedural_star");
+wade.removeLayer(1)};this.list=function(){return wade.cloneArray(a)}};

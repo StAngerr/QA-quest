@@ -3,8 +3,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 0,
-				"y": -3.25
+				"x": 4.960000000000001,
+				"y": -6.0600000000000005
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -19,7 +19,7 @@
 					},
 					"layer": 5,
 					"size": {
-						"x": 1200,
+						"x": 1243.3745694619668,
 						"y": 800
 					},
 					"autoResize": false,
@@ -60,8 +60,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 309.355,
-				"y": -144.15499999999992
+				"x": 214.755,
+				"y": -194.03499999999994
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -76,12 +76,12 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 91.58726428353978,
-						"y": 54.51374683858654
+						"x": 323.2939924796545,
+						"y": 18.130013582784983
 					},
 					"autoResize": false,
-					"visible": true,
-					"image": "batteries.jpg",
+					"visible": false,
+					"image": "",
 					"name": "",
 					"drawModifiers": [],
 					"properties": {}
@@ -113,8 +113,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 333.1350000000001,
-				"y": 285.62499999999994
+				"x": 290.13500000000005,
+				"y": 254.6649999999999
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -164,8 +164,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -536.7350000000004,
-				"y": 235.80500000000006
+				"x": -408.2250000000003,
+				"y": 203.22500000000002
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -180,7 +180,7 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 456.2628314939634,
+						"x": 250.73824004744623,
 						"y": 17.361277767463577
 					},
 					"autoResize": false,
@@ -215,8 +215,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -446,
-				"y": 62
+				"x": -243.3599999999999,
+				"y": 70.6
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -364,8 +364,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": -27.74938936265213,
-						"y": 135.73855161460483
+						"x": 19.168299518444115,
+						"y": 96.26745980374156
 					},
 					"autoResize": false,
 					"visible": true,
@@ -398,7 +398,7 @@
 			},
 			"functions": {
 				"onMoveComplete": "function (data)\n{if(this.direction === \"left\") {\n    this.getSprite().playAnimation('idleLeft');\n} else {\n     this.getSprite().playAnimation('idleRight');\n}\n}",
-				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  \n\n    if (overlapping[i].isStar) {\n        wade.clearScene();  wade.stop();//game complete\n   $('#mainSection').trigger('main:stageFinished');     break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        \n        var depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y);\n       \n        if (depth > 20) {\n            continue;\n        }\n        \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n\n\n\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
+				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  \n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        \n        var depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y);\n       \n        if (depth > 20) {\n            continue;\n        }\n        \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n\n\n\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
 				"jump": "function (data)\n{// var x = Math.round(this.getPosition().x);\n// if(( x >= 410 &&this.direction == 'right') || (x <= 213 && this.direction == 'left')) {\n//     return false;\n\n// }\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -500};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
 				"onFocus": "function (data)\n{ //   moving bubbles \nvar interval;\nvar movePlatforms = wade.getSceneObject('hero').getSprite().getOverlappingObjects();\nconsole.log(movePlatforms);\n$.each (movePlatforms, function(i) {\n    if (movePlatforms[i].getName() == \"ground\") return false;\n    else {\n        var that = movePlatforms[i].getPosition();\n        if (that.y <= -250) {\n            movePlatforms[i].moveTo(that.x, 450);\n            return false;\n        }\n        interval = setInterval(function() {\n              movePlatforms[i].moveTo(that.x + ((Math.random()>0.5)?-1:2), that.y - 2);\n        }, 1000);\n    }\n});\n}",
 				"onRemoveFromScene": "function (data)\n{\n}"
@@ -407,8 +407,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 309.47499999999957,
-				"y": 231.145
+				"x": 307.75499999999954,
+				"y": 222.54500000000002
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -423,8 +423,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 76.7463525683607,
-						"y": 32.76499185548045
+						"x": 50.50584020005549,
+						"y": 29.011803238278784
 					},
 					"autoResize": false,
 					"visible": true,
@@ -456,14 +456,14 @@
 			"functions": {
 				"onMouseIn": "function (data)\n{\n}",
 				"onAddToScene": "function (data)\n{\n}",
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 283);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*100:-100), that.getPosition().y-5, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5;\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n            that.setPosition(363, 283);\r\n            clearInterval(this.moveInterval);\r\n            that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*100:-100), that.getPosition().y-5, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 283.8249999999994,
-				"y": 109.17499999999987
+				"x": 349.5049999999994,
+				"y": 119.49499999999988
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -478,8 +478,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 79.41452564164128,
-						"y": 30.247148969958978
+						"x": 59.68056768312665,
+						"y": 36.75692821718021
 					},
 					"autoResize": false,
 					"visible": true,
@@ -517,8 +517,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 519.9849999999997,
-				"y": -100.92500000000011
+				"x": 441.18499999999955,
+				"y": -125.00500000000012
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -572,8 +572,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 442.0949999999993,
-				"y": 143.88499999999993
+				"x": 258.3749999999992,
+				"y": 11.444999999999851
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -588,8 +588,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 61.98347755444195,
-						"y": 21.635074841749603
+						"x": 40.39218736536505,
+						"y": 24.821706468219613
 					},
 					"autoResize": false,
 					"visible": true,
@@ -628,7 +628,7 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 406.33499999999947,
+				"x": 439.33499999999947,
 				"y": 30.14499999999992
 			},
 			"rotation": 0,
@@ -644,8 +644,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 59.50481538656287,
-						"y": 40.221703985225886
+						"x": 74.14625119275905,
+						"y": 50.11844079702505
 					},
 					"autoResize": false,
 					"visible": true,
@@ -678,108 +678,6 @@
 				"onMouseIn": "function (data)\n{\n}",
 				"onAddToScene": "function (data)\n{\n}",
 				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 283);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*200:-200), that.getPosition().y-5, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
-			}
-		},
-		{
-			"type": "SceneObject",
-			"position": {
-				"x": -52.43499999999999,
-				"y": 266.705
-			},
-			"rotation": 0,
-			"behaviors": [],
-			"sprites": [
-				{
-					"type": "Sprite",
-					"animations": {},
-					"currentAnimation": "default",
-					"sortPoint": {
-						"x": 0,
-						"y": 0
-					},
-					"layer": 1,
-					"size": {
-						"x": 93.16659439620297,
-						"y": 20.273594812016157
-					},
-					"autoResize": false,
-					"visible": true,
-					"image": "bubble.png",
-					"name": "",
-					"drawModifiers": [],
-					"properties": {}
-				}
-			],
-			"spriteOffsets": [
-				{
-					"x": 0,
-					"y": 0,
-					"angle": 0
-				}
-			],
-			"alignment": {
-				"x": "center",
-				"y": "center"
-			},
-			"name": "bridge",
-			"addToScene": {
-				"autoListen": true,
-				"params": null
-			},
-			"properties": {
-				"isPlatform": true,
-				"isBridge": true
-			}
-		},
-		{
-			"type": "SceneObject",
-			"position": {
-				"x": -211.41500000000005,
-				"y": 238.9749999999999
-			},
-			"rotation": 0,
-			"behaviors": [],
-			"sprites": [
-				{
-					"type": "Sprite",
-					"animations": {},
-					"currentAnimation": "default",
-					"sortPoint": {
-						"x": 0,
-						"y": 0
-					},
-					"layer": 1,
-					"size": {
-						"x": 95.2758476810887,
-						"y": 17.835208051702736
-					},
-					"autoResize": false,
-					"visible": true,
-					"image": "bubble.png",
-					"name": "",
-					"drawModifiers": [],
-					"properties": {}
-				}
-			],
-			"spriteOffsets": [
-				{
-					"x": 0,
-					"y": 0,
-					"angle": 0
-				}
-			],
-			"alignment": {
-				"x": "center",
-				"y": "center"
-			},
-			"name": "bridge_2",
-			"addToScene": {
-				"autoListen": true,
-				"params": null
-			},
-			"properties": {
-				"isPlatform": true,
-				"isBridge": true
 			}
 		},
 		{
@@ -824,6 +722,57 @@
 				"y": "center"
 			},
 			"name": "bridge_2_clone",
+			"addToScene": {
+				"autoListen": true,
+				"params": null
+			},
+			"properties": {
+				"isPlatform": true,
+				"isBridge": true
+			}
+		},
+		{
+			"type": "SceneObject",
+			"position": {
+				"x": -131.29500000000004,
+				"y": 217.21000000000004
+			},
+			"rotation": 6.273585046076219,
+			"behaviors": [],
+			"sprites": [
+				{
+					"type": "Sprite",
+					"animations": {},
+					"currentAnimation": "default",
+					"sortPoint": {
+						"x": 0,
+						"y": 0
+					},
+					"layer": 1,
+					"size": {
+						"x": 300.5316254863242,
+						"y": 46.112527197153845
+					},
+					"autoResize": false,
+					"visible": true,
+					"image": "Game_3screen_bridge.png",
+					"name": "",
+					"drawModifiers": [],
+					"properties": {}
+				}
+			],
+			"spriteOffsets": [
+				{
+					"x": 0,
+					"y": 0,
+					"angle": 0
+				}
+			],
+			"alignment": {
+				"x": "center",
+				"y": "center"
+			},
+			"name": "bridge",
 			"addToScene": {
 				"autoListen": true,
 				"params": null
