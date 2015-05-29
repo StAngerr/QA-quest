@@ -25,7 +25,6 @@ define(function(require) {
 			createNewDot();
 			showVisualization();
 			gameTime = setInterval(function() {
-				$('.digitalTimer').text(seconds.toFixed(2));
 				seconds -= 0.1;
 				if( seconds <= 0) { 
 					clearInterval(gameTime);
@@ -39,7 +38,7 @@ define(function(require) {
 		};
 
 		function showVisualization() {
-			$('.visualTimer').hide("scale", {percent: 0, direction: 'horizontal'}, (seconds.toFixed(2) * 1000) + 4500);
+			$('.visualTimer').hide("scale", {percent: 0, direction: 'horizontal'}, (seconds.toFixed(2) * 1000));
 		};
 
 		function resetVisual() {
@@ -79,7 +78,6 @@ define(function(require) {
 			seconds = singleGameTime;
 			points = 0;
 			totalTime = 1;
-			$('.digitalTimer').text(seconds.toFixed(2));
 		};
 
 		function createNewDot() {
@@ -208,7 +206,6 @@ define(function(require) {
 		};
 
 		function dotClick () {
-			/*max and min total time values*/
 			var min = 0.1;
 			var max = 2;
 			var coordinates = {
@@ -216,9 +213,8 @@ define(function(require) {
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
 			 };
 
-	/*		(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
-			totalTime++;	*/
-			seconds += 10;
+			(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
+			totalTime++;	
 			showClickResult('+' + ((max - (totalTime / 10) > min) ? (max - (totalTime / 10)).toFixed(1) :  min) + ' sec', coordinates);
 			removeDot();
 			createNewDot();
@@ -237,7 +233,7 @@ define(function(require) {
 			$('.underDotMsg')
 				.css({'top': coordinates.top + 'px', 'left': coordinates.left + 'px'})
 				.animate({'top': coordinates.top - 10 + 'px'}, 300, function() {
-				$('.underDotMsg').remove();
+					$('.underDotMsg').remove();
 				});
 		};
     };
