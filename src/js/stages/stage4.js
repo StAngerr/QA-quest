@@ -152,7 +152,52 @@ define(function(require) {
 			var dotHeight = 70;
 			var dotWidth = 70;
 
-			if(top > realDotTop && top < realDotTop + dotHeight) {
+			 /*      */
+			switch(some(top, left, realDot)) {
+				case 1: 
+					console.log('---1---');
+					console.log('top before: ' + top);
+					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+					console.log('top after: ' + top);
+					break;
+				case 2:
+
+					console.log('---2---');
+
+					console.log('top before: ' + top);
+					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+					console.log('top after: ' + top); 
+				break;
+				case 3:
+					console.log('---3---');
+
+					console.log('top before: ' + top);
+					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+					console.log('top after: ' + top);
+				break;
+				case 4:
+
+					console.log('---4---');
+
+					console.log('top before: ' + top);
+					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+					console.log('top after: ' + top);
+				break;
+			}
+
+			if(fakeDot.length && some(top, left, fakeDot)) {
+				var correctState; 
+
+				((left + 160) > maxLeftCoordinate) ? left -= 160 : left += 160;
+
+				correctState = some(top, left, fakeDot);
+				if(correctState == 1 || correctState == 2) ((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+				if(correctState == 3 || correctState == 4) ((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+			}
+
+			 /*     */
+
+			/*if(top > realDotTop && top < realDotTop + dotHeight) {
 				if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
 					
 					console.log('---1---');
@@ -185,8 +230,8 @@ define(function(require) {
 					console.log('top after: ' + top);
 				}
 			}
-
-			if(fakeDot.length) {
+*/
+	/*		if(fakeDot.length) {
 				var fakeTop = parseInt( $(fakeDot).css('transform').split(',')[5], 10);
 				var fakeLeft = parseInt( $(fakeDot).css('transform').split(',')[4], 10); 
 
@@ -194,7 +239,7 @@ define(function(require) {
 
 					( (left + 160) > maxLeftCoordinate) ? left -= 160 : left += 160;
 
-					/*change this*/
+					
 
 					if(top > realDotTop && top < realDotTop + dotHeight) {
 						if(left >= realDotLeft && left <= realDotLeft + dotWidth) {
@@ -209,23 +254,51 @@ define(function(require) {
 							((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
 						}
 					}					
-					/* ---------------------*/
-					console.log('corrected');
+					
 				}
-			}
+			}*/
 			return {
 				top: top,
 				left: left
 			};
 		};
 
-		function chekIfCoverFakeDot(top, left, fakeTop, fakeLeft,dotHeight,dotWidth) {
+/*		function chekIfCoverFakeDot(top, left, fakeTop, fakeLeft,dotHeight,dotWidth) {
 			if( (top > fakeTop && top < fakeTop + dotHeight) || (top + dotHeight > fakeTop && top + dotHeight < fakeTop + dotHeight) )  {
 				if( (left >= fakeLeft && left <= fakeLeft + dotWidth) ||  (left +  dotWidth >= fakeLeft &&  left + dotWidth <= fakeLeft + dotWidth))	
 				return true;
 			}
 			return false;
-		};
+		};*/
+
+		function some(top, left, dotToCompare) {
+			var realDot = $('.dot');
+			var fakeDot = $('.fakeDot');
+			var comparingDotLeft =  parseInt( $(dotToCompare).css('transform').split(',')[4], 10); 
+			var comparingDotTop = parseInt( $(dotToCompare).css('transform').split(',')[5], 10);
+			var dotHeight = 70;
+			var dotWidth = 70;
+			var case1 = 1,
+				case2 = 2,
+				case3 = 3,
+				case4 = 4;
+
+			if(top > comparingDotTop && top < comparingDotTop + dotHeight) {
+				if(left >= comparingDotLeft && left <= comparingDotLeft + dotWidth) {
+					return case1	
+				} else if(left +  dotWidth >= comparingDotLeft &&  left + dotWidth <= comparingDotLeft + dotWidth) {
+					return case2
+				}
+			} else if(top + dotHeight > comparingDotTop && top + dotHeight < comparingDotTop + dotHeight) {
+				if(left >= comparingDotLeft && left <= comparingDotLeft + dotWidth) {
+					return case3
+				} else if(left + dotWidth >= comparingDotLeft &&  left + dotWidth <= comparingDotLeft + dotWidth) {
+					return case4
+				}
+			}
+
+			return 0;		
+		}
 
 		/*-------------------------*/
 		function decorateFakeDot(dot) {
