@@ -14,8 +14,8 @@
         $('#hero').show();
        
 
-        turnOffTheLight();
-        addFlashLightEvents();
+        // turnOffTheLight();
+        // addFlashLightEvents();
     
 
          $('.choosePic').on ('click', function() {
@@ -45,21 +45,23 @@
      function findRightPicture () {
          var stage_content = {
             taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
-            src : ['_brown.png', '_white.png']          
-            }; 
+            src : ['_brown.png', '_white.png']           
+        };
+
+        
         stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content);
         
         var pictureDraggable = $('.pic-to-drag');        
 
         for (var i=0; i < pictureDraggable.length; i++) {
-             $(pictureDraggable[i]).attr('draggable','true');
+            $(pictureDraggable[i]).attr('draggable','true');
             $(pictureDraggable[i]).on('mouseover', function(){               
                 var old_src = $(this).attr('src');
                 var  new_src = old_src.slice(0,27) + stage_content.src[0];                
                 $(this).attr('src', new_src);
             });
             $(pictureDraggable[i]).on('mouseleave', function() { 
-                // if($(this).parent())
+               
                 if (!$(this).parent().hasClass('field-to-drop')) {
                     var old_src = $(this).attr('src');
                     var new_src = old_src.slice(0,27) + stage_content.src[1];                
@@ -86,13 +88,17 @@
         });
 
         $('#sendPicture').on('click', function() {
+            if($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
+                alert('ok');
+            }
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
             $('.joystick').show();  
-            // $('#inventory').trigger('inventory:addОщ'); 
+            
             setTimeout(function(){
-                
-                 $('#ticTacToe').show();
+                $('#inventory').trigger('inventory:addJoyStick'); 
+                $('#ticTacToe').show();
+                $('.item.joystick').remove(); 
             }, 4000);          
         });
      }
@@ -499,10 +505,10 @@
        
     function showInwentory (){
         $('.newGameB').css('visibility', 'hidden');
-        $('#ticTacToe').remove();
+        
        
          $('.oil').show();
-         setTimeout(stage2.finishStage, 3000);
+         setTimeout(addOil, 3000);
     }
     var counter = 0;
 
@@ -570,9 +576,10 @@
      }
      // end of game
      function addOil() {        
-        $('.oil') .show()      
+        $('#inventory').trigger('inventory:addOil');     
         $('#ticTacToe').remove();
-        $('.stone').remove();
+        $('.item.oil').remove();
+        stage2.finishStage();
         
     }
     return stage2;

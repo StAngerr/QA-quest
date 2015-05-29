@@ -42,9 +42,10 @@ define(function(require) {
         function initInventoryModuleEvents() {
             var module = $('#inventory');
 
-            $(module).on('inventory:addBatteries', quest.inventory.activateBatteries);
+            $(module).on('inventory:addBattery', quest.inventory.activateBatteries);
             $(module).on('inventory:addGun', quest.inventory.activateGun);
             $(module).on('inventory:addOil', quest.inventory.activateOil);
+            $(module).on('inventory:addJoyStick', quest.inventory.activateJoyStick);
         };        
     };   
 

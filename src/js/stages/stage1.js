@@ -78,15 +78,17 @@ define(function(require) {
     function showWord() {        
         $('#stage1Popup1').remove();
          $('.popupWrap').remove();
-        $('.gun').show();   
-        setTimeout(sendDnDWord, 2000); 
+        $('.gun').show();         
+        setTimeout(sendDnDWord, 3000); 
 
         
     };
 
     function sendDnDWord(event) {
-        
-        //$('.popupWrap').remove();
+        // add the first inventory
+        $('#inventory').trigger('inventory:addGun');  
+        $('.item.gun').remove();
+
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
         var myVar = setInterval(function() { 
@@ -125,7 +127,8 @@ define(function(require) {
     };
 
     function closePopup(event) {
-        $('.popupWrap').remove();
+        $('#inventory').trigger('inventory:addBattery');  
+        $('.item.battery').remove();
         $('.totalLevel').css({'opacity':'1'});
         
     };

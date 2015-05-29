@@ -56,20 +56,20 @@ a {
         z-index: 6;
     }
 
-        .item {
+    .item {
             position: absolute;                      
             width: 44px;
             height: 44px;
-            border:  none;          
+            border: none;          
             outline: none;
-            
+            opacity: 0;            
         
 
             &.battery {
                 background: url("../images/batteries.jpg") no-repeat 0 0;
                 right: 1040px;
-                bottom: 22px;
-                display: none;
+                bottom: 22px; 
+                display: none;               
                 animation: appear 3s ease-in   infinite alternate;
                 animation-iteration-count: 1;
 
@@ -98,6 +98,7 @@ a {
                 animation: appear 3s ease-in  infinite alternate;
                 animation-iteration-count: 1;
             }
+
             @keyframes appear {
                 0% {
                     transform: scale(1,1);
@@ -116,12 +117,12 @@ a {
                 15% {
                     transform: scale(1,1); 
                 }
-                100% {
-                    
-                    opacity: 1;                    
-                    bottom: 22px;
-
-                    
+                90%{
+                    opacity: 0.5
+                }
+                100% {                    
+                    opacity: 0;                    
+                    bottom: 22px;                    
                 }
                 
             }
