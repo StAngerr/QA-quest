@@ -33,7 +33,6 @@ define(function(require) {
         }; 
         if(wordGameStatus == 'unfinished') {
             stage1.getTmpl('popupFrameTmpl.html');
-            $('.popup').append('<button class="item gun"> </button>');
             stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content);
             $('#sendWord').on('click', showWord);
             /*Drag n drop*/
@@ -76,17 +75,18 @@ define(function(require) {
         $('#mainSection').trigger('main:stageFinished');
     };
 
-    function showWord() { 
+    function showWord() {        
         $('#stage1Popup1').remove();
+         $('.popupWrap').remove();
         $('.gun').show();   
-        setTimeout(sendDnDWord, 4000); 
+        setTimeout(sendDnDWord, 2000); 
 
         
     };
 
     function sendDnDWord(event) {
         
-        $('.popupWrap').remove();
+        //$('.popupWrap').remove();
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
         var myVar = setInterval(function() { 
@@ -99,7 +99,7 @@ define(function(require) {
             clearInterval(myVar);
            if(manState == 'stand' && flowGameStatus == 'unfinished') moveToBox();
         });
-        $('#inventory').trigger('inventory:addGun');
+       
         wordGameStatus = 'finished';
     };
 
@@ -110,7 +110,6 @@ define(function(require) {
             $('.totalLevel').remove();
             stage1.getTmpl('popupFrameTmpl.html');
             $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
-            $('.popup').append('<button class="item battery"></button>');  
             wade.init('src/js/flow.js');
             $('.popup').on('flowGameFinished', finishFlowGame); 
             changeManState();
@@ -119,7 +118,8 @@ define(function(require) {
 
     function finishFlowGame() {
         $('#wade_main_div').remove();
-        $('.item.battery').show();
+        $('.popupWrap').remove();
+        $('.battery').show();
         flowGameStatus = 'finished';
         setTimeout(closePopup, 4000); 
     };
@@ -127,7 +127,7 @@ define(function(require) {
     function closePopup(event) {
         $('.popupWrap').remove();
         $('.totalLevel').css({'opacity':'1'});
-        $('#inventory').trigger('inventory:addBatteries');
+        
     };
 
     function allowDrop(event) {

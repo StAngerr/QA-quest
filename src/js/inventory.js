@@ -2,18 +2,19 @@ define(function() {
 	var Inventory = function() {
 
 		this.activateBatteries = function() {
-			$('.batteries').removeClass('noItem').addClass('activeItem');
+			 //$('.battery').сss('right', '1040px');	
 
 		};
 
 		this.activateGun = function() {
-			$('.gun').removeClass('noItem').addClass('activeItem');
+				 //$('.gun').сss('right', '940px');			
 
 		};
 
 		this.activateOil = function() {
-			$('.oil').removeClass('noItem').addClass('activeItem');
-		};
+		// 	$('.oil').removeClass('noItem').addClass('activeItem');
+		// };
 	}
+}
 	return Inventory;
 });

@@ -55,6 +55,78 @@ a {
         border: 2px solid black;
         z-index: 6;
     }
+
+        .item {
+            position: absolute;                      
+            width: 44px;
+            height: 44px;
+            border:  none;          
+            outline: none;
+            
+        
+
+            &.battery {
+                background: url("../images/batteries.jpg") no-repeat 0 0;
+                right: 1040px;
+                bottom: 22px;
+                display: none;
+                animation: appear 3s ease-in   infinite alternate;
+                animation-iteration-count: 1;
+
+            }
+            &.gun {
+                background: url("../images/gun.jpg") no-repeat 0 0;
+                right: 940px;
+                bottom: 22px;
+                display: none;
+                animation: appear 3s ease-in  infinite alternate;
+                animation-iteration-count: 1;
+            }
+            &.oil {
+                background: url('../images/oil.jpeg') no-repeat 0 0;
+                right: 840px;
+                bottom: 22px;
+                display: none;
+                animation: appear 3s ease-in  infinite alternate;
+                animation-iteration-count: 1;
+            }
+            &.joystick {
+                background: url('../images/joystick.jpg') no-repeat 0 0;
+                right: 740px;
+                bottom: 22px;
+                display: none;
+                animation: appear 3s ease-in  infinite alternate;
+                animation-iteration-count: 1;
+            }
+            @keyframes appear {
+                0% {
+                    transform: scale(1,1);
+                     opacity: 1;
+                     right: 22px;
+                     bottom: 120px; 
+                     
+                }
+                 5% {
+                    transform: scale(1.5,1.5);
+                     opacity: .7;
+                     right: 22px;
+                     bottom: 120px; 
+                     
+                }
+                15% {
+                    transform: scale(1,1); 
+                }
+                100% {
+                    
+                    opacity: 1;                    
+                    bottom: 22px;
+
+                    
+                }
+                
+            }
+            
+        }   
     #inventory {
         width: 1200px;
         height: 10%;
