@@ -87,10 +87,11 @@
 
         $('#sendPicture').on('click', function() {
             $('#stage2Popup1').remove();
+            $('.popupWrap').remove();
             $('.joystick').show();  
             // $('#inventory').trigger('inventory:addОщ'); 
             setTimeout(function(){
-                $('.popupWrap').remove();
+                
                  $('#ticTacToe').show();
             }, 4000);          
         });
@@ -487,11 +488,9 @@
          logicOne();
          if (all == 2) {
             // 0 won
-             showInwentory ()
-             
+             showInwentory ()            
                
-         } else if (all == 1 || all == 3) {
-             
+         } else if (all == 1 || all == 3) {          
             
                 showInwentory ()
          }
@@ -501,10 +500,9 @@
     function showInwentory (){
         $('.newGameB').css('visibility', 'hidden');
         $('#ticTacToe').remove();
-        stage2.getTmpl('popupFrameTmpl.html');
-        $('.popup').append('<button class="item oil"> </button>');
+       
          $('.oil').show();
-         setTimeout(addOil, 2000);
+         setTimeout(stage2.finishStage, 3000);
     }
     var counter = 0;
 
@@ -518,7 +516,7 @@
              if (counter >= 1) { 
                  $('.newGameB').css('visibility', 'hidden');
                   $('#ticTacToe').remove();
-                 $('.oil').css('visibility', 'visible');
+                 
 
                  return false;
              }
@@ -572,11 +570,10 @@
      }
      // end of game
      function addOil() {        
-        $('#inventory').trigger('inventory:addOil');
-        $('button.oil').hide();
+        $('.oil') .show()      
         $('#ticTacToe').remove();
         $('.stone').remove();
-        stage2.finishStage()
+        
     }
     return stage2;
  });
