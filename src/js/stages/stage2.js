@@ -2,7 +2,12 @@
      var Stage = require('src/js/Stage.js');
      var stage2 = new Stage('stage2Tmpl.html');
      var $ = require('jquery');
+     var DragNDrop = require('src/js/dragndrop.js');
      var canPlay = false;
+     var that;
+
+    
+
      stage2.initEvents = function () {
      /* set hero to the right position*/   
         var heroPosition = {
@@ -12,10 +17,11 @@
         };
         $('#hero').css( heroPosition );
         $('#hero').show();
-       
 
-        // turnOffTheLight();
-        // addFlashLightEvents();
+        stage2.dragNdrop = new DragNDrop();
+   
+        turnOffTheLight();
+        addFlashLightEvents();
     
 
          $('.choosePic').on ('click', function() {
@@ -72,20 +78,23 @@
 
         }
         for (var i=0; i < pictureDraggable.length; i++) {
-            pictureDraggable[i].addEventListener("dragstart", drag);
-            pictureDraggable[i].addEventListener("dragover", over);
-            pictureDraggable[i].addEventListener("dragleave", leave);
+            pictureDraggable[i].addEventListener("dragstart", stage2.dragNdrop.drag);
+            pictureDraggable[i].addEventListener("dragover", stage2.dragNdrop.over);
+            pictureDraggable[i].addEventListener("dragleave", stage2.dragNdrop.leave);
         }
 
         var fieldToDrop = $('.field-to-drop')[0];
-        fieldToDrop.addEventListener('dragover', allowDrop);
-        fieldToDrop.addEventListener('drop', function (event) {
-            event.preventDefault();
-            event.stopPropagation();            
-            var data =  event.dataTransfer.getData('text/html');
-            var html =  $(event.target).html();
-            $(event.target).html(that);
-        });
+        fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
+        fieldToDrop.addEventListener('drop', function(event) {
+                event.preventDefault();
+                event.stopPropagation();                      
+                
+                drop(event);                
+                
+                return false;  
+            });
+
+        
 
         $('#sendPicture').on('click', function() {
             if($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
@@ -96,7 +105,7 @@
             $('.joystick').show();  
             
             setTimeout(function(){
-                $('#inventory').trigger('inventory:addJoyStick'); 
+                $('#inventory').trigger('inventory:addItem',{data:'.joystick'}); 
                 $('#ticTacToe').show();
                 $('.item.joystick').remove(); 
             }, 4000);          
@@ -104,7 +113,15 @@
      }
 
     
-    
+    function drop (event) {
+            event.preventDefault();
+            event.stopPropagation(); 
+            var that = stage2.dragNdrop.data; 
+           
+            // var data =  event.dataTransfer.getData('text/html');
+            // var html =  $(event.target).html();
+            $(event.target).html(that);
+        };
 
     stage2.finishStage = function() {
         removeFlashLightEvents();
@@ -138,31 +155,31 @@
     };
 
                                                              /* think how avoid the repetittions*/
-    var that;
-     function allowDrop(event) {
-        event.preventDefault();
-        return false;
-    };
+    
+    //  function allowDrop(event) {
+    //     event.preventDefault();
+    //     return false;
+    // };
 
-    function drag(event) {  
+    // function drag(event) {  
    
-        event.dataTransfer.setData('text/html', $(event.target).html()); 
-        that = $(event.target);  
+    //     event.dataTransfer.setData('text/html', $(event.target).html()); 
+    //     that = $(event.target);  
                
-        return false;
-    };
+    //     return false;
+    // };
 
-    function over(event) {
-        event.preventDefault();
-        //that.css('opacity', '0.5');     
-        return false;
-    };
+    // function over(event) {
+    //     event.preventDefault();
+    //     //that.css('opacity', '0.5');     
+    //     return false;
+    // };
 
-    function leave(event) {
-        event.preventDefault();
-        //that.css('opacity', '1');
-        return false;       
-    };
+    // function leave(event) {
+    //     event.preventDefault();
+    //     //that.css('opacity', '1');
+    //     return false;       
+    // };
 
 
      function removeFlashLightEvents() {
@@ -576,7 +593,7 @@
      }
      // end of game
      function addOil() {        
-        $('#inventory').trigger('inventory:addOil');     
+        $('#inventory').trigger('inventory:addItem',{data:'.oil'});     
         $('#ticTacToe').remove();
         $('.item.oil').remove();
         stage2.finishStage();

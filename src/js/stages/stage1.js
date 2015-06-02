@@ -2,6 +2,7 @@ define(function(require) {
     var Stage = require('src/js/Stage.js');    
     var stage1 = new Stage('stage1Tmpl.html');
     var $ = require('jquery');
+    var DragNDrop = require('src/js/dragndrop.js');
     var wade = require('wade');
     var wordGameStatus = 'unfinished';
     var manState = 'stand';
@@ -26,6 +27,9 @@ define(function(require) {
         }  
     };
 
+    stage1.dragNdrop = new DragNDrop();
+    
+   
     function openWordGame() {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
@@ -40,7 +44,7 @@ define(function(require) {
             var wordSpot = $('.makeWord')[0];
             var fieldToDrop = $('.all-letters')[0];
             $('.letters').attr("draggable","true");
-            wordSpot.addEventListener('dragover', allowDrop);
+            wordSpot.addEventListener('dragover', stage1.dragNdrop.allowDrop);
             wordSpot.addEventListener('drop', function(event) {
                 event.preventDefault();
                 event.stopPropagation();                      
@@ -50,8 +54,9 @@ define(function(require) {
                 return false;  
                         
             });
-            fieldToDrop.addEventListener('dragover', allowDrop);
+            fieldToDrop.addEventListener('dragover', stage1.dragNdrop.allowDrop);
             fieldToDrop.addEventListener('drop', function(event) {
+
                 event.preventDefault();
                 event.stopPropagation();  
                 counter --;
@@ -61,9 +66,9 @@ define(function(require) {
             });
               
             for (var i = 0; i < leafes.length; i++) {
-                leafes[i].addEventListener("dragstart", drag);
-                leafes[i].addEventListener("dragover", over);
-                leafes[i].addEventListener("dragleave", leave);
+                leafes[i].addEventListener("dragstart", stage1.dragNdrop.drag);
+                leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
+                leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
             };
             changeManState();
         } else {
@@ -86,7 +91,7 @@ define(function(require) {
 
     function sendDnDWord(event) {
         // add the first inventory
-        $('#inventory').trigger('inventory:addGun');  
+        $('#inventory').trigger('inventory:addItem', {data:'.gun'});  
         $('.item.gun').remove();
 
         $('.door').css('opacity','0');
@@ -127,63 +132,63 @@ define(function(require) {
     };
 
     function closePopup(event) {
-        $('#inventory').trigger('inventory:addBattery');  
+        $('#inventory').trigger('inventory:addItem', {data:'.battery'});  
         $('.item.battery').remove();
         $('.totalLevel').css({'opacity':'1'});
         
     };
 
-    function allowDrop(event) {
-        event.preventDefault();
-        return false;
-    };
+    // function allowDrop(event) {
+    //     event.preventDefault();
+    //     return false;
+    // };
 
-    function drag(event) {      
-        event.dataTransfer.setData('text/html', $(event.target).html()); 
-        that = $(event.target);          
-        return false;
-    };
+    // function drag(event) {      
+    //     event.dataTransfer.setData('text/html', $(event.target).html()); 
+    //     that = $(event.target);          
+    //     return false;
+    // };
 
-    function over(event) {
-        event.preventDefault();
-        that.css('opacity', '0.5');     
-        return false;
-    };
+    // function over(event) {
+    //     event.preventDefault();
+    //     that.css('opacity', '0.5');     
+    //     return false;
+    // };
 
-    function leave(event) {
-        event.preventDefault();
-        that.css('opacity', '1');
-        $('.makeWord').css ('background-color', 'yellow');
-        return false;       
-    };
+    // function leave(event) {
+    //     event.preventDefault();
+    //     that.css('opacity', '1');
+    //     $('.makeWord').css ('background-color', 'yellow');
+    //     return false;       
+    // };
 
     function drop(event) {
         event.preventDefault();
-        event.stopPropagation(); 
-           
+        event.stopPropagation();
+
+        that = stage1.dragNdrop.data; 
+        
         var data =  '<figure class="letters" draggable="true"> ' + event.dataTransfer.getData('text/html') + '</figure>';
         var html =  $(event.target).html();
         var targetNodeName = $(event.target)[0].nodeName;
         $('.makeWord').css ('background-color', '#fff'); 
-        if ($(event.target)[0].className != that.parent()[0].className) {
-            if ( $(event.target).parent().parent()[0].className != that.parent()[0].className) {
+        if ($(event.target)[0].className != $(that).parent()[0].className) {
+            if ( $(event.target).parent().parent()[0].className != $(that).parent()[0].className) {
                 if( targetNodeName == 'SPAN' || targetNodeName == "IMG") { 
                         html =  $(event.target).parent().parent().html()       
                         $(event.target).parent().parent().html(html + data);          
                 } else if (targetNodeName == 'FIGURE') {
                     html =  $(event.target).parent().html();
-                     $(event.target).parent().html(html + data);    
-
-                     
+                     $(event.target).parent().html(html + data);                      
                 } else {
                     $(event.target).html(html + data); 
                 }       
                 that.remove(); 
                 var leafes = $('.letters');
                   for (var i = 0; i < leafes.length; i++) {
-                        leafes[i].addEventListener("dragstart", drag);
-                        leafes[i].addEventListener("dragover", over);
-                        leafes[i].addEventListener("dragleave", leave);
+                        leafes[i].addEventListener("dragstart",stage1.dragNdrop.drag);
+                        leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
+                        leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
                     };
         
                 if (counter === 10) {          
