@@ -1,11 +1,10 @@
 define(function(require) {
     var _ = require('underscore');
-
     var Stage = function(templ) {
+        var currentStage = {};
         this.templateUrl = templ;
         this.initEvents;
         this.finishStage;
-        var currentStage = {};
 
         this.openStage = function(stage) {
             this.getTmpl(this.templateUrl);

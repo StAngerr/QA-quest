@@ -1,4 +1,4 @@
-define( function() {
+define(function() {
 	var $ = require('jquery');
 	var DragNDrop = function () {
 		that = this;        
@@ -14,12 +14,12 @@ define( function() {
 			return false;
 		};
 
-	   this.over =  function (event) {
+	    this.over =  function (event) {
 			event.preventDefault();        
 			return false;
 		};
 
-	   this.leave =  function (event) {
+	    this.leave =  function (event) {
 			event.preventDefault();        
 			return false;       
 		};

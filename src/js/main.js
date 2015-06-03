@@ -2,9 +2,9 @@ define(function (require) {
 	var Quest = require('src/js/qaquest.js');
 	var quest = new Quest();
 	var $ = require('jquery');
-	var t;
+	var t;   /*   :D   */
 
-	( checkLS() ) ? quest.startQuest() : $('.startBtn').on('click', function (){
+	(checkLS()) ? quest.startQuest() : $('.startBtn').on('click', function () {
 		clearTimeout(t);
 		quest.startQuest()
 	});
@@ -17,8 +17,7 @@ define(function (require) {
 			}, 7000);
 			return false;
 		}
-	}
-	
+	};
 });
 
 

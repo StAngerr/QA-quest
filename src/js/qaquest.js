@@ -7,7 +7,6 @@ define(function(require) {
         var quest = this;
         quest.currentStage = 0;
         quest.inventory = new Invetory();
-        
 
         quest.startQuest = function() {         
             initMainModuleEvents();
@@ -42,17 +41,14 @@ define(function(require) {
         function initInventoryModuleEvents() {
             var module = $('#inventory');
        
-              $(module).on('inventory:addItem', function (event, item) {
+            $(module).on('inventory:addItem', function (event, item) {
                 quest.inventory.activateItem(event, item.data);
             });
-            
-        };  
-                    
+        };               
     };   
 
     function clearMainContent() {
         $('#mainContent > *').remove();
     };
-
     return Quest;
 });

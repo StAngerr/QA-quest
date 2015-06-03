@@ -1,4 +1,3 @@
-
 requirejs.config({
     baseUrl: 'src/js',
     paths: {
@@ -9,5 +8,4 @@ requirejs.config({
         wade: 'lib/wade'
     }
 });
-
 requirejs(['main']);
