@@ -58,7 +58,6 @@ a {
     }
 
     .item {
-<<<<<<< HEAD
             position: absolute;                      
             width: 44px;
             height: 44px;
@@ -74,6 +73,7 @@ a {
                 display: none;               
                 animation: appear 3s ease-in   infinite alternate;
                 animation-iteration-count: 1;
+            }
             &.detail-1 {
                 background: url("../images/detail_1.png") no-repeat 0 0;
                 right: 940px;
@@ -97,8 +97,8 @@ a {
                 display: none;
                 animation: appear 3s ease-in  infinite alternate;
                 animation-iteration-count: 1;    
-    
-
+            }
+    }
 
         @keyframes appear {
             0% {
@@ -107,9 +107,7 @@ a {
                  right: 22px;
                  bottom: 120px; 
                  
-            }
-
-           
+            }          
 
              5% {
                 transform: scale(1.5,1.5);
@@ -129,7 +127,7 @@ a {
                 opacity: 0;                    
                 bottom: 22px;                    
             }
- }
+        }
 
 
 #wade_main_div {
@@ -175,7 +173,7 @@ canvas {
             font-size: 20px;
     }  
 
-
+}
 
 .clearFix:after {
     content: "";
@@ -183,4 +181,5 @@ canvas {
     height: 0;
     clear: both;
 
+}
 }
