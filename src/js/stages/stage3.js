@@ -6,6 +6,19 @@ define(function(require) {
 
     stage3.initEvents = function() {
     	/* it temporarily until standard control is not define*/
+
+
+stage3.getTmpl('popupFrameTmpl.html');
+       			stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
+       			var newGame = new StickGame();
+						newGame.startGame();
+						$('.pickStick').on('click', newGame.playerPicks);
+
+
+
+
+
+
     		var heroChange = {
           left : '40px',
           top:'530px',
@@ -15,7 +28,7 @@ define(function(require) {
         $('#hero').show();
         $('#stage3').on('click', function(e){
         	var x = e.pageX;
-          var y = e.pageY;
+            var y = e.pageY;
 
           if(x <= 811 ) return false;
 
@@ -80,7 +93,6 @@ define(function(require) {
 		currentGame.playerPicks = function(event) {
 			var sticks = event.target.name;
 			if(canPick(sticks)) {
-				logPick(currentGame.whoseTurn, sticks);
 				currentGame.firstPlayer.sticks += pickSticks(sticks);
 				changeTurn();
 				changeBtnState(); /*DELETE*/
@@ -116,7 +128,6 @@ define(function(require) {
 			}
 			/* little pause when compute picks*/
 			var compPickDelay = setTimeout(function() {
-				logPick(currentGame.whoseTurn, sticks);
 				currentGame.secondPlayer.sticks += pickSticks(sticks);
 				changeTurn();
 				currentGame.nextPick();
@@ -165,7 +176,7 @@ define(function(require) {
 		};
 
 		function pickSticks(sticksCount) {
-			var sticksLeft = $('.stick');
+			var sticksLeft = $('.mainSection .stick');
 
 			for (var i = sticksCount; i >= 1; i--) {
 				var curStick = $(sticksLeft[i - 1]);
@@ -183,12 +194,6 @@ define(function(require) {
 				$('.playerPlace').removeClass('activePlayer');
 				$('.cpuPlace').addClass('activeCpu');
 			}
-		};
-
-		function logPick(player, sticks) {
-			var who = (player == 'player') ? 'Player' : 'Computer';
-			var message ='<p class="singleLog"><span class="log' + who + '">' + player + '</span> took ' + sticks + ((sticks == 1) ? ' stick' : ' sticks') + '.</p>'
-			$('.logs').append(message);
 		};
 
 		function addStickBlock(player, stick) {

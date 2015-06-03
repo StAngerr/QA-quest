@@ -17,7 +17,9 @@ html, body, main {
 }
 
 body {
-    font-family: 'Noto Sans Bold ', sans-serif;   
+
+     font-family: 'Noto Sans', sans-serif;
+
 }
 
 main {
@@ -56,6 +58,7 @@ a {
     }
 
     .item {
+<<<<<<< HEAD
             position: absolute;                      
             width: 44px;
             height: 44px;
@@ -71,8 +74,6 @@ a {
                 display: none;               
                 animation: appear 3s ease-in   infinite alternate;
                 animation-iteration-count: 1;
-
-            }
             &.detail-1 {
                 background: url("../images/detail_1.png") no-repeat 0 0;
                 right: 940px;
@@ -95,38 +96,40 @@ a {
                 bottom: 22px;
                 display: none;
                 animation: appear 3s ease-in  infinite alternate;
-                animation-iteration-count: 1;
+                animation-iteration-count: 1;    
+    
+
+
+        @keyframes appear {
+            0% {
+                transform: scale(1,1);
+                 opacity: 1;
+                 right: 22px;
+                 bottom: 120px; 
+                 
             }
 
-            @keyframes appear {
-                0% {
-                    transform: scale(1,1);
-                     opacity: 1;
-                     right: 22px;
-                     bottom: 120px; 
-                     
-                }
-                 5% {
-                    transform: scale(1.5,1.5);
-                     opacity: .7;
-                     right: 22px;
-                     bottom: 120px; 
-                     
-                }
-                15% {
-                    transform: scale(1,1); 
-                }
-                90%{
-                    opacity: 0.5
-                }
-                100% {                    
-                    opacity: 0;                    
-                    bottom: 22px;                    
-                }
-                
+           
+
+             5% {
+                transform: scale(1.5,1.5);
+                 opacity: .7;
+                 right: 22px;
+                 bottom: 120px; 
+                 
             }
-            
-        }   
+            15% {
+                transform: scale(1,1); 
+            }
+            90%{
+                opacity: 0.5
+
+            }
+            100% {                    
+                opacity: 0;                    
+                bottom: 22px;                    
+            }
+ }
 
 
 #wade_main_div {
@@ -171,5 +174,13 @@ canvas {
             text-transform: uppercase;
             font-size: 20px;
     }  
-}
+
+
+
+.clearFix:after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+
 }
