@@ -6,7 +6,7 @@ define(function() {
 		};
 
 		this.activateGun = function() {
-					$('.gun').removeClass('noItem').addClass('activeItem');						
+			$('.gun').removeClass('noItem').addClass('activeItem');						
 		};
 
 		this.activateOil = function() {
