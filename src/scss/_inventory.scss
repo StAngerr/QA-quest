@@ -25,6 +25,7 @@
                 position: relative;    
                 display: block;
                 margin: 0 auto;
+          
                                    
             }
             .activeItem {
@@ -35,9 +36,7 @@
             }
         }
     }
-}
-
- 
+} 
 
 .item {
     position: absolute;                      
@@ -54,15 +53,13 @@
         right: 1040px;
         bottom: 22px; 
         display: none;               
-      
     }
 
     &.detail-1 {
         background: url("../images/detail_1.png") no-repeat 0 0;
         right: 940px;
         bottom: 22px;
-        display: none;
-        
+        display: none; 
     }
 
     &.detail-3 {
@@ -70,7 +67,6 @@
         right: 840px;
         bottom: 22px;
         display: none;
-      
     }
 
     &.detail-4 {
@@ -78,28 +74,24 @@
         right: 740px;
         bottom: 22px;
         display: none;
-          
     }
     &.detail-5 {
         background: url('../images/detail_5.png') no-repeat 0 0;
         right: 740px;
         bottom: 22px;
         display: none;
-          
     }
     &.detail-6 {
         background: url('../images/detail_6.png') no-repeat 0 0;
         right: 740px;
         bottom: 22px;
         display: none;
-          
     }
     &.detail-7 {
         background: url('../images/detail_7.png') no-repeat 0 0;
         right: 740px;
         bottom: 22px;
-        display: none;
-          
+        display: none;   
     }
 }
 

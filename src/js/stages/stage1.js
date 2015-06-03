@@ -26,10 +26,7 @@ define(function(require) {
             openWordGame();
         }  
     };
-
     stage1.dragNdrop = new DragNDrop();
-    
-   
     function openWordGame() {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
@@ -84,16 +81,13 @@ define(function(require) {
         $('#stage1Popup1').remove();
          $('.popupWrap').remove();
         $('.detail-1').show();         
-        setTimeout(sendDnDWord, 2000); 
-
-        
+        setTimeout(sendDnDWord, 2000);       
     };
 
     function sendDnDWord(event) {
         // add the first inventory
         $('#inventory').trigger('inventory:addItem', {data:'.detail-1'});  
         $('.item.detail-1').remove();
-
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
         var myVar = setInterval(function() { 

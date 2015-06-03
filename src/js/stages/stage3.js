@@ -28,7 +28,6 @@ define(function(require) {
 						$('.pickStick').on('click', newGame.playerPicks);
           });         	
         });
-       
 		/*------------------------------------------*/
     };
 

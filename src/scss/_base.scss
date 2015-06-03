@@ -58,8 +58,6 @@ a {
         z-index: 6;
     }
 
-
-
 #wade_main_div {
     position: relative;
     padding: 0;
@@ -105,11 +103,11 @@ canvas {
 
 }
 
-.clearFix:after {
-    content: "";
-    display: block;
-    height: 0;
-    clear: both;
+    .clearFix:after {
+        content: "";
+        display: block;
+        height: 0;
+        clear: both;
 
-}
+    }
 }
