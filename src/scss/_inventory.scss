@@ -1,31 +1,29 @@
 #inventory {
-    position:absolute;
+    position: absolute;
     bottom: 5px;
     width: 1200px;
     height: 10%;
     background: #9a9c8f;
-    margin: 0 auto;     
-    overflow: hidden;     
-  
-    .inventoryWrap {          
+    margin: 0 auto;
+    overflow: hidden;
+    display: none;
+
+    .inventoryWrap {
         width: 80%;
         height: 100%;
-        margin: 0 auto; 
-        text-align: center; 
+        margin: 0 auto;
+        text-align: center;
 
-
-        .itemContainer {                             
+        .itemContainer {
             display: inline-block;
             width: 85px;
             height: 95%;
             margin-right: 15px;
-
-                     
-            .itemIcon { 
-                position: relative;    
+            
+            .itemIcon {
+                position: relative;
                 display: block;
                 margin: 0 auto;
-                                   
             }
             .activeItem {
                 opacity: 1;
@@ -36,95 +34,80 @@
         }
     }
 }
-
- 
-
 .item {
-    position: absolute;                      
+    position: absolute;
     width: 90px;
     height: 90px;
-    border: none;          
+    border: none;
     outline: none;
-    opacity: 0; 
-    animation: appear 2s ease-in  infinite alternate;
-    animation-iteration-count: 1; 
+    opacity: 0;
+    animation: appear 2s ease-in infinite alternate;
+    animation-iteration-count: 1;
 
     &.detail-2 {
         background: url("../images/detail_2.png") no-repeat 0 0;
         right: 1040px;
-        bottom: 22px; 
-        display: none;               
-      
+        bottom: 22px;
+        display: none;
     }
-
     &.detail-1 {
         background: url("../images/detail_1.png") no-repeat 0 0;
         right: 940px;
         bottom: 22px;
         display: none;
-        
     }
-
     &.detail-3 {
         background: url('../images/detail_3.png') no-repeat 0 0;
         right: 840px;
         bottom: 22px;
         display: none;
-      
     }
-
     &.detail-4 {
         background: url('../images/detail_4.png') no-repeat 0 0;
         right: 740px;
         bottom: 22px;
         display: none;
-          
     }
     &.detail-5 {
         background: url('../images/detail_5.png') no-repeat 0 0;
-        right: 740px;
+        right: 640px;
         bottom: 22px;
         display: none;
-          
     }
     &.detail-6 {
         background: url('../images/detail_6.png') no-repeat 0 0;
-        right: 740px;
+        right: 540px;
         bottom: 22px;
         display: none;
-          
     }
     &.detail-7 {
         background: url('../images/detail_7.png') no-repeat 0 0;
-        right: 740px;
+        right: 440px;
         bottom: 22px;
         display: none;
-          
     }
 }
-
 @keyframes appear {
     0% {
-        transform: scale(1,1);
+        transform: scale(1, 1);
         opacity: 1;
         right: 22px;
-        bottom: 120px;          
-    }   
-     5% {
-        transform: scale(1.5,1.5);
+        bottom: 120px;
+    }
+    5% {
+        transform: scale(1.5, 1.5);
         opacity: .7;
         right: 22px;
-        bottom: 120px;          
+        bottom: 120px;
     }
     15% {
-        transform: scale(1,1); 
+        transform: scale(1, 1);
     }
-    90%{
+    90% {
         opacity: 0.5
-
     }
-    100% {                    
-        opacity: 0;                    
-        bottom: 22px;                    
+    100% {
+        opacity: 0;
+        bottom: 22px;
     }
 }

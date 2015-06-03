@@ -1,103 +1,97 @@
 #stage2 {
-	background: url('../images/stage2Bg.jpg') no-repeat 0 0;
-	.choosePic {
-		position: absolute;
-		top: 440px;
-		left: 250px;
-		width: 375px;
-		height: 100px;
-		
-	}
-	.stone {
-		position: absolute;
-		top: 555px;
-		right: 0;
-		width: 255px;
-		height: 255px;
-		background: url("../images/stone.png") no-repeat 0 0;
-		
-	}
-	 #ticTacToe {
-	 	 	position: absolute;
-	 	 	display: none;
-	 	 	background: url('../images/Game_2screen_stone_grid.png') no-repeat 0 0;
-		 	right: 59px;
-		 	bottom: 100px;
-		 	width: 155px;
-	 }
-	.tic {
-	 	background: url('../images/x.png') no-repeat 0 0;
-	}
-	.toe {
-	 	background: url('../images/o.png') no-repeat 0 0;
-	}
-	.tbl {
-		position: relative;
-			width: 150px;
-			right: -3px;
-			top: 4px;
-			transform: rotateY(-25deg) rotateX(30deg);
-			
-
-		td  {
-					
-			width: 30px;
-			height: 30px;
-				
-		}
-	}
-	.newGameB {
-		visibility: hidden;
-	}
-	
-
+    background: url('../images/stage2Bg.jpg') no-repeat 0 0;
+    .choosePic {
+        position: absolute;
+        top: 440px;
+        left: 250px;
+        width: 375px;
+        height: 100px;
+    }
+    .stone {
+        position: absolute;
+        top: 555px;
+        right: 0;
+        width: 255px;
+        height: 255px;
+        background: url("../images/stone.png") no-repeat 0 0;
+    }
+    #ticTacToe {
+        position: absolute;
+        display: none;
+        background: url('../images/Game_2screen_stone_grid.png') no-repeat 0 0;
+        right: 59px;
+        bottom: 100px;
+        width: 155px;
+    }
+    .tic {
+        background: url('../images/x.png') no-repeat 0 0;
+    }
+    .toe {
+        background: url('../images/o.png') no-repeat 0 0;
+    }
+    .tbl {
+        position: relative;
+        width: 150px;
+        right: -3px;
+        top: 4px;
+        transform: rotateY(-25deg) rotateX(30deg);
+        td {
+            width: 30px;
+            height: 30px;
+        }
+    }
+    .newGameB {
+        //visibility: hidden;
+        position: absolute;
+        bottom: -45px;
+        right: 10px;
+        width: 33px;
+        height: 34px;
+        border: none;
+        background: url('../images/Game_2_Refresh_btn.png') no-repeat 0 0;
+    }
 }
-
-
 .lightOff {
-	background-color: #000;
-	overflow: hidden;
+    background-color: #000;
+    overflow: hidden;
 }
 .flashLight {
-	background-color: #fff;
-	-webkit-clip-path: circle(00px at 50% 50%);
+    background-color: #fff;
+    -webkit-clip-path: circle(00px at 50% 50%);
 }
 .flashLightShadow {
-	position:absolute;
-	top: 0;
-	left: 0; 
-	width: 210px;
-	height: 210px; 
-	background: transperent;
-	border-radius: 100px;
-	box-shadow: -205px -5px  30px rgba(204,204,204,0.6);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 210px;
+    height: 210px;
+    background: transperent;
+    border-radius: 100px;
+    box-shadow: -205px -5px 30px rgba(204, 204, 204, 0.6);
 }
 #stage2Popup1.popup-common {
-
-	.field-with-pictures, .pictures-to-choose {
-		display: inline-block;
-		margin-right: 2.5em;
-		margin-top: 1em;		
-		height: 270px;	
-		background-color: rgb(208,226,168);
-		text-align: left;	
-		
-	}
-	.field-with-pictures {
-		width: 270px;
-	}
-	.pictures-to-choose {		
-		width: 178px;		
-	}	
-
-	figure, .field-to-drop {
-			display: inline-block;
-			width: 86px;
-			height: 86px;
-			padding: 0;
-			margin: 0;
-			border: 1px solid rgb(90,74,66);
-			overflow: hidden;
-
-		}
+    .field-with-pictures, .pictures-to-choose {
+        display: inline-block;
+        margin-right: 2.5em;
+        margin-top: 1em;
+        height: 270px;
+        background-color: rgb(208, 226, 168);
+        text-align: left;
+    }
+    .field-with-pictures {
+        width: 270px;
+    }
+    .pictures-to-choose {
+        width: 178px;
+    }
+    figure,
+    .field-to-drop {
+        display: inline-block;
+        width: 86px;
+        height: 86px;
+        padding: 0;
+        margin: 0;
+        border: 1px solid rgb(90, 74, 66);
+        overflow: hidden;
+    }
 }
