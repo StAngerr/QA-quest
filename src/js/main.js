@@ -14,7 +14,7 @@ define(function (require) {
 		} else {
 			t = setTimeout(function(){
 				quest.startQuest();
-			}, 20000);
+			}, 7000);
 			return false;
 		}
 	}

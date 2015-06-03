@@ -1,79 +1,67 @@
-
 .home {
-	background: url('http://yaryna.net/img/zoryane-nebo.jpg')  0 0;
-	position: relative;
-	width: 1207px;
-	height: 100%;
-	margin: 1em auto;
-	overflow: hidden;
-
-	.startBtn {
-		position: absolute;
-		right: 0;
-		display: block;
-		width: 100px;
-		height: 100px;
-		margin: auto;
-		z-index: 10;
-		background: url('../images/rocket.png')  0 0;
-		color: orange;
-		opacity: .6;
-		span {
-			display: none;
-			font-size: 2em;
-		}
-
-		&:hover span {
-			display: block;
-			opacity:1;
-		}
-	}
-	article {	
-		position: absolute;
-		margin-left: -9em;
-		width: 1000px;
-		height: 800px;
-		bottom: 0;
-		left: 40%;
-		font-size: 250%;
-  	overflow: hidden;
-		-webkit-transform-origin: 50% 100%;	
-		transform-origin: 50% 100%;
-		-webkit-transform: perspective(300px) rotateX(25deg);	
-		transform: perspective(300px) rotateX(25deg);
-	   color: #eee;
-	  	div {
-	  		position: absolute;
-				top: 100%;
-				-webkit-animation: scroll 50s linear 1s infinite;
-				animation: scroll 50s linear 1s infinite;
-	  	}
-   
-	}
-	&:after {
-		position: absolute;
-		content: ' ';
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 60%;
-		background-image: -webkit-linear-gradient(top, rgba(0,0,0,1) 0%, transparent 100%);
-		background-image: linear-gradient(top, rgba(0,0,0,1) 0%, transparent 100%);
-		pointer-events: none;
-	}
+    background: url('../images/Open_Space_Start_fon.jpg') 0 0;
+    position: relative;
+    width: 1200px;
+    height: 100%;
+    margin: 1em auto;
+    overflow: hidden;
+    .startBtn {
+        position: absolute;
+        left: 40%;
+        top: 70px;
+        padding: .1em 1em;
+        z-index: 10;
+        background: #000;
+        color: #fff;
+        border: 2px solid rgb(141, 128, 148);
+        font-size: 30px;
+    }
+    article {
+        position: absolute;
+        margin-left: -10em;
+        width: 1100px;
+        height: 900px;
+        bottom: 10px;
+        left: 40%;
+        font-size: 260%;
+        overflow: hidden;
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+        -webkit-transform: perspective(350px) rotateX(25deg);
+        transform: perspective(350px) rotateX(25deg);
+        color: #eee;
+        div {
+            position: absolute;
+            top: 100%;
+            -webkit-animation: scroll 50s linear 1s infinite;
+            animation: scroll 50s linear 1s infinite;
+        }
+    }
+    &:after {
+        position: absolute;
+        content: ' ';
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 60%;
+        background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 1) 0%, transparent 100%);
+        background-image: linear-gradient(top, rgba(0, 0, 0, 1) 0%, transparent 100%);
+        pointer-events: none;
+    }
 }
-
 @-webkit-keyframes scroll {
-	0% { top: 100%; }
-	100% { top: -170%; }
+    0% {
+        top: 100%;
+    }
+    100% {
+        top: -170%;
+    }
 }
-
-
 @keyframes scroll {
-	0% { top: 100%; }
-	100% { top: -170%; }
+    0% {
+        top: 100%;
+    }
+    100% {
+        top: -170%;
+    }
 }
-
-	
-
-

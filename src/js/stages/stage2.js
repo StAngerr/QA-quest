@@ -6,196 +6,206 @@
      var canPlay = false;
      var that;
 
-    
+
 
      stage2.initEvents = function () {
-     /* set hero to the right position*/   
-        var heroPosition = {
-          left : '20px',
-          top:'575px',
-          height: '150px'
-        };
-        $('#hero').css( heroPosition );
-        $('#hero').show();
+         /* set hero to the right position*/
+         var heroPosition = {
+             left: '20px',
+             top: '575px',
+             height: '150px'
+         };
+         $('#hero').css(heroPosition);
+         $('#hero').show();
 
-        stage2.dragNdrop = new DragNDrop();
-   
-        turnOffTheLight();
-        addFlashLightEvents();
-    
+         stage2.dragNdrop = new DragNDrop();
 
-         $('.choosePic').on ('click', function() {
-             $('.man').animate({'left' : '450'}, 1000);
-             if(!canPlay) {
-                canPlay = true;
+         turnOffTheLight();
+         addFlashLightEvents();
+
+
+         $('.choosePic').on('click', function () {
+             $('.man').animate({
+                 'left': '450'
+             }, 1000);
+             if (!canPlay) {
+                 canPlay = true;
                  stage2.getTmpl('popupFrameTmpl.html');
-                 findRightPicture ();
+                 findRightPicture();
              } else {
-                return false;
+                 return false;
              }
-                   
+
          });
 
-     /*start to play cross-zero*/
-        $('.field').on('click', function (event) {
-            $('.man').animate({'left' : '750'}, 1000);           
-            if(!canPlay) return false;
-            event.stopPropagation();
-            yourChoice($(this).attr('id'));
-        });
-        $('.newGameB').on('click', playAgain);           
-    }
-
-
-     function findRightPicture () {
-         var stage_content = {
-            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
-            src : ['_brown.png', '_white.png']           
-        };
-
-        
-        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content);
-        
-        var pictureDraggable = $('.pic-to-drag');        
-
-        for (var i=0; i < pictureDraggable.length; i++) {
-            $(pictureDraggable[i]).attr('draggable','true');
-            $(pictureDraggable[i]).on('mouseover', function(){               
-                var old_src = $(this).attr('src');
-                var  new_src = old_src.slice(0,27) + stage_content.src[0];                
-                $(this).attr('src', new_src);
-            });
-            $(pictureDraggable[i]).on('mouseleave', function() { 
-               
-                if (!$(this).parent().hasClass('field-to-drop')) {
-                    var old_src = $(this).attr('src');
-                    var new_src = old_src.slice(0,27) + stage_content.src[1];                
-                    $(this).attr('src', new_src);
-                }
-            });
-           
-
-        }
-        for (var i=0; i < pictureDraggable.length; i++) {
-            pictureDraggable[i].addEventListener("dragstart", stage2.dragNdrop.drag);
-            pictureDraggable[i].addEventListener("dragover", stage2.dragNdrop.over);
-            pictureDraggable[i].addEventListener("dragleave", stage2.dragNdrop.leave);
-        }
-
-        var fieldToDrop = $('.field-to-drop')[0];
-        fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
-        fieldToDrop.addEventListener('drop', function(event) {
-                event.preventDefault();
-                event.stopPropagation();                   
-                
-                drop(event);                
-                
-                return false;  
-            });
-
-        
-
-        $('#sendPicture').on('click', function() {
-            if($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
-                alert('ok');
-            }
-            $('#stage2Popup1').remove();
-            $('.popupWrap').remove();
-            $('.detail-4').show();  
-            
-            setTimeout(function(){
-                $('#inventory').trigger('inventory:addItem',{data:'.detail-4'}); 
-                $('#ticTacToe').show();
-                $('.item.detail-4').remove(); 
-            }, 2000);          
-        });
+         /*start to play cross-zero*/
+         $('.field').on('click', function (event) {
+             $('.man').animate({
+                 'left': '750'
+             }, 1000);
+             if (!canPlay) return false;
+             event.stopPropagation();
+             yourChoice($(this).attr('id'));
+         });
+         $('.newGameB').on('click', playAgain);
      }
 
-    
-    function drop (event) {
-            event.preventDefault();
-            event.stopPropagation(); 
-            var that = stage2.dragNdrop.data; 
 
-            $(event.target).html(that);
-        };
+     function findRightPicture() {
+         var stage_content = {
+             taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',
+             src: ['_brown.png', '_white.png']
+         };
 
-    stage2.finishStage = function() {
-        removeFlashLightEvents();
-        $('#mainSection').trigger('main:stageFinished');
-    };
 
-    function turnOffTheLight() {
+         stage2.getTmpl('stage2PictureGameTmpl.html', '.popup', stage_content);
+
+         var pictureDraggable = $('.pic-to-drag');
+
+         for (var i = 0; i < pictureDraggable.length; i++) {
+             $(pictureDraggable[i]).attr('draggable', 'true');
+             $(pictureDraggable[i]).on('mouseover', function () {
+                 var old_src = $(this).attr('src');
+                 var new_src = old_src.slice(0, 27) + stage_content.src[0];
+                 $(this).attr('src', new_src);
+             });
+             $(pictureDraggable[i]).on('mouseleave', function () {
+
+                 if (!$(this).parent().hasClass('field-to-drop')) {
+                     var old_src = $(this).attr('src');
+                     var new_src = old_src.slice(0, 27) + stage_content.src[1];
+                     $(this).attr('src', new_src);
+                 }
+             });
+
+
+         }
+         for (var i = 0; i < pictureDraggable.length; i++) {
+             pictureDraggable[i].addEventListener("dragstart", stage2.dragNdrop.drag);
+             pictureDraggable[i].addEventListener("dragover", stage2.dragNdrop.over);
+             pictureDraggable[i].addEventListener("dragleave", stage2.dragNdrop.leave);
+         }
+
+         var fieldToDrop = $('.field-to-drop')[0];
+         fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
+         fieldToDrop.addEventListener('drop', function (event) {
+             event.preventDefault();
+             event.stopPropagation();
+
+             drop(event);
+
+             return false;
+         });
+
+
+
+         $('#sendPicture').on('click', function () {
+             if ($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
+                 alert('ok');
+             }
+             $('#stage2Popup1').remove();
+             $('.popupWrap').remove();
+             $('.detail-4').show();
+
+             setTimeout(function () {
+                 $('#inventory').trigger('inventory:addItem', {
+                     data: '.detail-4'
+                 });
+                 $('#ticTacToe').show();
+                 $('.item.detail-4').remove();
+             }, 2000);
+         });
+     }
+
+
+     function drop(event) {
+         event.preventDefault();
+         event.stopPropagation();
+         var that = stage2.dragNdrop.data;
+
+         $(event.target).html(that);
+     };
+
+     stage2.finishStage = function () {
+         removeFlashLightEvents();
+         $('#mainSection').trigger('main:stageFinished');
+     };
+
+     function turnOffTheLight() {
          $('html').addClass('lightOff');
          $('body').addClass('flashLight');
          $('body').append('<div class="flashLightShadow"></div>');
      };
      /*    Move events to flash light*/
-    function addFlashLightEvents() {
-        $(document).mousemove(function(e) {
-            $('body').css({
-                '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
-            });
-            $('.flashLightShadow').css({
-                'top': (e.pageY - 100) + 'px',
-                'left': (e.pageX + 102) + 'px'
-            });
-        });
-    };
+     function addFlashLightEvents() {
+         $(document).mousemove(function (e) {
+             $('body').css({
+                 '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
+             });
+             $('.flashLightShadow').css({
+                 'top': (e.pageY - 100) + 'px',
+                 'left': (e.pageX + 102) + 'px'
+             });
+         });
+     };
 
-    function removeFlashLightEvents() {
-        $(document).off('mousemove');
-        $('html').removeClass('lightOff');
-        $('body').removeClass('flashLight');
-        $('.flashLightShadow').remove();
-        $('body').css({'-webkit-clip-path': 'none'});
-    };
+     function removeFlashLightEvents() {
+         $(document).off('mousemove');
+         $('html').removeClass('lightOff');
+         $('body').removeClass('flashLight');
+         $('.flashLightShadow').remove();
+         $('body').css({
+             '-webkit-clip-path': 'none'
+         });
+     };
 
 
 
      function removeFlashLightEvents() {
-        $(document).off('mousemove');
-        $('html').removeClass('lightOff');
-        $('body').css({'-webkit-clip-path': 'none' });
-        $('body').removeClass('flashLight');
-        $('.flashLightShadow').remove();
+         $(document).off('mousemove');
+         $('html').removeClass('lightOff');
+         $('body').css({
+             '-webkit-clip-path': 'none'
+         });
+         $('body').removeClass('flashLight');
+         $('.flashLightShadow').remove();
      };
 
 
      /*functions and variables to play tictictoe game*/
-    var x = "src/images/x.png";
-    var oz = "src/images/o.png";
-    var pause = 0;
-    var all = 0;
-    var a = 0;
-    var b = 0;
-    var c = 0;
-    var d = 0;
-    var e = 0;
-    var f = 0;
-    var g = 0;
-    var h = 0;
-    var i = 0;
-    var j = 0;
-    var k = 0;
-    var l = 0;
-    var m = 0;
-    var n = 0;
-    var o = 0;
-    var p = 0;
-    var temp = "";
-    var ok = 0;
-    var cf = 0;
-    var choice = 16;
-    var aRandomNumber = 0;
-    var comp = 0;
-    var t = 0;
-    var wn = 0;
-    var ls = 0;
-    var ts = 0;
+     var x = "src/images/x.png";
+     var oz = "src/images/o.png";
+     var pause = 0;
+     var all = 0;
+     var a = 0;
+     var b = 0;
+     var c = 0;
+     var d = 0;
+     var e = 0;
+     var f = 0;
+     var g = 0;
+     var h = 0;
+     var i = 0;
+     var j = 0;
+     var k = 0;
+     var l = 0;
+     var m = 0;
+     var n = 0;
+     var o = 0;
+     var p = 0;
+     var temp = "";
+     var ok = 0;
+     var cf = 0;
+     var choice = 16;
+     var aRandomNumber = 0;
+     var comp = 0;
+     var t = 0;
+     var wn = 0;
+     var ls = 0;
+     var ts = 0;
      // logic to know who is winner
      // 1 - X; 2 - 0; 3 - noone
-    function logicOne() {
+     function logicOne() {
          if ((a == 1) && (b == 1) && (c == 1) && (d == 1)) all = 1;
          if ((a == 1) && (f == 1) && (k == 1) && (p == 1)) all = 1;
          if ((a == 1) && (e == 1) && (i == 1) && (m == 1)) all = 1;
@@ -221,50 +231,50 @@
          if ((a != 0) && (b != 0) && (c != 0) && (d != 0) && (e != 0) && (f != 0) && (g != 0) && (h != 0) && (i != 0) && (j != 0) && (k != 0) && (l != 0) && (m != 0) && (n != 0) && (o != 0) && (p != 0) && (all == 0)) all = 3;
 
      }
-         // logic for AI move
+     // logic for AI move
      function logicTwo() {
-             if ((a == 2) && (b == 2) && (c == 0) && (d == 2) && (temp == "")) temp = "C";
-             if ((a == 2) && (b == 0) && (c == 2) && (d == 2) && (temp == "")) temp = "B";
-             if ((a == 0) && (b == 2) && (c == 2) && (d == 2) && (temp == "")) temp = "A";
-             if ((a == 2) && (b == 2) && (c == 2) && (d == 0) && (temp == "")) temp = "D";
-             if ((a == 2) && (e == 2) && (i == 2) && (m == 0) && (temp == "")) temp = "M";
-             if ((a == 2) && (e == 0) && (i == 2) && (m == 2) && (temp == "")) temp = "E";
-             if ((a == 0) && (e == 2) && (i == 2) && (m == 2) && (temp == "")) temp = "A";
-             if ((a == 2) && (e == 2) && (i == 0) && (m == 2) && (temp == "")) temp = "I";
-             if ((a == 2) && (f == 2) && (k == 0) && (p == 2) && (temp == "")) temp = "K";
-             if ((a == 2) && (f == 0) && (k == 2) && (p == 2) && (temp == "")) temp = "F";
-             if ((a == 0) && (f == 2) && (k == 2) && (p == 2) && (temp == "")) temp = "A";
-             if ((a == 2) && (f == 2) && (k == 2) && (p == 0) && (temp == "")) temp = "P";
-             if ((b == 2) && (f == 2) && (j == 2) && (n == 0) && (temp == "")) temp = "N";
-             if ((b == 2) && (f == 2) && (j == 0) && (n == 2) && (temp == "")) temp = "J";
-             if ((b == 2) && (f == 0) && (j == 2) && (n == 2) && (temp == "")) temp = "F";
-             if ((b == 0) && (f == 2) && (j == 2) && (n == 2) && (temp == "")) temp = "B";
-             if ((c == 0) && (g == 2) && (k == 2) && (o == 2) && (temp == "")) temp = "C";
-             if ((c == 2) && (g == 0) && (k == 2) && (o == 2) && (temp == "")) temp = "G";
-             if ((c == 2) && (g == 2) && (k == 0) && (o == 2) && (temp == "")) temp = "K";
-             if ((c == 2) && (g == 2) && (k == 2) && (o == 0) && (temp == "")) temp = "O";
-             if ((d == 0) && (h == 2) && (l == 2) && (p == 2) && (temp == "")) temp = "D";
-             if ((d == 2) && (h == 0) && (l == 2) && (p == 2) && (temp == "")) temp = "H";
-             if ((d == 2) && (h == 2) && (l == 0) && (p == 2) && (temp == "")) temp = "L";
-             if ((d == 2) && (h == 2) && (l == 2) && (p == 0) && (temp == "")) temp = "P";
-             if ((d == 0) && (g == 2) && (j == 2) && (m == 2) && (temp == "")) temp = "D";
-             if ((d == 2) && (g == 0) && (j == 2) && (m == 2) && (temp == "")) temp = "G";
-             if ((d == 2) && (g == 2) && (j == 0) && (m == 2) && (temp == "")) temp = "J";
-             if ((d == 2) && (g == 2) && (j == 2) && (m == 0) && (temp == "")) temp = "M";
-             if ((e == 0) && (f == 2) && (g == 2) && (h == 2) && (temp == "")) temp = "E";
-             if ((e == 2) && (f == 0) && (g == 2) && (h == 2) && (temp == "")) temp = "F";
-             if ((e == 2) && (f == 2) && (g == 0) && (h == 2) && (temp == "")) temp = "G";
-             if ((e == 2) && (f == 2) && (g == 2) && (h == 0) && (temp == "")) temp = "H";
-             if ((i == 0) && (j == 2) && (k == 2) && (l == 2) && (temp == "")) temp = "I";
-             if ((i == 2) && (j == 0) && (k == 2) && (l == 2) && (temp == "")) temp = "J";
-             if ((i == 2) && (j == 2) && (k == 0) && (l == 2) && (temp == "")) temp = "K";
-             if ((i == 2) && (j == 2) && (k == 2) && (l == 0) && (temp == "")) temp = "L";
-             if ((m == 0) && (n == 2) && (o == 2) && (p == 2) && (temp == "")) temp = "M";
-             if ((m == 2) && (n == 0) && (o == 2) && (p == 2) && (temp == "")) temp = "N";
-             if ((m == 2) && (n == 2) && (o == 0) && (p == 2) && (temp == "")) temp = "O";
-             if ((m == 2) && (n == 2) && (o == 2) && (p == 0) && (temp == "")) temp = "P";
-         }
-         // logic for AI block your win
+         if ((a == 2) && (b == 2) && (c == 0) && (d == 2) && (temp == "")) temp = "C";
+         if ((a == 2) && (b == 0) && (c == 2) && (d == 2) && (temp == "")) temp = "B";
+         if ((a == 0) && (b == 2) && (c == 2) && (d == 2) && (temp == "")) temp = "A";
+         if ((a == 2) && (b == 2) && (c == 2) && (d == 0) && (temp == "")) temp = "D";
+         if ((a == 2) && (e == 2) && (i == 2) && (m == 0) && (temp == "")) temp = "M";
+         if ((a == 2) && (e == 0) && (i == 2) && (m == 2) && (temp == "")) temp = "E";
+         if ((a == 0) && (e == 2) && (i == 2) && (m == 2) && (temp == "")) temp = "A";
+         if ((a == 2) && (e == 2) && (i == 0) && (m == 2) && (temp == "")) temp = "I";
+         if ((a == 2) && (f == 2) && (k == 0) && (p == 2) && (temp == "")) temp = "K";
+         if ((a == 2) && (f == 0) && (k == 2) && (p == 2) && (temp == "")) temp = "F";
+         if ((a == 0) && (f == 2) && (k == 2) && (p == 2) && (temp == "")) temp = "A";
+         if ((a == 2) && (f == 2) && (k == 2) && (p == 0) && (temp == "")) temp = "P";
+         if ((b == 2) && (f == 2) && (j == 2) && (n == 0) && (temp == "")) temp = "N";
+         if ((b == 2) && (f == 2) && (j == 0) && (n == 2) && (temp == "")) temp = "J";
+         if ((b == 2) && (f == 0) && (j == 2) && (n == 2) && (temp == "")) temp = "F";
+         if ((b == 0) && (f == 2) && (j == 2) && (n == 2) && (temp == "")) temp = "B";
+         if ((c == 0) && (g == 2) && (k == 2) && (o == 2) && (temp == "")) temp = "C";
+         if ((c == 2) && (g == 0) && (k == 2) && (o == 2) && (temp == "")) temp = "G";
+         if ((c == 2) && (g == 2) && (k == 0) && (o == 2) && (temp == "")) temp = "K";
+         if ((c == 2) && (g == 2) && (k == 2) && (o == 0) && (temp == "")) temp = "O";
+         if ((d == 0) && (h == 2) && (l == 2) && (p == 2) && (temp == "")) temp = "D";
+         if ((d == 2) && (h == 0) && (l == 2) && (p == 2) && (temp == "")) temp = "H";
+         if ((d == 2) && (h == 2) && (l == 0) && (p == 2) && (temp == "")) temp = "L";
+         if ((d == 2) && (h == 2) && (l == 2) && (p == 0) && (temp == "")) temp = "P";
+         if ((d == 0) && (g == 2) && (j == 2) && (m == 2) && (temp == "")) temp = "D";
+         if ((d == 2) && (g == 0) && (j == 2) && (m == 2) && (temp == "")) temp = "G";
+         if ((d == 2) && (g == 2) && (j == 0) && (m == 2) && (temp == "")) temp = "J";
+         if ((d == 2) && (g == 2) && (j == 2) && (m == 0) && (temp == "")) temp = "M";
+         if ((e == 0) && (f == 2) && (g == 2) && (h == 2) && (temp == "")) temp = "E";
+         if ((e == 2) && (f == 0) && (g == 2) && (h == 2) && (temp == "")) temp = "F";
+         if ((e == 2) && (f == 2) && (g == 0) && (h == 2) && (temp == "")) temp = "G";
+         if ((e == 2) && (f == 2) && (g == 2) && (h == 0) && (temp == "")) temp = "H";
+         if ((i == 0) && (j == 2) && (k == 2) && (l == 2) && (temp == "")) temp = "I";
+         if ((i == 2) && (j == 0) && (k == 2) && (l == 2) && (temp == "")) temp = "J";
+         if ((i == 2) && (j == 2) && (k == 0) && (l == 2) && (temp == "")) temp = "K";
+         if ((i == 2) && (j == 2) && (k == 2) && (l == 0) && (temp == "")) temp = "L";
+         if ((m == 0) && (n == 2) && (o == 2) && (p == 2) && (temp == "")) temp = "M";
+         if ((m == 2) && (n == 0) && (o == 2) && (p == 2) && (temp == "")) temp = "N";
+         if ((m == 2) && (n == 2) && (o == 0) && (p == 2) && (temp == "")) temp = "O";
+         if ((m == 2) && (n == 2) && (o == 2) && (p == 0) && (temp == "")) temp = "P";
+     }
+     // logic for AI block your win
      function logicThree() {
          if ((a == 1) && (b == 1) && (c == 0) && (d == 1) && (temp == "")) temp = "C";
          if ((a == 1) && (b == 0) && (c == 1) && (d == 1) && (temp == "")) temp = "B";
@@ -406,31 +416,28 @@
              return true;
          }
      }
-  
+
      function yourChoice(chName) {
-       
-        pause = 0;
-        if (all != 0) ended();
-        if (all == 0) {
+
+         pause = 0;
+         if (all != 0) ended();
+         if (all == 0) {
              cf = 0;
              ok = 0;
              temp = chName;
              checkSpace();
-            if (ok == 1) {
-                  $('#'+chName).addClass('tic');
-                
-            }
-             process();
-             if (ok == 0) taken();
-            
-             if ((all == 0) && (pause == 0)) {
-                 setTimeout(function(){
-                    myChoice();
-                    return;
-                }, 500);
-                
-            }
-            
+             if (ok == 1) {
+                 $('#' + chName).addClass('tic');
+                 process();
+                 if (ok == 0) taken();
+
+                 if ((all == 0) && (pause == 0)) {
+                     setTimeout(function () {
+                         myChoice();
+                         return;
+                     }, 500);
+                 }
+             }
          }
      }
 
@@ -439,7 +446,7 @@
      }
 
      function myChoice() {
-      
+
          temp = "";
          ok = 0;
          cf = 1;
@@ -469,6 +476,7 @@
          }
          $('#' + temp).addClass('toe');
          process();
+         return false;
      }
 
 
@@ -477,63 +485,62 @@
      }
 
      function process() {
-        // CHANGE IT THEN! we need some conditions from customer
+         // CHANGE IT THEN! we need some conditions from customer
 
          logicOne();
          if (all == 2) {
-            // 0 won
-             showInwentory ()            
-               
-         } else if (all == 1 || all == 3) {          
-            
-                showInwentory ()
+             // 0 won
+             showInwentory()
+
+         } else if (all == 1 || all == 3) {
+
+             showInwentory()
          }
 
      }
-       
-    function showInwentory (){
-        $('.newGameB').css('visibility', 'hidden');
-        
-       
+
+     function showInwentory() {
+         $('.newGameB').css('visibility', 'hidden');
+         $('#ticTacToe').remove();
+
          $('.detail-3').show();
-         setTimeout( function() {
-            $('#inventory').trigger('inventory:addItem',{data:'.detail-3'});     
-            $('#ticTacToe').remove();
-            $('.item.detail-3').remove();
-            stage2.finishStage();
+         setTimeout(function () {
+
+
+             $('#inventory').trigger('inventory:addItem', {
+                 data: '.detail-3'
+             });
+             $('.item.detail-3').remove();
+             stage2.finishStage();
          }, 2000);
-    }
-    var counter = 0;
+     }
+     var counter = 0;
 
      function playAgain() {
-       
+
          if (all == 2) {
              reset();
          } else if (all == 3) {
              counter++;
              // CHANGE IT THEN!
-             if (counter >= 1) { 
+             if (counter >= 1) {
                  $('.newGameB').css('visibility', 'hidden');
-                  $('#ticTacToe').remove();                 
+                 $('#ticTacToe').remove();
 
                  return false;
              }
-             
              reset();
-             
-
          }
-
      }
-    
 
-     function reset() {        
-        var fields = $('.field');
-        fields.each( function(index){
-            $(this).removeClass('toe');
-            $(this).removeClass('tic');
-        });
-        $('.newGameB').css('visibility', 'hidden');
+
+     function reset() {
+         var fields = $('.field');
+         fields.each(function (index) {
+             $(this).removeClass('toe');
+             $(this).removeClass('tic');
+         });
+         $('.newGameB').css('visibility', 'hidden');
 
          all = 0;
          a = 0;
@@ -558,14 +565,14 @@
          choice = 16;
          aRandomNumber = 0;
          comp = 0;
-        
-         
+
+
          if (t == 0) {
              t = 2;
              myChoice();
          }
          t--;
      }
-    
-    return stage2;
+
+     return stage2;
  });
