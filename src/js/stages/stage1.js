@@ -83,7 +83,7 @@ define(function(require) {
     function showWord() {        
         $('#stage1Popup1').remove();
          $('.popupWrap').remove();
-        $('.gun').show();         
+        $('.detail-1').show();         
         setTimeout(sendDnDWord, 3000); 
 
         
@@ -91,8 +91,8 @@ define(function(require) {
 
     function sendDnDWord(event) {
         // add the first inventory
-        $('#inventory').trigger('inventory:addItem', {data:'.gun'});  
-        $('.item.gun').remove();
+        $('#inventory').trigger('inventory:addItem', {data:'.detail-1'});  
+        $('.item.detail-1').remove();
 
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
@@ -126,41 +126,18 @@ define(function(require) {
     function finishFlowGame() {
         $('#wade_main_div').remove();
         $('.popupWrap').remove();
-        $('.battery').show();
+        $('.detail-2').show();
         flowGameStatus = 'finished';
         setTimeout(closePopup, 4000); 
     };
 
     function closePopup(event) {
-        $('#inventory').trigger('inventory:addItem', {data:'.battery'});  
-        $('.item.battery').remove();
+        $('#inventory').trigger('inventory:addItem', {data:'.detail-2'});  
+        $('.item.detail-2').remove();
         $('.totalLevel').css({'opacity':'1'});
         
     };
 
-    // function allowDrop(event) {
-    //     event.preventDefault();
-    //     return false;
-    // };
-
-    // function drag(event) {      
-    //     event.dataTransfer.setData('text/html', $(event.target).html()); 
-    //     that = $(event.target);          
-    //     return false;
-    // };
-
-    // function over(event) {
-    //     event.preventDefault();
-    //     that.css('opacity', '0.5');     
-    //     return false;
-    // };
-
-    // function leave(event) {
-    //     event.preventDefault();
-    //     that.css('opacity', '1');
-    //     $('.makeWord').css ('background-color', 'yellow');
-    //     return false;       
-    // };
 
     function drop(event) {
         event.preventDefault();

@@ -4,6 +4,7 @@
     box-sizing: border-box;
     cursor: default;
 }
+
 html, body, main {
     height: 100%;
     width: 100%;
@@ -14,9 +15,9 @@ html, body, main {
     -ms-user-select: none;
     user-select: none;
 }
+
 body {
-    font-family: 'Noto Sans Bold ', sans-serif;
-   
+    font-family: 'Noto Sans Bold ', sans-serif;   
 }
 
 main {
@@ -24,8 +25,6 @@ main {
 	display: block;
     height: 100%;
     overflow: hidden;
-
-
 }
 
 a {
@@ -65,8 +64,8 @@ a {
             opacity: 0;            
         
 
-            &.battery {
-                background: url("../images/batteries.jpg") no-repeat 0 0;
+            &.detail-2 {
+                background: url("../images/detail_2.png") no-repeat 0 0;
                 right: 1040px;
                 bottom: 22px; 
                 display: none;               
@@ -74,24 +73,24 @@ a {
                 animation-iteration-count: 1;
 
             }
-            &.gun {
-                background: url("../images/gun.jpg") no-repeat 0 0;
+            &.detail-1 {
+                background: url("../images/detail_1.png") no-repeat 0 0;
                 right: 940px;
                 bottom: 22px;
                 display: none;
                 animation: appear 3s ease-in  infinite alternate;
                 animation-iteration-count: 1;
             }
-            &.oil {
-                background: url('../images/oil.jpeg') no-repeat 0 0;
+            &.detail-3 {
+                background: url('../images/detail_3.png') no-repeat 0 0;
                 right: 840px;
                 bottom: 22px;
                 display: none;
                 animation: appear 3s ease-in  infinite alternate;
                 animation-iteration-count: 1;
             }
-            &.joystick {
-                background: url('../images/joystick.jpg') no-repeat 0 0;
+            &.detail-4 {
+                background: url('../images/detail_4.png') no-repeat 0 0;
                 right: 740px;
                 bottom: 22px;
                 display: none;
@@ -128,53 +127,7 @@ a {
             }
             
         }   
-    #inventory {
-        width: 1200px;
-        height: 10%;
-        background: #ccc;
-        margin: 0 auto;
-        border-bottom-right-radius: 10px;
-        border-bottom-left-radius: 10px; 
-        .inventoryWrap {
-            width: 1000px;
-            height: 100%;
-            margin: 0 auto;
-            .itemContainer {
-                box-sizing: border-box;
-                border-radius: 15px;
-                float: left;
-                width: 9%;
-                height: 90%;
-                margin: 5px 7px 0 0;
-                background-color: #fff;
-                
-                &:hover {
-                    border: 2px solid #707070;
-                }
 
-                figure {
-                    margin-top: 15px;
-                }
-                .itemIcon {     
-                   display: block;
-                   margin: 0 auto;
-                   border: 0px solid #f37736;
-                   transition: opacity .8s;
-                   border-radius: 10px;
-                }
-            }
-        }
-    }
-
-}
-
- .activeItem {
-    opacity: 1;
-}
-
-.noItem {
-    opacity: 0.3;
-}
 
 #wade_main_div {
     position: relative;
@@ -218,4 +171,5 @@ canvas {
             text-transform: uppercase;
             font-size: 20px;
     }  
+}
 }

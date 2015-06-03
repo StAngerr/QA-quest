@@ -29,8 +29,7 @@
              if(!canPlay) {
                 canPlay = true;
                  stage2.getTmpl('popupFrameTmpl.html');
-                $('.popup').append('<button class="item joystick"> </button>');
-                findRightPicture ();
+                 findRightPicture ();
              } else {
                 return false;
              }
@@ -102,12 +101,12 @@
             }
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
-            $('.joystick').show();  
+            $('.detail-4').show();  
             
             setTimeout(function(){
-                $('#inventory').trigger('inventory:addItem',{data:'.joystick'}); 
+                $('#inventory').trigger('inventory:addItem',{data:'.detail-4'}); 
                 $('#ticTacToe').show();
-                $('.item.joystick').remove(); 
+                $('.item.detail-4').remove(); 
             }, 4000);          
         });
      }
@@ -117,9 +116,7 @@
             event.preventDefault();
             event.stopPropagation(); 
             var that = stage2.dragNdrop.data; 
-           
-            // var data =  event.dataTransfer.getData('text/html');
-            // var html =  $(event.target).html();
+
             $(event.target).html(that);
         };
 
@@ -154,32 +151,6 @@
         $('body').css({'-webkit-clip-path': 'none'});
     };
 
-                                                             /* think how avoid the repetittions*/
-    
-    //  function allowDrop(event) {
-    //     event.preventDefault();
-    //     return false;
-    // };
-
-    // function drag(event) {  
-   
-    //     event.dataTransfer.setData('text/html', $(event.target).html()); 
-    //     that = $(event.target);  
-               
-    //     return false;
-    // };
-
-    // function over(event) {
-    //     event.preventDefault();
-    //     //that.css('opacity', '0.5');     
-    //     return false;
-    // };
-
-    // function leave(event) {
-    //     event.preventDefault();
-    //     //that.css('opacity', '1');
-    //     return false;       
-    // };
 
 
      function removeFlashLightEvents() {
@@ -593,9 +564,9 @@
      }
      // end of game
      function addOil() {        
-        $('#inventory').trigger('inventory:addItem',{data:'.oil'});     
+        $('#inventory').trigger('inventory:addItem',{data:'.detail-3'});     
         $('#ticTacToe').remove();
-        $('.item.oil').remove();
+        $('.item.detail-3').remove();
         stage2.finishStage();
         
     }
