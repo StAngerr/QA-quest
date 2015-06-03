@@ -84,7 +84,7 @@ define(function(require) {
         $('#stage1Popup1').remove();
          $('.popupWrap').remove();
         $('.detail-1').show();         
-        setTimeout(sendDnDWord, 3000); 
+        setTimeout(sendDnDWord, 2000); 
 
         
     };
@@ -128,7 +128,7 @@ define(function(require) {
         $('.popupWrap').remove();
         $('.detail-2').show();
         flowGameStatus = 'finished';
-        setTimeout(closePopup, 4000); 
+        setTimeout(closePopup, 2000); 
     };
 
     function closePopup(event) {

@@ -86,7 +86,7 @@
         fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
         fieldToDrop.addEventListener('drop', function(event) {
                 event.preventDefault();
-                event.stopPropagation();                      
+                event.stopPropagation();                   
                 
                 drop(event);                
                 
@@ -107,7 +107,7 @@
                 $('#inventory').trigger('inventory:addItem',{data:'.detail-4'}); 
                 $('#ticTacToe').show();
                 $('.item.detail-4').remove(); 
-            }, 4000);          
+            }, 2000);          
         });
      }
 
@@ -495,8 +495,13 @@
         $('.newGameB').css('visibility', 'hidden');
         
        
-         $('.oil').show();
-         setTimeout(addOil, 3000);
+         $('.detail-3').show();
+         setTimeout( function() {
+            $('#inventory').trigger('inventory:addItem',{data:'.detail-3'});     
+            $('#ticTacToe').remove();
+            $('.item.detail-3').remove();
+            stage2.finishStage();
+         }, 2000);
     }
     var counter = 0;
 
@@ -509,8 +514,7 @@
              // CHANGE IT THEN!
              if (counter >= 1) { 
                  $('.newGameB').css('visibility', 'hidden');
-                  $('#ticTacToe').remove();
-                 
+                  $('#ticTacToe').remove();                 
 
                  return false;
              }
@@ -562,13 +566,6 @@
          }
          t--;
      }
-     // end of game
-     function addOil() {        
-        $('#inventory').trigger('inventory:addItem',{data:'.detail-3'});     
-        $('#ticTacToe').remove();
-        $('.item.detail-3').remove();
-        stage2.finishStage();
-        
-    }
+    
     return stage2;
  });

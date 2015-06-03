@@ -7,19 +7,7 @@ define(function(require) {
     stage3.initEvents = function() {
     	/* it temporarily until standard control is not define*/
 
-
-stage3.getTmpl('popupFrameTmpl.html');
-       			stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
-       			var newGame = new StickGame();
-						newGame.startGame();
-						$('.pickStick').on('click', newGame.playerPicks);
-
-
-
-
-
-
-    		var heroChange = {
+   				var heroChange = {
           left : '40px',
           top:'530px',
           height: '130px'
@@ -44,12 +32,26 @@ stage3.getTmpl('popupFrameTmpl.html');
 		/*------------------------------------------*/
     };
 
+
+
 	function bubbleStart() {
 
-		$('.popupWrap').remove();/*!!!*/ 
+		
 		  $('#stage3').append('<div class="bubbles-popup"><div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div></div>'); /* set sizes*/
-       wade.init('src/js/lib/wade_src/bubbles.js');      
+       wade.init('src/js/lib/wade_src/bubbles.js');    
+       
     };
+
+    function bubbleFinish(){
+    	
+    	
+    	$('.detail-6').show();
+    	setTimeout(function () {
+    		 $('#inventory').trigger('inventory:addItem',{data:'.detail-6'}); 
+    		$('#mainSection').trigger('main:stageFinished'); 
+    	}, 2500);
+    	 
+    }
 
 	function StickGame() {
 		var currentGame = this;
@@ -83,11 +85,13 @@ stage3.getTmpl('popupFrameTmpl.html');
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
 			printWhoWon(winner);
 			/*CHECK WHO IS WINNER*/
-			
+			$('.popupWrap').remove();/*!!!*/ 
+			$('.detail-5').show();
 			setTimeout(function(){
+				 $('#inventory').trigger('inventory:addItem',{data:'.detail-5'}); 
 				 bubbleStart();
 				  //$('#mainSection').trigger('main:stageFinished');
-			}, 1500);
+			}, 2500);
 		};
 
 		currentGame.playerPicks = function(event) {

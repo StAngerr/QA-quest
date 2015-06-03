@@ -34,14 +34,15 @@ a {
 }
 
 #mainSection { 
-    position:relative;
+    position: relative;
     max-width: 1200px;
     margin: 0 auto;
 
     #mainContent {
         width: 1200px;
-        height: 90%;
+        height: 80%;
         margin: 0 auto;
+
     }
 
    .man {
@@ -57,77 +58,6 @@ a {
         z-index: 6;
     }
 
-    .item {
-            position: absolute;                      
-            width: 44px;
-            height: 44px;
-            border: none;          
-            outline: none;
-            opacity: 0;            
-        
-
-            &.detail-2 {
-                background: url("../images/detail_2.png") no-repeat 0 0;
-                right: 1040px;
-                bottom: 22px; 
-                display: none;               
-                animation: appear 3s ease-in   infinite alternate;
-                animation-iteration-count: 1;
-            }
-            &.detail-1 {
-                background: url("../images/detail_1.png") no-repeat 0 0;
-                right: 940px;
-                bottom: 22px;
-                display: none;
-                animation: appear 3s ease-in  infinite alternate;
-                animation-iteration-count: 1;
-            }
-            &.detail-3 {
-                background: url('../images/detail_3.png') no-repeat 0 0;
-                right: 840px;
-                bottom: 22px;
-                display: none;
-                animation: appear 3s ease-in  infinite alternate;
-                animation-iteration-count: 1;
-            }
-            &.detail-4 {
-                background: url('../images/detail_4.png') no-repeat 0 0;
-                right: 740px;
-                bottom: 22px;
-                display: none;
-                animation: appear 3s ease-in  infinite alternate;
-                animation-iteration-count: 1;    
-            }
-    }
-
-        @keyframes appear {
-            0% {
-                transform: scale(1,1);
-                 opacity: 1;
-                 right: 22px;
-                 bottom: 120px; 
-                 
-            }          
-
-             5% {
-                transform: scale(1.5,1.5);
-                 opacity: .7;
-                 right: 22px;
-                 bottom: 120px; 
-                 
-            }
-            15% {
-                transform: scale(1,1); 
-            }
-            90%{
-                opacity: 0.5
-
-            }
-            100% {                    
-                opacity: 0;                    
-                bottom: 22px;                    
-            }
-        }
 
 
 #wade_main_div {
