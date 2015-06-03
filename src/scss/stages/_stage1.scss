@@ -19,7 +19,6 @@
 		width: 249px;
 		height: 296px;
 	}
-	
 	.tree {
 		position: absolute;
 		top: 503px;
@@ -29,7 +28,6 @@
 		background: url("../images/Tree_small.png") no-repeat 0 0;
 		z-index: 7;
 	}
-
 	.leafes {
 		position: absolute;
 		top: 360px;
@@ -58,7 +56,6 @@
 		top: 150px;
 		margin: 0 auto;	
 		border: 10px solid rgb(90,74,66);
-		
 		
 		&.fixForFlowGame {
 			position: static;
@@ -93,6 +90,7 @@
 		}
 	}
 }
+
 #wade_main_div {
     position: relative;
     padding: 0;

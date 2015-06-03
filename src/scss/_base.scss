@@ -4,9 +4,8 @@
     box-sizing: border-box;
     cursor: default;
 }
-html,
-body,
-main {
+
+html,body,main {
     height: 100%;
     width: 100%;
     -webkit-touch-callout: none;
@@ -16,18 +15,22 @@ main {
     -ms-user-select: none;
     user-select: none;
 }
+
 body {
     font-family: 'Noto Sans', sans-serif;
 }
+
 main {
     position: relative;
     display: block;
     height: 100%;
     overflow: hidden;
 }
+
 a {
     cursor: pointer;
 }
+
 #mainSection {
     position: relative;
     max-width: 1200px;
@@ -38,6 +41,7 @@ a {
         height: 100%;
         margin: 0 auto;
     }
+
     .man {
         display: none;
         position: absolute;
@@ -50,67 +54,66 @@ a {
         border: 2px solid black;
         z-index: 6;
     }
-canvas {
-    position: absolute;
-    top:0;
-    left:0;
-    margin: 0;
-    padding: 0;
-    max-width: 740px;
-    max-height: 540px;
-}
-
-.popup-common {
-    background: rgb(142, 184,80);
-    text-align: center;
-    font-size: 20px;
-    height: 100%;
-    padding: 2em;
-
-    .task-description {
-    #wade_main_div {
-        position: relative;
-        padding: 0;
-        max-width: 740px;
-        max-height: 540px;
-        outline: none;
-        z-index: 13;
-        top: -410px;
-        margin: 0 auto;
-    }
     canvas {
         position: absolute;
-        top: 0;
-        left: 0;
+        top:0;
+        left:0;
         margin: 0;
         padding: 0;
         max-width: 740px;
         max-height: 540px;
     }
+
     .popup-common {
-        background: rgb(142, 184, 80);
+        background: rgb(142, 184,80);
         text-align: center;
         font-size: 20px;
         height: 100%;
         padding: 2em;
+
         .task-description {
-            text-align: center;
-        }
-        .popup-btn {
-            display: block;
-            width: 90%;
-            padding: 1em;
-            border-radius: 10px;
-            background: rgb(118, 76, 41);
-            margin: 1em auto;
-            color: rgb(142, 184, 80);
-            text-transform: uppercase;
-            font-size: 20px;
+            #wade_main_div {
+                position: relative;
+                padding: 0;
+                max-width: 740px;
+                max-height: 540px;
+                outline: none;
+                z-index: 13;
+                top: -410px;
+                margin: 0 auto;
+            }
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                margin: 0;
+                padding: 0;
+                max-width: 740px;
+                max-height: 540px;
+            }
+            .popup-common {
+                background: rgb(142, 184, 80);
+                text-align: center;
+                font-size: 20px;
+                height: 100%;
+                padding: 2em;
+                
+                .task-description {
+                    text-align: center;
+                }
 
-    }  
-
-}
-
+                .popup-btn {
+                    display: block;
+                    width: 90%;
+                    padding: 1em;
+                    border-radius: 10px;
+                    background: rgb(118, 76, 41);
+                    margin: 1em auto;
+                    color: rgb(142, 184, 80);
+                    text-transform: uppercase;
+                    font-size: 20px;
+                }  
+            }
         }
     }
 

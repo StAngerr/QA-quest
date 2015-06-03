@@ -5,6 +5,7 @@
     height: 100%;
     margin: 1em auto;
     overflow: hidden;
+    
     .startBtn {
         position: absolute;
         left: 40%;
@@ -16,6 +17,7 @@
         border: 2px solid rgb(141, 128, 148);
         font-size: 30px;
     }
+
     article {
         position: absolute;
         margin-left: -10em;
@@ -30,6 +32,7 @@
         -webkit-transform: perspective(350px) rotateX(25deg);
         transform: perspective(350px) rotateX(25deg);
         color: #eee;
+        
         div {
             position: absolute;
             top: 100%;
@@ -49,6 +52,7 @@
         pointer-events: none;
     }
 }
+
 @-webkit-keyframes scroll {
     0% {
         top: 100%;
@@ -57,6 +61,7 @@
         top: -170%;
     }
 }
+
 @keyframes scroll {
     0% {
         top: 100%;

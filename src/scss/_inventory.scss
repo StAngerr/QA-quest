@@ -25,16 +25,18 @@
                 display: block;
                 margin: 0 auto;
             }
+
             .activeItem {
                 opacity: 1;
             }
+
             .noItem {
                 opacity: 0.3;
             }
         }
     }
-
 }
+
 .item {
     position: absolute;
     width: 90px;
@@ -50,15 +52,12 @@
         right: 1040px;
         bottom: 22px; 
         display: none;               
-
     }
     &.detail-1 {
         background: url("../images/detail_1.png") no-repeat 0 0;
         right: 940px;
         bottom: 22px;
-
         display: none; 
-
     }
     &.detail-3 {
         background: url('../images/detail_3.png') no-repeat 0 0;
@@ -89,9 +88,9 @@
         right: 440px;
         bottom: 22px;
         display: none;   
-
     }
 }
+
 @keyframes appear {
     0% {
         transform: scale(1, 1);

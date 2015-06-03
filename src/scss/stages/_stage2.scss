@@ -23,12 +23,15 @@
         bottom: 100px;
         width: 155px;
     }
+
     .tic {
         background: url('../images/x.png') no-repeat 0 0;
     }
+
     .toe {
         background: url('../images/o.png') no-repeat 0 0;
     }
+
     .tbl {
         position: relative;
         width: 150px;
@@ -40,8 +43,8 @@
             height: 30px;
         }
     }
+
     .newGameB {
-        //visibility: hidden;
         position: absolute;
         bottom: -45px;
         right: 10px;
@@ -51,14 +54,17 @@
         background: url('../images/Game_2_Refresh_btn.png') no-repeat 0 0;
     }
 }
+
 .lightOff {
     background-color: #000;
     overflow: hidden;
 }
+
 .flashLight {
     background-color: #fff;
     -webkit-clip-path: circle(00px at 50% 50%);
 }
+
 .flashLightShadow {
     position: absolute;
     top: 0;
@@ -69,6 +75,7 @@
     border-radius: 100px;
     box-shadow: -205px -5px 30px rgba(204, 204, 204, 0.6);
 }
+
 #stage2Popup1.popup-common {
     .field-with-pictures, .pictures-to-choose {
         display: inline-block;
@@ -78,14 +85,16 @@
         background-color: rgb(208, 226, 168);
         text-align: left;
     }
+
     .field-with-pictures {
         width: 270px;
     }
+
     .pictures-to-choose {
         width: 178px;
     }
-    figure,
-    .field-to-drop {
+    
+    figure,.field-to-drop {
         display: inline-block;
         width: 86px;
         height: 86px;

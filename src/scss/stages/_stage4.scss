@@ -1,13 +1,7 @@
-* {
-	box-sizing: border-box;
-	cursor: default;
-}
-
 #gameField {
 	width: 500px;
 	height: 700px;
 }
-
 /*    MENU */
 .gameStatus {
 	width: 100%;
@@ -60,7 +54,6 @@
 	border-radius: 10px;
 	font-size: 1.3em;
 	color: #520303;
-	
 }	
 
 .gameInfo .infoBlock .fakeDot {
@@ -115,24 +108,19 @@
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px; 
 	background: #BECBC1;
-		-webkit-transform: scaleX(1);
-	        transform: scaleX(1);
+	-webkit-transform: scaleX(1);
+	transform: scaleX(1);
 }
-
 
 .addAnimation {
 	transition: -webkit-transform 11s;
 	transition: transform 11s;
 }
 
-.defScale {
-
-}
 .scaleToZero {
 	-webkit-transform: scaleX(0);
-	        transform: scaleX(0);
+	transform: scaleX(0);
 }
-
 /*    GAME FIELD */
 .playGround {
 	position: relative;
@@ -143,11 +131,13 @@
 	background: linear-gradient(to right bottom, #FFE37C , #FFF7D8 );
 	padding-top: 1px;
 }
+
 .clickCounter .points{
 	font-family: 'Shadows Into Light', cursive;
 	font-size: 3em;
 	font-weight: bold;
 }
+
 .playGround .dot{
 	position: absolute;
 	width: 70px;
