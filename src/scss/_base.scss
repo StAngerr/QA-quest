@@ -50,9 +50,6 @@ a {
         border: 2px solid black;
         z-index: 6;
     }
-<<<<<<< HEAD
-
-
 canvas {
     position: absolute;
     top:0;
@@ -71,7 +68,6 @@ canvas {
     padding: 2em;
 
     .task-description {
-=======
     #wade_main_div {
         position: relative;
         padding: 0;
@@ -93,7 +89,6 @@ canvas {
     }
     .popup-common {
         background: rgb(142, 184, 80);
->>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7
         text-align: center;
         font-size: 20px;
         height: 100%;
@@ -111,23 +106,18 @@ canvas {
             color: rgb(142, 184, 80);
             text-transform: uppercase;
             font-size: 20px;
-<<<<<<< HEAD
+
     }  
 
 }
 
-=======
         }
     }
->>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7
+
     .clearFix:after {
         content: "";
         display: block;
         height: 0;
         clear: both;
-<<<<<<< HEAD
-
-=======
->>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7
     }
 }
