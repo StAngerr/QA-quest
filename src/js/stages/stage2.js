@@ -6,8 +6,6 @@
      var canPlay = false;
      var that;
 
-    
-
      stage2.initEvents = function () {
      /* set hero to the right position*/   
         var heroPosition = {
@@ -22,20 +20,18 @@
    
         turnOffTheLight();
         addFlashLightEvents();
-    
 
-         $('.choosePic').on ('click', function() {
-             $('.man').animate({'left' : '450'}, 1000);
-             if(!canPlay) {
-                canPlay = true;
-                 stage2.getTmpl('popupFrameTmpl.html');
-                $('.popup').append('<button class="item joystick"> </button>');
-                findRightPicture ();
-             } else {
-                return false;
-             }
-                   
-         });
+        $('.choosePic').on ('click', function() {
+            $('.man').animate({'left' : '450'}, 1000, function() {
+                if(!canPlay) {
+                    canPlay = true;
+                    stage2.getTmpl('popupFrameTmpl.html');
+                    findRightPicture();
+                } else {
+                    return false;
+                }             
+            });
+        });
 
      /*start to play cross-zero*/
         $('.field').on('click', function (event) {
@@ -53,12 +49,18 @@
             taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
             src : ['_brown.png', '_white.png']           
         };
-
         
-        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content);
-        
-        var pictureDraggable = $('.pic-to-drag');        
+        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, QQQQQQQQQQQQQQQQQQQQQ);
+     }
+     
 
+     function QQQQQQQQQQQQQQQQQQQQQ() {
+        var pictureDraggable = $('.pic-to-drag');    
+        var stage_content = {
+            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+            src : ['_brown.png', '_white.png']           
+        };    
+       
         for (var i=0; i < pictureDraggable.length; i++) {
             $(pictureDraggable[i]).attr('draggable','true');
             $(pictureDraggable[i]).on('mouseover', function(){               
@@ -74,8 +76,6 @@
                     $(this).attr('src', new_src);
                 }
             });
-           
-
         }
         for (var i=0; i < pictureDraggable.length; i++) {
             pictureDraggable[i].addEventListener("dragstart", stage2.dragNdrop.drag);

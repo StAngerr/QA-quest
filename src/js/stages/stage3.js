@@ -6,23 +6,10 @@ define(function(require) {
 
     stage3.initEvents = function() {
     	/* it temporarily until standard control is not define*/
-
-
-stage3.getTmpl('popupFrameTmpl.html');
-       			stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
-       			var newGame = new StickGame();
-						newGame.startGame();
-						$('.pickStick').on('click', newGame.playerPicks);
-
-
-
-
-
-
-    		var heroChange = {
-          left : '40px',
-          top:'530px',
-          height: '130px'
+    	var heroChange = {
+			left : '40px',
+			top:'530px',
+			height: '130px'
         };
         $('#hero').css( heroChange );
         $('#hero').show();
@@ -30,15 +17,15 @@ stage3.getTmpl('popupFrameTmpl.html');
         	var x = e.pageX;
             var y = e.pageY;
 
-          if(x <= 811 ) return false;
+	        if(x <= 811 ) return false;
 
-          $('.man').animate({'left' : '285'}, 1300, function() {
-          	stage3.getTmpl('popupFrameTmpl.html');
-       			stage3.getTmpl('stage3SticksGameTmpl.html','.popup');
-       			var newGame = new StickGame();
-						newGame.startGame();
-						$('.pickStick').on('click', newGame.playerPicks);
-          });         	
+	        $('.man').animate({'left' : '285'}, 1300, function() {
+       			
+
+          		stage3.getTmpl('popupFrameTmpl.html');
+       			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);
+				
+	        });         	
         });
        
 		/*------------------------------------------*/
@@ -47,8 +34,17 @@ stage3.getTmpl('popupFrameTmpl.html');
 	function bubbleStart() {
 
 		$('.popupWrap').remove();/*!!!*/ 
-		  $('#stage3').append('<div class="bubbles-popup"><div id="wade_main_div" width="800" height="600" tabindex="1" margin="0"></div></div>'); /* set sizes*/
-       wade.init('src/js/lib/wade_src/bubbles.js');      
+	   $('#stage3').append('<div class="bubbles-popup">/div>'); /* set sizes*/
+	   stage3.getTmpl('stage1FlowGameTmpl.html','.bubbles-popup',null, SOME);
+            
+    };
+
+    function SOME() {wade.init('src/js/lib/wade_src/bubbles.js'); };
+
+    function newStickGame() {
+    	var newGame = new StickGame();
+    	newGame.startGame();
+		$('.pickStick').on('click', newGame.playerPicks);
     };
 
 	function StickGame() {

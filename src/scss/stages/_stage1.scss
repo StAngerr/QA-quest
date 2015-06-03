@@ -20,7 +20,6 @@
 		height: 296px;
 	}
 	
-
 	.tree {
 		position: absolute;
 		top: 503px;
@@ -60,35 +59,47 @@
 		margin: 0 auto;	
 		border: 10px solid rgb(90,74,66);
 		
-			
+		
+		&.fixForFlowGame {
+			position: static;
+			margin-top: 110px;
+		}	
 		
 		.popup-common {					
-
-		.letters {
-			position: relative;
-			display: inline-block;
-			text-align: justify;
-			background:none;
-			
-			span {
-				position: absolute;
-				height: 69px;
-				width: 51px;
-				top: 10px;
-				left: 15%;			
-				font-size: 30pt;
-				color: #eee;
+			.letters {
+				position: relative;
+				display: inline-block;
+				text-align: justify;
+				background:none;
+				
+				span {
+					position: absolute;
+					height: 69px;
+					width: 51px;
+					top: 10px;
+					left: 15%;			
+					font-size: 30pt;
+					color: #eee;
+				}
+			}
+			.makeWord {
+				width: 90%;
+				min-height: 100px;
+				margin: 2em auto;
+				padding: 0;
+				background: #fff;
+				text-align: center
 			}
 		}
-		.makeWord {
-			width: 90%;
-			min-height: 100px;
-			margin: 2em auto;
-			padding: 0;
-			background: #fff;
-			text-align: center
-		}
-		
-	}
 	}
 }
+#wade_main_div {
+    position: relative;
+    padding: 0;
+    max-width: 740px;
+    max-height: 540px;
+    outline: none;
+    z-index: 13;
+    margin: 0 auto;
+}
+
