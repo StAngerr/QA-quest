@@ -5,20 +5,22 @@ define(function(require) {
         this.templateUrl = templ;
         this.initEvents;
         this.finishStage;
+        var currentStage = {};
 
-        this.openStage = function() {
+        this.openStage = function(stage) {
             this.getTmpl(this.templateUrl);
+            currentStage = stage;
         };    
 
-        this.getTmpl = function(tmplName, direction, dataToTempl) {
+        this.getTmpl = function(tmplName, direction, dataToTempl, doAfterUpload) {
             $.ajax({
                 url: 'src/templates/' + tmplName,
                 method: 'GET',
-                async: false,
                 success: function(data) {
                     var target = direction || '#mainContent';                   
                     var content = dataToTempl ? _.template(data)(dataToTempl): data;
                     $(target).prepend(content);
+                    (doAfterUpload) ? doAfterUpload() : currentStage.initEvents();
                 }
             });
         };       

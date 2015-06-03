@@ -31,10 +31,14 @@ define(function (require) {
     };
     stage1.dragNdrop = new DragNDrop();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 >>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7
+=======
+    
+>>>>>>> alternative_upload
     function openWordGame() {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
@@ -42,6 +46,7 @@ define(function (require) {
         };
         if (wordGameStatus == 'unfinished') {
             stage1.getTmpl('popupFrameTmpl.html');
+<<<<<<< HEAD
             stage1.getTmpl('stage1WordGameTmpl.html', '.popup', stage_content);
             $('#sendWord').on('click', showWord);
             /*Drag n drop*/
@@ -75,22 +80,71 @@ define(function (require) {
                 leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
                 leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
             };
+=======
+            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content,WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW);
+            
+>>>>>>> alternative_upload
             changeManState();
         } else {
             stage1.finishStage();
         }
     };
+<<<<<<< HEAD
 
     stage1.finishStage = function () {
+=======
+/*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    */
+    function WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW() {
+      $('#sendWord').on('click', showWord);
+        /*Drag n drop*/
+        var leafes = $('.letters');
+        var wordSpot = $('.makeWord')[0];
+        var fieldToDrop = $('.all-letters')[0];
+        $('.letters').attr("draggable","true");
+        wordSpot.addEventListener('dragover', stage1.dragNdrop.allowDrop);
+        wordSpot.addEventListener('drop', function(event) {
+            event.preventDefault();
+            event.stopPropagation();                      
+            counter++;
+            drop(event);                
+            word += that.children().text();
+            return false;          
+        });
+        fieldToDrop.addEventListener('dragover', stage1.dragNdrop.allowDrop);
+        fieldToDrop.addEventListener('drop', function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();  
+            counter--;
+            drop(event);                      
+            word =  $('.makeWord').children().children(1).text();             
+            return false;           
+        });
+          
+        for (var i = 0; i < leafes.length; i++) {
+            leafes[i].addEventListener("dragstart", stage1.dragNdrop.drag);
+            leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
+            leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
+        };
+    }
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+    stage1.finishStage = function() {
+>>>>>>> alternative_upload
         $('#mainSection').trigger('main:stageFinished');
     };
 
     function showWord() {
         $('#stage1Popup1').remove();
+<<<<<<< HEAD
          $('.popupWrap').remove();
         $('.detail-1').show();         
         setTimeout(sendDnDWord, 2000);       
 
+=======
+        $('.popupWrap').remove();
+        $('.gun').show();         
+        setTimeout(sendDnDWord, 3000); 
+>>>>>>> alternative_upload
     };
 
     function sendDnDWord(event) {
@@ -135,11 +189,21 @@ define(function (require) {
         }, 1000, function () {
             $('.totalLevel').remove();
             stage1.getTmpl('popupFrameTmpl.html');
+<<<<<<< HEAD
             $('.popupWrap').append('<div id="wade_main_div" width="800" height="600" tabindex="1"></div>'); /* set sizes*/
             wade.init('src/js/flow.js');
             $('.popup').on('flowGameFinished', finishFlowGame);
+=======
+            stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
+>>>>>>> alternative_upload
             changeManState();
         });
+    };
+
+    function addFlowGame() {
+        wade.init('src/js/flow.js');
+        $('.popup').on('flowGameFinished', finishFlowGame); 
+        $('.popup').addClass('fixForFlowGame');
     };
 
     function finishFlowGame() {
@@ -171,7 +235,11 @@ define(function (require) {
         var data = '<figure class="letters" draggable="true"> ' + event.dataTransfer.getData('text/html') + '</figure>';
         var html = $(event.target).html();
         var targetNodeName = $(event.target)[0].nodeName;
+<<<<<<< HEAD
         $('.makeWord').css('background-color', '#fff');
+=======
+        $('.makeWord').css('background-color', '#fff'); 
+>>>>>>> alternative_upload
         if ($(event.target)[0].className != $(that).parent()[0].className) {
             if ($(event.target).parent().parent()[0].className != $(that).parent()[0].className) {
                 if (targetNodeName == 'SPAN' || targetNodeName == "IMG") {
@@ -196,12 +264,20 @@ define(function (require) {
                     return false;
                 }
             }
+<<<<<<< HEAD
 
         } else {
             that.css('opacity', '1');
             return false;
 
         }
+=======
+                    
+        } else {     
+            that.css('opacity', '1'); 
+                    return false;
+        }       
+>>>>>>> alternative_upload
     };
 
     function changeManState() {

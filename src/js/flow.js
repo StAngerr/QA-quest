@@ -12,6 +12,7 @@ App = function() {
 
 	this.init = function() {		
 		this.loadLevel(2);
+        console.log('finished');
 	}
 
     this.loadLevel = function(levelId) {
@@ -50,6 +51,9 @@ App = function() {
 	    	wade.removeSceneObject(loading);
     		wade.app.startLevel(level.data);
 	    });
+
+
+        console.log('im here');
     };
 
     this.startLevel = function(levelData) {

@@ -1,22 +1,22 @@
 /*
 Error: Invalid CSS after "...t-align: center": expected "{", was ";"
-        on line 107 of src/scss/_base.scss
+        on line 97 of src/scss/_base.scss
         from line 2 of src/scss/main.scss
 
-102:         max-height: 540px;
-103:     }
-104:     .popup-common {
-105:         background: rgb(142, 184, 80);
-106: >>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7
-107:         text-align: center;
-108:         font-size: 20px;
-109:         height: 100%;
-110:         padding: 2em;
-111:         .task-description {
-112:             text-align: center;
+92:         max-height: 540px;
+93:     }
+94:     .popup-common {
+95:         background: rgb(142, 184, 80);
+96: >>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7
+97:         text-align: center;
+98:         font-size: 20px;
+99:         height: 100%;
+100:         padding: 2em;
+101:         .task-description {
+102:             text-align: center;
 
 Backtrace:
-src/scss/_base.scss:107
+src/scss/_base.scss:97
 src/scss/main.scss:2
 c:/Ruby193/lib/ruby/gems/1.9.1/gems/sass-3.4.12/lib/sass/scss/parser.rb:1167:in `expected'
 c:/Ruby193/lib/ruby/gems/1.9.1/gems/sass-3.4.12/lib/sass/scss/parser.rb:1101:in `expected'
@@ -81,4 +81,4 @@ c:/Ruby193/bin/sass:23:in `<main>'
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Invalid CSS after \"...t-align: center\": expected \"{\", was \";\"\A         on line 107 of src/scss/_base.scss\A         from line 2 of src/scss/main.scss\A \A 102:         max-height: 540px;\A 103:     }\A 104:     .popup-common {\A 105:         background: rgb(142, 184, 80);\A 106: >>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7\A 107:         text-align: center;\A 108:         font-size: 20px;\A 109:         height: 100%;\A 110:         padding: 2em;\A 111:         .task-description {\A 112:             text-align: center;"; }
+  content: "Error: Invalid CSS after \"...t-align: center\": expected \"{\", was \";\"\A         on line 97 of src/scss/_base.scss\A         from line 2 of src/scss/main.scss\A \A 92:         max-height: 540px;\A 93:     }\A 94:     .popup-common {\A 95:         background: rgb(142, 184, 80);\A 96: >>>>>>> ea386cf13f0d02fb0ec86e4aa4fd179c1ad46cc7\A 97:         text-align: center;\A 98:         font-size: 20px;\A 99:         height: 100%;\A 100:         padding: 2em;\A 101:         .task-description {\A 102:             text-align: center;"; }

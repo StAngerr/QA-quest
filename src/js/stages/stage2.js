@@ -6,6 +6,7 @@
      var canPlay = false;
      var that;
 
+<<<<<<< HEAD
 
 
      stage2.initEvents = function () {
@@ -37,6 +38,34 @@
              }
 
          });
+=======
+     stage2.initEvents = function () {
+     /* set hero to the right position*/   
+        var heroPosition = {
+          left : '20px',
+          top:'575px',
+          height: '150px'
+        };
+        $('#hero').css( heroPosition );
+        $('#hero').show();
+
+        stage2.dragNdrop = new DragNDrop();
+   
+        turnOffTheLight();
+        addFlashLightEvents();
+
+        $('.choosePic').on ('click', function() {
+            $('.man').animate({'left' : '450'}, 1000, function() {
+                if(!canPlay) {
+                    canPlay = true;
+                    stage2.getTmpl('popupFrameTmpl.html');
+                    findRightPicture();
+                } else {
+                    return false;
+                }             
+            });
+        });
+>>>>>>> alternative_upload
 
          /*start to play cross-zero*/
          $('.field').on('click', function (event) {
@@ -53,6 +82,7 @@
 
      function findRightPicture() {
          var stage_content = {
+<<<<<<< HEAD
              taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',
              src: ['_brown.png', '_white.png']
          };
@@ -115,6 +145,72 @@
                  $('.item.detail-4').remove();
              }, 2000);
          });
+=======
+            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+            src : ['_brown.png', '_white.png']           
+        };
+        
+        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, QQQQQQQQQQQQQQQQQQQQQ);
+     }
+     
+
+     function QQQQQQQQQQQQQQQQQQQQQ() {
+        var pictureDraggable = $('.pic-to-drag');    
+        var stage_content = {
+            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+            src : ['_brown.png', '_white.png']           
+        };    
+       
+        for (var i=0; i < pictureDraggable.length; i++) {
+            $(pictureDraggable[i]).attr('draggable','true');
+            $(pictureDraggable[i]).on('mouseover', function(){               
+                var old_src = $(this).attr('src');
+                var  new_src = old_src.slice(0,27) + stage_content.src[0];                
+                $(this).attr('src', new_src);
+            });
+            $(pictureDraggable[i]).on('mouseleave', function() { 
+               
+                if (!$(this).parent().hasClass('field-to-drop')) {
+                    var old_src = $(this).attr('src');
+                    var new_src = old_src.slice(0,27) + stage_content.src[1];                
+                    $(this).attr('src', new_src);
+                }
+            });
+        }
+        for (var i=0; i < pictureDraggable.length; i++) {
+            pictureDraggable[i].addEventListener("dragstart", stage2.dragNdrop.drag);
+            pictureDraggable[i].addEventListener("dragover", stage2.dragNdrop.over);
+            pictureDraggable[i].addEventListener("dragleave", stage2.dragNdrop.leave);
+        }
+
+        var fieldToDrop = $('.field-to-drop')[0];
+        fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
+        fieldToDrop.addEventListener('drop', function(event) {
+                event.preventDefault();
+                event.stopPropagation();                      
+                
+                drop(event);                
+                
+                return false;  
+            });
+
+        
+
+        $('#sendPicture').on('click', function() {
+            if($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
+                alert('ok');
+            }
+            $('#stage2Popup1').remove();
+            $('.popupWrap').remove();
+            $('.joystick').show();  
+            
+            setTimeout(function(){
+                $('#inventory').trigger('inventory:addItem',{data:'.joystick'}); 
+                $('#ticTacToe').show();
+                $('.item.joystick').remove(); 
+            }, 4000);          
+        });
+>>>>>>> alternative_upload
      }
 
 
