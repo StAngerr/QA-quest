@@ -8,7 +8,8 @@ define(function (require) {
     var stage_content = {
             taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
             src : ['_brown.png', '_white.png']           
-        };   
+        }; 
+
     stage2.initEvents = function () {
      /* set hero to the right position*/   
         var heroPosition = {
@@ -21,10 +22,11 @@ define(function (require) {
         $('#inventory').show();
 
         stage2.dragNdrop = new DragNDrop();
-        turnOffTheLight();
-        addFlashLightEvents();
+        // turnOffTheLight();
+        // addFlashLightEvents();
+
         $('.choosePic').on ('click', function() {
-            $('.man').animate({'left' : '450'}, 1000, function() {
+            $('.man').animate({'left' : '450px'}, 1000, function() {
                 if(!canPlay) {
                     canPlay = true;
                     stage2.getTmpl('popupFrameTmpl.html');
@@ -35,40 +37,51 @@ define(function (require) {
             });
         });
      /*start to play cross-zero*/
-        $('.field').on('click', function (event) {
-            $('.man').animate({'left' : '750'}, 1000);           
-            if(!canPlay) return false;
-            event.stopPropagation();
-            yourChoice($(this).attr('id'));
+        $('.stone').on('click', function() {
+            if ($('.man').css('left') !== '750px') {
+                $('.man').animate({'left' : '750px'}, 1000)
+            } else {
+                return false;
+            }
+            
+            
+            
         });
-        $('.newGameB').on('click', playAgain);           
+        $('.field').on('click', function (event) {            
+                        if(!canPlay) return false;          
+                        ticAppear($(this).attr('id'));
+                    }); 
+        
+
+        $('.newGameB').on('click', playAgain);        
+                  
     };
 
     function findRightPicture () {
-        var stage_content = {
-            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
-            src : ['_brown.png', '_white.png']           
-        };    
-        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, QQQQQQQQQQQQQQQQQQQQQ);
+        // var stage_content = {
+        //     taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+        //     src : ['_brown.png', '_white.png']           
+        // };    
+        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, startPictureMovingGame);
     };
      
-    function QQQQQQQQQQQQQQQQQQQQQ() {
+    function startPictureMovingGame() {
         var pictureDraggable = $('.pic-to-drag');    
         var fieldToDrop = $('.field-to-drop')[0];
-         
+         console.log(pictureDraggable);
        
         for (var i=0; i < pictureDraggable.length; i++) {
             $(pictureDraggable[i]).attr('draggable','true');
-            $(pictureDraggable[i]).on('mouseover', function(){               
-                var old_src = $(this).attr('src');
+            $(pictureDraggable[i]).on('mouseover', function(){
+                var old_src = $(this).children().attr('src');
                 var  new_src = old_src.slice(0,27) + stage_content.src[0];                
-                $(this).attr('src', new_src);
+                $(this).children().attr('src', new_src);
             });
             $(pictureDraggable[i]).on('mouseleave', function() { 
                 if (!$(this).parent().hasClass('field-to-drop')) {
-                    var old_src = $(this).attr('src');
+                    var old_src = $(this).children().attr('src');
                     var new_src = old_src.slice(0,27) + stage_content.src[1];                
-                    $(this).attr('src', new_src);
+                    $(this).children().attr('src', new_src);
                 }
             });
         }
@@ -78,16 +91,9 @@ define(function (require) {
             pictureDraggable[i].addEventListener("dragleave", stage2.dragNdrop.leave);
         }
         fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
-        fieldToDrop.addEventListener('drop', function(event) {
-            event.preventDefault();
-            event.stopPropagation();                      
-            drop(event);                
-            return false;  
-        });
+        fieldToDrop.addEventListener('drop',stage2.dragNdrop.drop);
         $('#sendPicture').on('click', function() {
-            if($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
-                alert('ok');
-            }
+            // send picture  !!!!!!!!!!!
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
             $('.detail-3').show();  
@@ -102,10 +108,7 @@ define(function (require) {
     
     function drop (event) {
         event.preventDefault();
-        event.stopPropagation(); 
-
         var that = stage2.dragNdrop.data; 
-
         $(event.target).html(that);
     };
 
@@ -147,6 +150,7 @@ define(function (require) {
         $('body').removeClass('flashLight');
         $('.flashLightShadow').remove();
     };
+
      /*functions and variables to play tictictoe game*/
     var x = "src/images/x.png";
     var oz = "src/images/o.png";
@@ -391,7 +395,7 @@ define(function (require) {
         }
     };
   
-    function yourChoice(chName) {
+    function ticAppear(chName) {
         pause = 0;
         if (all != 0) ended();
         if (all == 0) {
@@ -405,7 +409,7 @@ define(function (require) {
             if (ok == 0) taken();
             if ((all == 0) && (pause == 0)) {
                 setTimeout(function(){
-                    myChoice();
+                    toeAppear();
                     return;
                 }, 500);  
             } 
@@ -418,7 +422,7 @@ define(function (require) {
         return false;
     };
 
-    function myChoice() {
+    function toeAppear() {
         temp = "";
         ok = 0;
         cf = 1;
@@ -468,7 +472,7 @@ define(function (require) {
     function showInwentory (){
         $('.newGameB').css('visibility', 'hidden');
         $('.detail-4').show();
-        setTimeout(addOil, 3000);
+        setTimeout(finishTicTacToe, 3000);
     };
 
     function playAgain() {
@@ -518,12 +522,12 @@ define(function (require) {
         comp = 0;
         if (t == 0) {
             t = 2;
-            myChoice();
+            toeAppear();
         }
         t--;
     }
      // end of game
-    function addOil() {        
+    function finishTicTacToe() {        
         $('#inventory').trigger('inventory:addItem',{data:'.detail-4'});     
         $('#ticTacToe').remove();
         $('.item.detail-4').remove();

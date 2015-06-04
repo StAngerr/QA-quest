@@ -8,9 +8,16 @@ define(function() {
 		 	return false;
 		};
 
-		this.drag = function(event) {      
+		this.drag = function(event) { 
+
 			event.dataTransfer.setData('text/html', $(event.target).html()); 
-			that.data = $(event.target);         
+			if ($(event.target).nodeName !== 'FIGURE') {
+				that.data = $(event.target).parent(); 
+			} else{
+				that.data = $(event.target)
+			}
+			 
+			console.log(that.data)       
 			return false;
 		};
 
@@ -23,6 +30,15 @@ define(function() {
 			event.preventDefault();        
 			return false;       
 		};
+		this.drop = function(event) {
+			event.preventDefault();
+			
+			if ($(event.target)[0].nodeName === 'DIV')  {
+				$(event.target).html(that.data);
+			} else {
+				$(event.target).closest('div').html(that.data);				
+			}       
+		}
 	}
 	return DragNDrop;
 });
