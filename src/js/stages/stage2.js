@@ -19,12 +19,11 @@ define(function (require) {
         $('#hero').css( heroPosition );
         $('#hero').show();
         $('#inventory').show();
-
         stage2.dragNdrop = new DragNDrop();
         turnOffTheLight();
         addFlashLightEvents();
         $('.choosePic').on ('click', function() {
-            $('.man').animate({'left' : '450'}, 1000, function() {
+            $('.man').animate({'left' : '450px'}, 1000, function() {
                 if(!canPlay) {
                     canPlay = true;
                     stage2.getTmpl('popupFrameTmpl.html');
@@ -36,10 +35,11 @@ define(function (require) {
         });
      /*start to play cross-zero*/
         $('.field').on('click', function (event) {
-            $('.man').animate({'left' : '750'}, 1000);           
-            if(!canPlay) return false;
-            event.stopPropagation();
-            yourChoice($(this).attr('id'));
+            var ticToeField = this;
+            $('.man').animate({'left' : '750px'}, 1000, function() {
+                if(!canPlay) return false;
+                yourChoice($(ticToeField).attr('id'));
+            });           
         });
         $('.newGameB').on('click', playAgain);           
     };
@@ -56,7 +56,6 @@ define(function (require) {
         var pictureDraggable = $('.pic-to-drag');    
         var fieldToDrop = $('.field-to-drop')[0];
          
-       
         for (var i=0; i < pictureDraggable.length; i++) {
             $(pictureDraggable[i]).attr('draggable','true');
             $(pictureDraggable[i]).on('mouseover', function(){               
@@ -85,9 +84,6 @@ define(function (require) {
             return false;  
         });
         $('#sendPicture').on('click', function() {
-            if($(that).attr('src') === "src/images/pop_up_figures/4_brown.png") {
-                alert('ok');
-            }
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
             $('.detail-3').show();  
@@ -101,11 +97,10 @@ define(function (require) {
     };
     
     function drop (event) {
+        var that = stage2.dragNdrop.data; 
+        
         event.preventDefault();
         event.stopPropagation(); 
-
-        var that = stage2.dragNdrop.data; 
-
         $(event.target).html(that);
     };
 
@@ -402,15 +397,14 @@ define(function (require) {
             if (ok == 1) {
                 $('#'+chName).addClass('tic');
                  process();
-            if (ok == 0) taken();
-            if ((all == 0) && (pause == 0)) {
-                setTimeout(function(){
-                    myChoice();
-                    return;
-                }, 500);  
-            } 
+                if (ok == 0) taken();
+                if ((all == 0) && (pause == 0)) {
+                    setTimeout(function(){
+                        myChoice();
+                        return;
+                    }, 500);  
+                } 
             }
-           
         }
     };
 
@@ -468,7 +462,7 @@ define(function (require) {
     function showInwentory (){
         $('.newGameB').css('visibility', 'hidden');
         $('.detail-4').show();
-        setTimeout(addOil, 3000);
+        setTimeout(finishTicTacGame, 3000);
     };
 
     function playAgain() {
@@ -523,7 +517,7 @@ define(function (require) {
         t--;
     }
      // end of game
-    function addOil() {        
+    function finishTicTacGame() {        
         $('#inventory').trigger('inventory:addItem',{data:'.detail-4'});     
         $('#ticTacToe').remove();
         $('.item.detail-4').remove();

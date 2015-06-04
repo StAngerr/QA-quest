@@ -11,15 +11,15 @@ define(function(require) {
 			top:'530px',
 			height: '130px'
         };
-        $('#hero').css( heroChange );
         $('#hero').show();
+        $('#hero').css(heroChange);
         $('#inventory').show();
         $('#stage3').on('click', function(e){
         	var x = e.pageX;
             var y = e.pageY;
 
 	        if(x <= 811 ) return false;
-	        $('.man').animate({'left' : '285'}, 1300, function() {
+	        $('.man').animate({'left' : '285px'}, 1300, function() {
 	      		stage3.getTmpl('popupFrameTmpl.html');
 	   			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
 	        });         	
