@@ -45,6 +45,10 @@ define(function (require) {
     };
 
     function findRightPicture () {
+        var stage_content = {
+            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+            src : ['_brown.png', '_white.png']           
+        };    
         stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, QQQQQQQQQQQQQQQQQQQQQ);
     };
      
