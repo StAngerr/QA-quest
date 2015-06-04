@@ -5,7 +5,10 @@ define(function (require) {
     var DragNDrop = require('src/js/dragndrop.js');
     var canPlay = false;
     var that;
-
+    var stage_content = {
+            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
+            src : ['_brown.png', '_white.png']           
+        };   
     stage2.initEvents = function () {
      /* set hero to the right position*/   
         var heroPosition = {
@@ -15,6 +18,8 @@ define(function (require) {
         };
         $('#hero').css( heroPosition );
         $('#hero').show();
+        $('#inventory').show();
+
         stage2.dragNdrop = new DragNDrop();
         turnOffTheLight();
         addFlashLightEvents();
@@ -46,10 +51,7 @@ define(function (require) {
     function QQQQQQQQQQQQQQQQQQQQQ() {
         var pictureDraggable = $('.pic-to-drag');    
         var fieldToDrop = $('.field-to-drop')[0];
-        var stage_content = {
-            taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
-            src : ['_brown.png', '_white.png']           
-        };    
+         
        
         for (var i=0; i < pictureDraggable.length; i++) {
             $(pictureDraggable[i]).attr('draggable','true');
@@ -84,13 +86,13 @@ define(function (require) {
             }
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
-            $('.joystick').show();  
+            $('.detail-3').show();  
             
             setTimeout(function(){
-                $('#inventory').trigger('inventory:addItem',{data:'.joystick'}); 
+                $('#inventory').trigger('inventory:addItem',{data:'.detail-3'}); 
                 $('#ticTacToe').show();
-                $('.item.joystick').remove(); 
-            }, 4000);          
+                $('.item.detail-3').remove(); 
+            }, 2000);          
         });
     };
     
@@ -395,8 +397,7 @@ define(function (require) {
             checkSpace();
             if (ok == 1) {
                 $('#'+chName).addClass('tic');
-            }
-            process();
+                 process();
             if (ok == 0) taken();
             if ((all == 0) && (pause == 0)) {
                 setTimeout(function(){
@@ -404,6 +405,8 @@ define(function (require) {
                     return;
                 }, 500);  
             } 
+            }
+           
         }
     };
 
@@ -460,7 +463,7 @@ define(function (require) {
        
     function showInwentory (){
         $('.newGameB').css('visibility', 'hidden');
-        $('.oil').show();
+        $('.detail-4').show();
         setTimeout(addOil, 3000);
     };
 
@@ -517,9 +520,10 @@ define(function (require) {
     }
      // end of game
     function addOil() {        
-        $('#inventory').trigger('inventory:addItem',{data:'.oil'});     
+        $('#inventory').trigger('inventory:addItem',{data:'.detail-4'});     
         $('#ticTacToe').remove();
-        $('.item.oil').remove();
+        $('.item.detail-4').remove();
+
         stage2.finishStage();
     }
     return stage2;

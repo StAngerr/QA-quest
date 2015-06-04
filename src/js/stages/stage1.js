@@ -13,6 +13,7 @@ define(function(require) {
 
     stage1.initEvents = function() {
         $('#hero').show();
+        $('#inventory').show();
         $('.door').on('click', function(event) {
             if(manState == 'stand') stage1.moveToDoor();
         });
@@ -26,7 +27,9 @@ define(function(require) {
             openWordGame();
         }  
     };
+
     stage1.dragNdrop = new DragNDrop();
+
     function openWordGame() {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
@@ -80,14 +83,14 @@ define(function(require) {
     function showWord() {        
         $('#stage1Popup1').remove();
         $('.popupWrap').remove();
-        $('.gun').show();         
-        setTimeout(sendDnDWord, 3000); 
+        $('.detail-1').show();         
+        setTimeout(sendDnDWord, 2000); 
     };
 
     function sendDnDWord(event) {
         // add the first inventory
-        $('#inventory').trigger('inventory:addItem', {data:'.gun'});  
-        $('.item.gun').remove();
+        $('#inventory').trigger('inventory:addItem', {data:'.detail-1'});  
+        $('.item.detail-1').remove();
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
         var myVar = setInterval(function() { 
@@ -123,14 +126,14 @@ define(function(require) {
     function finishFlowGame() {
         $('#wade_main_div').remove();
         $('.popupWrap').remove();
-        $('.battery').show();
+        $('.detail-2').show();
         flowGameStatus = 'finished';
-        setTimeout(closePopup, 4000); 
+        setTimeout(closePopup, 2000); 
     };
 
     function closePopup(event) {
-        $('#inventory').trigger('inventory:addItem', {data:'.battery'});  
-        $('.item.battery').remove();
+        $('#inventory').trigger('inventory:addItem', {data:'.detail-2'});  
+        $('.item.detail-2').remove();
         $('.totalLevel').css({'opacity':'1'});   
     };
 

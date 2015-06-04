@@ -13,6 +13,7 @@ define(function(require) {
         };
         $('#hero').css( heroChange );
         $('#hero').show();
+        $('#inventory').show();
         $('#stage3').on('click', function(e){
         	var x = e.pageX;
             var y = e.pageY;
@@ -27,7 +28,7 @@ define(function(require) {
 
 	function bubbleStart() {
 	   $('.popupWrap').remove();/*!!!*/ 
-	   $('#stage3').append('<div class="bubbles-popup">/div>'); /* set sizes*/
+	   $('#stage3').append('<div class="bubbles-popup"></div>'); /* set sizes*/
 	   stage3.getTmpl('stage1FlowGameTmpl.html','.bubbles-popup',null, SOME);  
     };
 
@@ -70,10 +71,16 @@ define(function(require) {
 		currentGame.finishGame = function() {
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
 
-			printWhoWon(winner);		
+			printWhoWon(winner);
+
+        $('.popupWrap').remove();
+        $('.detail-5').show();         
+        
+    		
 			setTimeout(function(){
+				$('#inventory').trigger('inventory:addItem',{data:'.detail-5'}); 
+				$('.item.detail-5').remove();
 				bubbleStart();
-				//$('#mainSection').trigger('main:stageFinished');
 			}, 1500);
 		};
 

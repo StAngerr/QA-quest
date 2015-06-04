@@ -5,6 +5,8 @@ define(function(require) {
     require('jqueryUi');
 
     stage4.initEvents = function() {
+    	 $('#inventory').show();
+    	 $('#hero').hide();
     	/* its temporarily until standard control is not define*/
     	var dotGame = new ClickOnDotGame();
     	$('.startGameBtn').on('click', dotGame.startClickGame);
