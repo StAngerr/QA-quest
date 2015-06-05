@@ -12,7 +12,8 @@ define(function (require) {
 
     stage2.initEvents = function () {
         var mainSection = $('#mainSection');
-       $(mainSection).on('first:itemAdded', function(event, item) {
+        
+        $(mainSection).on('first:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
                 stage2.finishStage();
             }

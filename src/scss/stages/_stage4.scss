@@ -1,6 +1,8 @@
 #gameField {
-	width: 500px;
-	height: 700px;
+	width: 100%;
+	height: 100%;
+	background: #8FAE50;
+	font-style: italic;
 }
 /*    MENU */
 .gameStatus {
@@ -12,21 +14,23 @@
 }
 
 .startGameBtn {
-	width: 300px;
-	height: 90px;
-	margin: 5px 0 0 90px;
+	position: relative;
+	top: 231px;
+	left: 225px;
+	width: 160px;
+	height: 65px;
+	margin: 0 auto;
 	border: none;
 	font-size: 1.8em;
-	font-family: 'Shadows Into Light', cursive;
-	border-radius: 15px;
-	background: #FDD1A1;
+	border-radius: 5px;
+	background: #774C29;
+	color: #B5CD6B;
 	cursor: pointer;
+	text-transform: uppercase;
 }
 
 .startGameBtn:hover {
-	font-size: 2.5em;
-	color: #B30A0A;
-	border: 3px solid #A6A6A6;
+	color: #E6EFD0;
 }
 
 .gameInfo {
@@ -34,19 +38,15 @@
 	height: 100%;
 }
 
-.infoHeader {
-	text-align: center;
-		
-}
-
-.gameInfo .infoBlock {	
-	position: relative;
+.infoBlock {	
 	height: 100px;
-	width: 90%;
-	background: #FFB0B0;
-	margin: 5px auto;
-	padding: 10px;
+	width: 620px;
+	margin: 0 auto 65px auto;
 	border-radius: 20px;
+	text-align: center;
+	font-size: 20px;
+	padding: 30px 0 0 0;
+	
 }
 
 .gameInfo .infoBlock .shortInfo {
@@ -61,20 +61,15 @@
 	color: #520303;
 }	
 
-.gameInfo .infoBlock .fakeDot {
-	background: #1D28FF;
-}
-
 .clickCounter {
 	display: block;
 	float: left;
-	height: 90%;
-	width: 40%;
+	height:70px;
+	width: 50%;
 	text-align: center;
-	margin: 5px 0 0 20px;
-	border-radius: 10px;
-	background: #5F807A;
-	color: #FFD2D2;
+	border-width: 0 2px 2px 0;
+	border-style: solid;
+	border-color:  #9C8679;
 }
 
 .timer {
@@ -82,25 +77,11 @@
 	position: relative;
 	float: right;
 	width: 50%;
-	height: 90%;
-	margin: 5px 20px 0 0px;
-	background: #5F807A;
-	border-radius: 10px;
+	height: 70px;
+	border-width: 0 0 2px 2px;
+	border-style: solid;
+	border-color:  #9C8679;
 }
-
-.digitalTimer {
-	position: absolute;
-	z-index: 2;
-	top: 20px;
-	left: 85px;
-	padding: 5px;
-	font-size: 2.2em;
-	background: #999999;
-	border-radius: 50%;
-	color: #FFD2D2;
-	font-weight: bold;
-}
-
 .visualTimer {
 	position: absolute;
 	z-index: 1;
@@ -129,12 +110,17 @@
 /*    GAME FIELD */
 .playGround {
 	position: relative;
-	width: 100%;
-	height: 600px;
-	margin: 15px 0 0 0;
-	border-radius: 15px;
-	background: linear-gradient(to right bottom, #FFE37C , #FFF7D8 );
-	padding-top: 1px;
+	width: 620px;
+	height: 330px;
+	margin: 0 auto;
+	background: #ECF4DD;
+	border-width: 4px 0 0px 4px;
+	border-color: #736760;
+	border-style: solid;	
+}
+
+.infoBackground {
+	background: #ECF4DD url("../images/infoBackground.png") no-repeat 90px 28px;
 }
 
 .clickCounter .points{

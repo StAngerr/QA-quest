@@ -5,15 +5,21 @@ define(function(require) {
     require('jqueryUi');
 
     stage4.initEvents = function() {
-    	 $('#inventory').show();
-    	 $('#hero').hide();
+    	stage4.getTmpl('popupFrameTmpl.html');
+    	stage4.getTmpl('stage4DotGameTmpl.html','.popup', null,loadDotGame);
+    };
+
+    function loadDotGame() {
+    	$('#inventory').show();
+    	$('#hero').hide();
     	/* its temporarily until standard control is not define*/
     	var dotGame = new ClickOnDotGame();
     	$('.startGameBtn').on('click', dotGame.startClickGame);
 		/*------------------------------------------*/
     };
+
     function ClickOnDotGame() {
-    	var singleGameTime = 3;
+    	var singleGameTime = 1;
 		var points = 0;
 		var seconds = singleGameTime;
 		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
@@ -46,18 +52,18 @@ define(function(require) {
 		function resetVisual() {
 			$('.visualTimer').stop(true,true).css({'display' : 'block'});
 			showVisualization();
-
 		};
 
 		function onGameInterface() {
-			$('.playGround > *').remove();
+			$('.playGround').removeClass('infoBackground');
 			$('.startGameBtn').addClass('closeBlock');
 			$('.clickCounter').removeClass('closeBlock');
 			$('.timer').removeClass('closeBlock');
 		};
 
 		function onInfoInterface() {
-			$('.playGround > *').remove();
+			$('.playGround > .dot, .playGround > .fakeDot').remove();
+			$('.playGround').addClass('infoBackground');
 			$('.startGameBtn').removeClass('closeBlock');
 			$('.clickCounter').addClass('closeBlock');
 			$('.timer').addClass('closeBlock');
