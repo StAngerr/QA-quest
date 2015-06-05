@@ -37,14 +37,16 @@ define(function(require) {
         }; 
         if(wordGameStatus == 'unfinished') {
             stage1.getTmpl('popupFrameTmpl.html');
-            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW);
+
+            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);
+
             changeManState();
         } else {
             stage1.finishStage();
         }
     };
-/*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    */
-    function WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW() {
+
+    function  startWordGame() {
         $('#sendWord').on('click', showWord);
         /*Drag n drop*/
         var leafes = $('.letters');
@@ -52,35 +54,44 @@ define(function(require) {
         var fieldToDrop = $('.all-letters')[0];
         $('.letters').attr("draggable","true");
         wordSpot.addEventListener('dragover', stage1.dragNdrop.allowDrop);
-        wordSpot.addEventListener('drop', function(event) {
-            event.preventDefault();
-            event.stopPropagation();                      
-            counter++;
-            drop(event);                
-            word += that.children().text();
-            return false;          
+        wordSpot.addEventListener('drop', function(event) {                        
+            stage1.dragNdrop.drop(event, addNewLetter); 
+                 
         });
         fieldToDrop.addEventListener('dragover', stage1.dragNdrop.allowDrop);
-        fieldToDrop.addEventListener('drop', function(event) {
-            event.preventDefault();
-            event.stopPropagation();  
-            counter--;
-            drop(event);                      
-            word =  $('.makeWord').children().children(1).text();             
-            return false;           
-        });          
+        fieldToDrop.addEventListener('drop', function(event) {          
+            stage1.dragNdrop.drop(event, addNewLetter);   
+        });
+
         for (var i = 0; i < leafes.length; i++) {
-            leafes[i].addEventListener("dragstart", stage1.dragNdrop.drag);
+            leafes[i].addEventListener("dragstart",stage1.dragNdrop.drag);
             leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
             leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
-        };
-    }
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+        };          
+       
+    };
+
+    function addNewLetter () {
+        that = stage1.dragNdrop.data;               
+        if ($(event.target)[0].nodeName !== 'DIV') {
+            var target = $(event.target).closest('div');
+
+            if (target.html() !== '') {                   
+                $(event.target).closest('div').append(that.context);                                                   
+            } else {
+                $(event.target).closest('div').html(that);
+            }          
+        } else if ($(event.target).html() !== '') {
+            $(event.target).append(that.context);           
+        }      
+    };
+
     stage1.finishStage = function() {
         $('#mainSection').trigger('main:stageFinished');
     };
 
-    function showWord() {        
+    function showWord() {  
+        word =  $('.makeWord').children().children(1).text();        
         $('#stage1Popup1').remove();
         $('.popupWrap').remove();
         $('.detail-1').show();         
@@ -137,44 +148,7 @@ define(function(require) {
         $('.totalLevel').css({'opacity':'1'});   
     };
 
-    function drop(event) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        that = stage1.dragNdrop.data;         
-        var data =  '<figure class="letters" draggable="true"> ' + event.dataTransfer.getData('text/html') + '</figure>';
-        var html =  $(event.target).html();
-        var targetNodeName = $(event.target)[0].nodeName;
-
-        $('.makeWord').css('background-color', '#fff'); 
-        if ($(event.target)[0].className != $(that).parent()[0].className) {
-            if ( $(event.target).parent().parent()[0].className != $(that).parent()[0].className) {
-                if( targetNodeName == 'SPAN' || targetNodeName == "IMG") { 
-                    html =  $(event.target).parent().parent().html()       
-                    $(event.target).parent().parent().html(html + data);          
-                } else if (targetNodeName == 'FIGURE') {
-                    html =  $(event.target).parent().html();
-                    $(event.target).parent().html(html + data);                      
-                } else {
-                    $(event.target).html(html + data); 
-                }       
-                that.remove(); 
-                var leafes = $('.letters');
-                for (var i = 0; i < leafes.length; i++) {
-                    leafes[i].addEventListener("dragstart",stage1.dragNdrop.drag);
-                    leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
-                    leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
-                };
-                if (counter === 10) {          
-                    $('#sendWord').show();
-                    return false;
-                }
-            }      
-        } else {     
-            that.css('opacity', '1'); 
-            return false;
-        }       
-    };
+  
 
     function changeManState() {
         (manState == 'stand') ? manState = 'moving' : manState = 'stand';

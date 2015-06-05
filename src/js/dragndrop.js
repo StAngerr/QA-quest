@@ -8,20 +8,34 @@ define(function() {
 		 	return false;
 		};
 
-		this.drag = function(event) {      
+		this.drag = function(event) { 
 			event.dataTransfer.setData('text/html', $(event.target).html()); 
-			that.data = $(event.target);         
+			if ($(event.target)[0].nodeName !== 'FIGURE') {
+				that.data = $(event.target).parent(); 
+			} else{
+				that.data = $(event.target);
+			}		  
 			return false;
 		};
 
-	    this.over =  function (event) {
+	  	this.over =  function (event) {
 			event.preventDefault();        
 			return false;
 		};
 
-	    this.leave =  function (event) {
+	  	this.leave =  function (event) {
 			event.preventDefault();        
 			return false;       
+		};
+
+		this.drop = function(event, callback) {
+			event.preventDefault();			
+			if ($(event.target)[0].nodeName === 'DIV' && $(event.target).html() == '') {
+				$(event.target).html(that.data);
+			} else {
+				callback();
+				return false;		
+			}       
 		};
 	}
 	return DragNDrop;
