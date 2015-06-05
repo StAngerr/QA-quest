@@ -44,77 +44,65 @@ a {
 
     .man {
         display: none;
+        z-index: 6;
         position: absolute;
         top: 450px;
         left: 10px;
         width: 50px;
-        background: #cf0;
-        font-size: 2.5em;
         height: 200px;
-        border: 2px solid black;
-        z-index: 6;
+        background: #cf0;
+        font-size: 2.5em;        
+        border: 2px solid black;        
+    }
+
+    #wade_main_div {        
+        position: relative;        
+        z-index: 13;
+        top: 0;
+        max-height: 550px;
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 0;
+        outline: none;
     }
     canvas {
         position: absolute;
-        top:0;
-        left:0;
-        margin: 0;
-        padding: 0;
+        top: 0;
+        left: 0;
         max-width: 740px;
         max-height: 540px;
+        margin: 0;
+        padding: 0;       
     }
 
-  
-
-        #wade_main_div {
-                position: relative;
-                padding: 0;
-                max-width: 750px;
-                max-height: 550px;
-                outline: none;
-                z-index: 13;
-                top: 0;
-                margin: 0 auto;
-            }
-            canvas {
-                position: absolute;
-                top: 0;
-                left: 0;
-                margin: 0;
-                padding: 0;
-                max-width: 740px;
-                max-height: 540px;
-            }
-            .popup-common {
-                background: rgb(142, 184, 80);
-                text-align: center;
-                font-size: 20px;
-                height: 100%;
-                padding: 2em;
-                
-                .task-description {
-                    text-align: center;
-                }
-
-                .popup-btn {
-                    display: block;
-                    width: 90%;
-                    padding: 1em;
-                    border-radius: 10px;
-                    background: rgb(118, 76, 41);
-                    margin: 1em auto;
-                    color: rgb(142, 184, 80);
-                    text-transform: uppercase;
-                    font-size: 20px;
-                }  
-            }
+    .popup-common {
+        height: 100%;
+        padding: 2em;
+        background: rgb(142, 184, 80);
+        text-align: center;
+        font-size: 20px;
         
-    
+        .task-description {
+            text-align: center;
+        }
+
+        .popup-btn {
+            display: block;
+            width: 90%;
+            margin: 1em auto;
+            padding: 1em;
+            border-radius: 10px;
+            background: rgb(118, 76, 41);
+            color: rgb(142, 184, 80);
+            text-transform: uppercase;
+            font-size: 20px;
+        }  
+    }    
 
     .clearFix:after {
-        content: "";
         display: block;
         height: 0;
+        content: "";
         clear: both;
     }
 }

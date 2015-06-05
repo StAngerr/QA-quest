@@ -1,5 +1,6 @@
 #stage2 {
     background: url('../images/stage2Bg.jpg') no-repeat 0 0;
+
     .choosePic {
         position: absolute;
         top: 440px;
@@ -7,6 +8,7 @@
         width: 375px;
         height: 100px;
     }
+
     .stone {
         position: absolute;
         top: 555px;
@@ -15,13 +17,14 @@
         height: 255px;
         background: url("../images/stone.png") no-repeat 0 0;
     }
+
     #ticTacToe {
         position: absolute;
-        display: none;
-        background: url('../images/Game_2screen_stone_grid.png') no-repeat 0 0;
         right: 59px;
         bottom: 100px;
         width: 155px;
+        display: none;
+        background: url('../images/Game_2screen_stone_grid.png') no-repeat 0 0;        
     }
 
     .tic {
@@ -34,9 +37,9 @@
 
     .tbl {
         position: relative;
+        top: 4px;
         width: 150px;
         right: -3px;
-        top: 4px;
         transform: rotateY(-25deg) rotateX(30deg);
         td {
             width: 30px;
@@ -79,9 +82,9 @@
 #stage2Popup1.popup-common {
     .field-with-pictures, .pictures-to-choose {
         display: inline-block;
-        margin-right: 2.5em;
-        margin-top: 1em;
         height: 270px;
+        margin-right: 2.5em;
+        margin-top: 1em;        
         background-color: rgb(208, 226, 168);
         text-align: left;
     }

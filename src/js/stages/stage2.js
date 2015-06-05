@@ -433,7 +433,7 @@ define(function (require) {
                         setTimeout(function() {
                             toeAppear();
                             return;
-                        }, 500);  
+                        }, 200);  
                     } 
                 }
             }
@@ -549,56 +549,9 @@ define(function (require) {
         $('.newGameB').css('visibility', 'hidden');
         $('.detail-4').show();
         setTimeout(finishTicTacToe, 3000);
-    };   
+    }; 
   
      // end of game tictactoe
-
-<<<<<<< HEAD
-    function reset() {        
-        var fields = $('.field');
-        fields.each( function(index){
-            $(this).removeClass('toe');
-            $(this).removeClass('tic');
-        });
-        $('.newGameB').css('visibility', 'hidden');
-        all = 0;
-        a = 0;
-        b = 0;
-        c = 0;
-        d = 0;
-        e = 0;
-        f = 0;
-        g = 0;
-        h = 0;
-        i = 0;
-        j = 0;
-        k = 0;
-        l = 0;
-        m = 0;
-        n = 0;
-        o = 0;
-        p = 0;
-        temp = "";
-        ok = 0;
-        cf = 0;
-        choice = 16;
-        aRandomNumber = 0;
-        comp = 0;
-        if (t == 0) {
-            t = 2;
-            myChoice();
-        }
-        t--;
-    }
-     // end of game
-    function finishTicTacGame() {        
-        $('#inventory').trigger('inventory:addItem',{name:'.detail-4'});     
-        $('#ticTacToe').remove();
-        $('.item.detail-4').remove();
-
-        //stage2.finishStage();
-    }
-=======
     function finishTicTacToe() {
         $('#inventory').trigger('inventory:addItem',{data:'.detail-4'});     
         $('#ticTacToe').remove();
@@ -607,6 +560,5 @@ define(function (require) {
         stage2.finishStage();
     };
 
->>>>>>> 264dc3643b67c96252705feb6df73620ce5acbe5
     return stage2;
 });
