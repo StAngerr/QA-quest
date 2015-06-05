@@ -6,11 +6,12 @@ define(function() {
 
 		this.addItem = function(event, itemName) {
 			var timeout;
-			
+
 			$(itemName).addClass('addAnimation');
 			timeout = setTimeout(function() {
 				$('#mainContent').trigger('main:itemAdded', {name: itemName});
-			}, 2100);
+				clearTimeout(timeout);
+			}, 1600);
 		};		
 	}
 	return Inventory;
