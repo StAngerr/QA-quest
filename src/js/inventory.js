@@ -6,12 +6,13 @@ define(function() {
 
 		this.addItem = function(event, itemName) {
 			var timeout;
-
+			var module = $('#mainSection');
+			
 			$(itemName).addClass('addAnimation');
 			timeout = setTimeout(function() {
-				$('#mainContent').trigger('main:itemAdded', {name: itemName});
+				$(module).trigger('first:itemAdded', {name: itemName});
 				clearTimeout(timeout);
-			}, 1600);
+			}, 2600);			
 		};		
 	}
 	return Inventory;

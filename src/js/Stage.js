@@ -2,6 +2,7 @@ define(function(require) {
     var _ = require('underscore');
     var Stage = function(templ) {
         var currentStage = {};
+        var stageLoad = true;
         this.templateUrl = templ;
         this.initEvents;
         this.finishStage;
@@ -19,7 +20,12 @@ define(function(require) {
                     var target = direction || '#mainContent';                   
                     var content = dataToTempl ? _.template(data)(dataToTempl): data;
                     $(target).prepend(content);
-                    (doAfterUpload) ? doAfterUpload() : currentStage.initEvents();
+                    if(stageLoad) {
+                        currentStage.initEvents();
+                        stageLoad = false;
+                    } else {
+                       if(doAfterUpload) doAfterUpload();
+                    }
                 }
             });
         };       

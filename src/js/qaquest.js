@@ -23,6 +23,7 @@ define(function(require) {
             clearMainContent();           
             stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array has zero index*/         
             stageObj.openStage(stageObj);
+            
         };
 
         function writeStageToLS(stage) {

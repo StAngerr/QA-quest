@@ -12,6 +12,12 @@ define(function(require) {
     var counter = 0;
 
     stage1.initEvents = function() {
+
+        var module1 = $('#hero');
+        $(module1).on('first:itemAdded', function(event, item) {
+            alert('ok');
+        }); 
+
         $('#hero').show();
         $('#inventory').show();
         $('.door').on('click', function(event) {
@@ -20,6 +26,7 @@ define(function(require) {
     };
 
     stage1.moveToDoor = function() {
+
         changeManState(); 
         if($('.man').css('left') !== '750px') {
             $('.man').animate({'left' : '750'}, 2000, openWordGame);

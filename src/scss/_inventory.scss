@@ -1,11 +1,11 @@
 #inventory {
     position: absolute;
+    display: none;
     bottom: 5px;
     width: 1200px;
     height: 10%;
-    background: #9a9c8f;
     margin: 0 auto;
-    display: none;
+    background: #9a9c8f;
 
     .inventoryWrap {
         width: 80%;
@@ -15,18 +15,18 @@
 
         .itemContainer {
             display: inline-block;
-            margin-right: 13px;
             width: 87px;
             height: 50px;
-            background: #E3E5E5;
+            margin-right: 13px;
             margin-top: 24px;
+            background: #E3E5E5;
             &:before {
                 content: "";
                 position: absolute;
+                display: block;
                 top: 0px;
                 width: 0; 
                 height: 0; 
-                display: block;
                 border-left: 44px solid transparent;
                 border-right: 44px solid transparent;
                 border-bottom: 24px solid #E3E5E5;
@@ -34,10 +34,10 @@
             &:after {
                 content: "";
                 position: absolute;
+                display: block;
                 top: 74px;
                 width: 0; 
                 height: 0; 
-                display: block;
                 border-left: 44px solid transparent;
                 border-right: 44px solid transparent;
                 border-top: 24px solid #E3E5E5;
@@ -45,11 +45,11 @@
             
             .itemIcon {
                 position: relative;
+                display: block;
                 top: -24px;
                 left: -1px;
-                z-index: 13;
-                display: block;
                 margin: 0 auto;
+                z-index: 13;
                 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
                 &.detail-1 {
                     &.addAnimation { 
