@@ -72,13 +72,10 @@ define(function(require) {
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
 
 			printWhoWon(winner);
-
-        $('.popupWrap').remove();
-        $('.detail-5').show();         
-        
-    		
+	        $('.popupWrap').remove();
+	        $('.detail-5').show();        
 			setTimeout(function(){
-				$('#inventory').trigger('inventory:addItem',{data:'.detail-5'}); 
+				$('#inventory').trigger('inventory:addItem',{name:'.detail-5'}); 
 				$('.item.detail-5').remove();
 				bubbleStart();
 			}, 1500);

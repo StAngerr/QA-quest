@@ -5,7 +5,6 @@
     height: 10%;
     background: #9a9c8f;
     margin: 0 auto;
-    overflow: hidden;
     display: none;
 
     .inventoryWrap {
@@ -24,10 +23,118 @@
                 position: relative;
                 display: block;
                 margin: 0 auto;
+                /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+                &.detail-1 {
+                    &.addAnimation { 
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail1;
+                    }
+                }
+                &.detail-2 {
+                    &.addAnimation { 
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail2;
+                    }
+                }
+                &.detail-3 {
+                    &.addAnimation {
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail3;
+                    }
+                }
+                &.detail-4 {
+                    &.addAnimation {
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail4;
+                    }
+                }
+                &.detail-5 {
+                    &.addAnimation {
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail5;
+                    }
+                }
+                &.detail-6 {
+                    &.addAnimation {
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail6;
+                    }
+                }
+                &.detail-7 {
+                    &.addAnimation {
+                        opacity: 1;
+                        animation-duration: 2s;
+                        animation-name: detail7;
+                    }
+                }
+
+                @-webkit-keyframes detail1 {
+                    from {
+                        transform: translate(780px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                }
+                @-webkit-keyframes detail2 {
+                    from {
+                        transform: translate(695px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                }
+                @-webkit-keyframes detail3 {
+                    from {
+                        transform: translate(610px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                }
+                @-webkit-keyframes detail4 {
+                    from {
+                        transform: translate(525px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                } 
+                @-webkit-keyframes detail5 {
+                    from {
+                        transform: translate(440px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                }
+                @-webkit-keyframes detail6 {
+                    from {
+                        transform: translate(355px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                }
+                @-webkit-keyframes detail7 {
+                    from {
+                        transform: translate(270px, -200px);
+                    }
+                    to {
+                        transform: translate(0px,0px)
+                    }   
+                }
+                /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
             }
 
             .activeItem {
-                opacity: 1;
+                opacity: 1; 
             }
 
             .noItem {
@@ -43,21 +150,22 @@
     height: 90px;
     border: none;
     outline: none;
-    opacity: 0;
-    animation: appear 2s ease-in infinite alternate;
-    animation-iteration-count: 1;
+    opacity: 1;
+/*     animation: appear 2s ease-in infinite alternate;
+    animation-iteration-count: 1; */
+    z-index: 300;
 
+    &.detail-1 {
+        background: url("../images/detail_1.png") no-repeat 0 0;
+/*         right: 940px;
+        bottom: 22px;
+        display: none;  */
+    }
     &.detail-2 {
         background: url("../images/detail_2.png") no-repeat 0 0;
         right: 1040px;
         bottom: 22px; 
         display: none;               
-    }
-    &.detail-1 {
-        background: url("../images/detail_1.png") no-repeat 0 0;
-        right: 940px;
-        bottom: 22px;
-        display: none; 
     }
     &.detail-3 {
         background: url('../images/detail_3.png') no-repeat 0 0;
@@ -91,7 +199,9 @@
     }
 }
 
-@keyframes appear {
+
+
+/* @keyframes appear {
     0% {
         transform: scale(1, 1);
         opacity: 1;
@@ -115,3 +225,4 @@
         bottom: 22px;
     }
 }
+ */

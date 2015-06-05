@@ -10,6 +10,13 @@ define(function (require) {
             src : ['_brown.png', '_white.png']           
         };   
     stage2.initEvents = function () {
+        var mainSection = $('#mainContent');
+        $(mainContent).on('main:itemAdded', function(event, item) {
+            if(item.name.indexOf('detail-4') !== -1) {
+                stage2.finishStage();
+            }
+        });
+
      /* set hero to the right position*/   
         var heroPosition = {
             left : '20px',
@@ -20,8 +27,8 @@ define(function (require) {
         $('#hero').show();
         $('#inventory').show();
         stage2.dragNdrop = new DragNDrop();
-        turnOffTheLight();
-        addFlashLightEvents();
+       /* turnOffTheLight();
+        addFlashLightEvents();*/
         $('.choosePic').on ('click', function() {
             $('.man').animate({'left' : '450px'}, 1000, function() {
                 if(!canPlay) {
@@ -89,7 +96,7 @@ define(function (require) {
             $('.detail-3').show();  
             
             setTimeout(function(){
-                $('#inventory').trigger('inventory:addItem',{data:'.detail-3'}); 
+                $('#inventory').trigger('inventory:addItem',{name:'.detail-3'}); 
                 $('#ticTacToe').show();
                 $('.item.detail-3').remove(); 
             }, 2000);          
@@ -518,11 +525,11 @@ define(function (require) {
     }
      // end of game
     function finishTicTacGame() {        
-        $('#inventory').trigger('inventory:addItem',{data:'.detail-4'});     
+        $('#inventory').trigger('inventory:addItem',{name:'.detail-4'});     
         $('#ticTacToe').remove();
         $('.item.detail-4').remove();
 
-        stage2.finishStage();
+        //stage2.finishStage();
     }
     return stage2;
 });

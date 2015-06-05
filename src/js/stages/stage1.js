@@ -37,7 +37,7 @@ define(function(require) {
         }; 
         if(wordGameStatus == 'unfinished') {
             stage1.getTmpl('popupFrameTmpl.html');
-            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content,WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW);
+            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW);
             changeManState();
         } else {
             stage1.finishStage();
@@ -84,12 +84,12 @@ define(function(require) {
         $('#stage1Popup1').remove();
         $('.popupWrap').remove();
         $('.detail-1').show();         
-        setTimeout(sendDnDWord, 2000); 
+        sendDnDWord(); 
     };
 
     function sendDnDWord(event) {
         // add the first inventory
-        $('#inventory').trigger('inventory:addItem', {data:'.detail-1'});  
+        $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  
         $('.item.detail-1').remove();
         $('.door').css('opacity','0');
         $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
@@ -128,11 +128,11 @@ define(function(require) {
         $('.popupWrap').remove();
         $('.detail-2').show();
         flowGameStatus = 'finished';
-        setTimeout(closePopup, 2000); 
+        closePopup(); 
     };
 
     function closePopup(event) {
-        $('#inventory').trigger('inventory:addItem', {data:'.detail-2'});  
+        $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
         $('.item.detail-2').remove();
         $('.totalLevel').css({'opacity':'1'});   
     };
