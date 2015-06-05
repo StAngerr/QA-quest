@@ -502,7 +502,7 @@ define(function (require) {
                     return false;
                 } 
                 reset();
-            }
+            } else reset();
         };
 
         function reset() {        
