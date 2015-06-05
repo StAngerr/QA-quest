@@ -186,7 +186,7 @@ define(function(require) {
 
 		function decorateFakeDot(dot) {
 						/* yellow      blue        red         orange    */
-			var colors = ['#E3DB00', '#1D28FF', '#FF1D28', '#FF8724'];
+			var colors = ['#FFDAB9', '#FFFFA3', '#E6E6FA', '#A4D3DB'];
 			var randomColor = Math.floor( Math.random() * 4);
 			var randomPicture = Math.floor( Math.random() * 4); 
 

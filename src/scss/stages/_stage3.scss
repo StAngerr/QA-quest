@@ -41,7 +41,7 @@
 	width: 100%; 
 	height: 545px;
 	height: 100%; 
-	background: #F0FFF3;
+	background: #8FAE50;
 	font-style: italic;
 	
 	.rules {
@@ -71,6 +71,7 @@
 	.mainSection, .playerPlace, .cpuPlace { 	
 		height: 100%;
 		border: 2px solid #AA9E84;
+		background: #ECF4DD;
 	}
 
 	.mainSection {
@@ -92,24 +93,38 @@
 		}
 
 		.controls {			
-			margin-top: 10px;
+			margin-top: 9px;
 			
 			.pickStick {
+				position: relative;
 				width: 35px;
-				height: 37px;
+				height: 35px;
 				margin-right: 17px;
 				background: #CDDD9C;
 				color: #594A47;
 				font-weight: bold;
 				font-size: 20px;
-				font-style: italic;
-				border-radius: 50% 20%;
-				border-width: 4px 1px 4px 1px;
+				border-radius: 50%;
 				border-style: solid;
-				border-color: #594A47;
+				font-style: italic;
 				transition: background .3s, color .2s;
 				outline: none;
+				z-index: 22;
 				
+				&:before {
+					content: "";
+					display: block;
+					position: absolute;
+					top: -3px;
+					left: -3px;
+					width: 33px;
+					height: 30px;
+					border-radius: 50%;
+					border-color: #594A47;
+					border-style: solid;
+					border-width: 5px 1px 4px 2px;
+					transform: rotate(-15deg);
+				}
 				&:first-child {
 					margin-left: 54px;
 				}
@@ -119,7 +134,13 @@
 				}
 				&.disabled {
 					opacity: 0.5;
-				}
+				}	
+				&:last-child {
+					&:before {
+						border-width: 4px 1px 5px 1px;
+						transform: rotate(-45deg);
+					}
+				}	
 			}
 		}
 	}
