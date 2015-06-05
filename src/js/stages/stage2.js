@@ -98,7 +98,7 @@ define(function (require) {
             $('.detail-3').show();
             
             setTimeout(function(){
-                $('#inventory').trigger('inventory:addItem',{data:'.detail-3'}); 
+                $('#inventory').trigger('inventory:addItem',{name:'.detail-3'}); 
                 startTicTacToeGame();
                 $('.item.detail-3').remove(); 
             }, 2000);          
@@ -553,7 +553,7 @@ define(function (require) {
   
      // end of game tictactoe
     function finishTicTacToe() {
-        $('#inventory').trigger('inventory:addItem',{data:'.detail-4'});     
+        $('#inventory').trigger('inventory:addItem',{name:'.detail-4'});     
         $('#ticTacToe').remove();
         $('.item.detail-4').remove();
 
