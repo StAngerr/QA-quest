@@ -1,11 +1,11 @@
 #inventory {
     position: absolute;
+    display: none;
     bottom: 5px;
     width: 1200px;
     height: 10%;
-    background: #9a9c8f;
     margin: 0 auto;
-    display: none;
+    background: #9a9c8f;
 
     .inventoryWrap {
         width: 80%;
@@ -15,18 +15,18 @@
 
         .itemContainer {
             display: inline-block;
-            margin-right: 13px;
             width: 87px;
             height: 50px;
-            background: #E3E5E5;
+            margin-right: 13px;
             margin-top: 24px;
+            background: #E3E5E5;
             &:before {
                 content: "";
                 position: absolute;
+                display: block;
                 top: 0px;
                 width: 0; 
                 height: 0; 
-                display: block;
                 border-left: 44px solid transparent;
                 border-right: 44px solid transparent;
                 border-bottom: 24px solid #E3E5E5;
@@ -34,10 +34,10 @@
             &:after {
                 content: "";
                 position: absolute;
+                display: block;
                 top: 74px;
                 width: 0; 
                 height: 0; 
-                display: block;
                 border-left: 44px solid transparent;
                 border-right: 44px solid transparent;
                 border-top: 24px solid #E3E5E5;
@@ -45,58 +45,55 @@
             
             .itemIcon {
                 position: relative;
+                display: block;
                 top: -24px;
                 left: -1px;
-                z-index: 13;
-                display: block;
                 margin: 0 auto;
+                z-index: 13;
+                
+                &.addAnimation { 
+                    opacity: 1;
+                }
                 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
                 &.detail-1 {
                     &.addAnimation { 
-                        opacity: 1;
                         animation-duration: 1.5s;
                         animation-name: detail1; 
                     }
                 }
                 &.detail-2 {
 
-                    &.addAnimation { 
-                        opacity: 1;
+                    &.addAnimation {
                         animation-duration: 1.5s;
                         animation-name: detail2;
                     }
                 }
                 &.detail-3 {
                     &.addAnimation {
-                        opacity: 1;
                         animation-duration: 1.5s;
                         animation-name: detail3;
                     }
                 }
                 &.detail-4 {
                     &.addAnimation {
-                        opacity: 1;
                         animation-duration: 1.5s;
                         animation-name: detail4;
                     }
                 }
                 &.detail-5 {
                     &.addAnimation {
-                        opacity: 1;
                         animation-duration: 1.5s;
                         animation-name: detail5;
                     }
                 }
                 &.detail-6 {
                     &.addAnimation {
-                        opacity: 1;
                         animation-duration: 1.5s;
                         animation-name: detail6;
                     }
                 }
                 &.detail-7 {
                     &.addAnimation {
-                        opacity: 1;
                         animation-duration: 1.5s;
                         animation-name: detail7;
                     }
@@ -158,7 +155,6 @@
                         transform: translate(0px,0px)
                     }   
                 }
-                /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
             }
 
             .activeItem {
@@ -169,60 +165,5 @@
                 opacity: 0.3;
             }
         }
-    }
-}
-
-.item {
-    position: absolute;
-    width: 90px;
-    height: 90px;
-    border: none;
-    outline: none;
-    opacity: 1;
-/*     animation: appear 2s ease-in infinite alternate;
-    animation-iteration-count: 1; */
-    z-index: 300;
-
-    &.detail-1 {
-        background: url("../images/detail_1.png") no-repeat 0 0;
-/*         right: 940px;
-        bottom: 22px;
-        display: none;  */
-    }
-    &.detail-2 {
-        background: url("../images/detail_2.png") no-repeat 0 0;
-        right: 1040px;
-        bottom: 22px; 
-        display: none;               
-    }
-    &.detail-3 {
-        background: url('../images/detail_3.png') no-repeat 0 0;
-        right: 840px;
-        bottom: 22px;
-        display: none;
-    }
-    &.detail-4 {
-        background: url('../images/detail_4.png') no-repeat 0 0;
-        right: 740px;
-        bottom: 22px;
-        display: none;
-    }
-    &.detail-5 {
-        background: url('../images/detail_5.png') no-repeat 0 0;
-        right: 640px;
-        bottom: 22px;
-        display: none;
-    }
-    &.detail-6 {
-        background: url('../images/detail_6.png') no-repeat 0 0;
-        right: 540px;
-        bottom: 22px;
-        display: none;
-    }
-    &.detail-7 {
-        background: url('../images/detail_7.png') no-repeat 0 0;
-        right: 440px;
-        bottom: 22px;
-        display: none;   
     }
 }

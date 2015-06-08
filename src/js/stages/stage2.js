@@ -11,13 +11,13 @@ define(function (require) {
         }; 
 
     stage2.initEvents = function () {
-        var mainSection = $('#mainContent');
-        $(mainContent).on('main:itemAdded', function(event, item) {
+        var mainSection = $('#mainSection');
+        
+        $(mainSection).on('first:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
                 stage2.finishStage();
             }
         });
-
      /* set hero to the right position*/   
         var heroPosition = {
             left : '20px',
@@ -28,8 +28,8 @@ define(function (require) {
         $('#hero').show();
         $('#inventory').show();
         stage2.dragNdrop = new DragNDrop();
-        turnOffTheLight();
-        addFlashLightEvents();
+/*        turnOffTheLight();
+        addFlashLightEvents();*/
         $('.choosePic').on ('click', function() {
             $('.man').animate({'left' : '450px'}, 1000, function() {
                 if(!canPlay) {
@@ -555,9 +555,6 @@ define(function (require) {
     function finishTicTacToe() {
         $('#inventory').trigger('inventory:addItem',{name:'.detail-4'});     
         $('#ticTacToe').remove();
-        $('.item.detail-4').remove();
-
-        stage2.finishStage();
     };
 
     return stage2;
