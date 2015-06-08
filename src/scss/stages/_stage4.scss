@@ -3,99 +3,137 @@
 	height: 100%;
 	background: #8FAE50;
 	font-style: italic;
-}
-/*    MENU */
-.gameStatus {
-	width: 100%;
-	height: 100px;
-	border-radius: 15px;
-	overflow: hidden;
-	background: #FFE37C;
-}
-
-.startGameBtn {
-	position: relative;
-	top: 230px;
-	left: 225px;
-	width: 160px;
-	height: 65px;
-	margin: 0 auto;
-	border: none;
-	font-size: 1.8em;
-	border-radius: 5px;
-	background: #774C29;
-	color: #B5CD6B;
-	cursor: pointer;
-	text-transform: uppercase;
-}
-
-.startGameBtn:hover {
-	color: #E6EFD0;
-}
-
-.gameInfo {
-	width: 100%;
-	height: 100%;
-}
-
-.infoBlock {	
-	height: 100px;
-	width: 620px;
-	margin: 0 auto 65px auto;
-	border-radius: 20px;
-	text-align: center;
-	font-size: 20px;
-	padding: 30px 0 0 0;
 	
-}
+	.infoBlock {	
+		height: 100px;
+		width: 620px;
+		margin: 0 auto 65px auto;
+		padding: 30px 0 0 0;
+		text-align: center;
+		font-size: 20px;
+		
+		.shortInfo {
+			font-size: 20px;
+			line-height: 110%;
+			color: #515055;
+		}	
 
-.gameInfo .infoBlock .shortInfo {
-	float: right;
-	width: 60%;
-	margin: 5px;
-	padding: 10px;
-	border: 1px solid #000;	
-	background: #F5D5D5;
-	border-radius: 10px;
-	font-size: 1.3em;
-	color: #520303;
-}	
+		h3 {
+			margin-top: 6px;
+			font-size: 20px;
+			color: #4A4A54;
+		}
+	}
+	.playGround {
+		position: relative;
+		width: 620px;
+		height: 330px;
+		margin: 0 auto;
+		border-width: 4px 0 0px 4px;
+		border-color: #736760;
+		background: #ECF4DD;
+		border-style: solid;	
+		
+		&.infoBackground {
+			background: #ECF4DD url("../images/infoBackground.png") no-repeat 91px 26px;
+		}
 
-.clickCounter {
-	display: block;
-	float: left;
-	height:70px;
-	width: 50%;
-	text-align: center;
-	border-width: 0 2px 2px 0;
-	border-style: solid;
-	border-color:  #9C8679;
-}
+		.startGameBtn {
+			position: relative;
+			top: 229px;
+			left: 226px;
+			width: 160px;
+			height: 65px;
+			margin: 0 auto;
+			border: none;
+			border-radius: 5px;
+			background: #774C29;
+			color: #B5CD6B;
+			cursor: pointer;
+			font-weight: bold;
+			text-transform: uppercase;
+			font-size: 28px;
+		    font-family: 'Noto Sans', sans-serif;
+		    
+		    &:hover {
+				color: #E6EFD0;
+			}
+		}
 
-.timer {
-	display: block;
-	position: relative;
-	float: right;
-	width: 50%;
-	height: 70px;
-	border-width: 0 0 2px 2px;
-	border-style: solid;
-	border-color:  #9C8679;
-}
-.visualTimer {
-	position: absolute;
-	z-index: 1;
-	top: 35px;
-	left: 10px;
-	width: 90%;
-	height: 20px;
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px; 
-	background: #BECBC1;
-	-webkit-transform: scaleX(1);
-	transform: scaleX(1);
+		.clickCounter {
+			float: left;
+			height: 65px;
+			width: 50%;
+			padding: 17px 0 0 0;
+			border-width: 0 2px 5px 0;
+			border-color:  #9C8679;
+			border-style: solid;
+			text-align: center;
+			color: #737476;
+			
+			.points{
+				font-size: 20px;
+				font-weight: bold;
+			}
+		}
+
+		.timer {
+			position: relative;
+			float: right;
+			width: 50%;
+			height: 65px;
+			border-width: 0 0 5px 3px;
+			border-style: solid;
+			border-color:  #9C8679;
+			
+			.visualTimer {
+				position: absolute;
+				height: 12px;
+				width: 90%;
+				top: 25px;
+				left: 15px;
+				z-index: 1;
+				background: #736759;
+				-webkit-transform: scaleX(1);
+				transform: scaleX(1);
+			}
+		}
+		
+		.dot {
+			position: absolute;
+			width: 50px;
+			height: 50px;
+			border-radius: 100px;
+			cursor: pointer;
+			background-color: #8cad4f;
+		}
+
+		.fakeDot {
+			position: absolute;
+			width: 50px;
+			height: 50px;
+			border-radius: 100px;
+			cursor: pointer;
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+		}
+
+		.gameResults {
+			position: absolute;
+			width: 19%;
+			height: 30%;
+			top: 101px;
+			left: 249px;
+			margin: 0 auto;
+			text-align: center;
+			font-size: 20px;
+		
+			.points {
+				display: block;
+				margin-top: 10px;
+			}
+		}	
+	}
 }
 
 .addAnimation {
@@ -107,72 +145,15 @@
 	-webkit-transform: scaleX(0);
 	transform: scaleX(0);
 }
-/*    GAME FIELD */
-.playGround {
-	position: relative;
-	width: 620px;
-	height: 330px;
-	margin: 0 auto;
-	background: #ECF4DD;
-	border-width: 4px 0 0px 4px;
-	border-color: #736760;
-	border-style: solid;	
-}
-
-.infoBackground {
-	background: #ECF4DD url("../images/infoBackground.png") no-repeat 90px 28px;
-}
-
-.clickCounter .points{
-	font-family: 'Shadows Into Light', cursive;
-	font-size: 3em;
-	font-weight: bold;
-}
-
-.playGround .dot{
-	position: absolute;
-	width: 50px;
-	height: 50px;
-	border-radius: 100px;
-	cursor: pointer;
-	background-color: #98FB98;
-}
-
-.fakeDot {
-	position: absolute;
-	width: 50px;
-	height: 50px;
-	border-radius: 100px;
-	cursor: pointer;
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-}
 
 .underDotMsg {
 	position: absolute;
-	z-index: 999;
 	width: 90px;
 	height: 20px;
-	font-size: 1.5em;
-	font-weight: bold;
+	z-index: 999;
 }
 
 .closeBlock {
 	display: none;
 }
 
-.gameResults {
-	position: absolute;
-	top: 101px;
-	left: 249px;
-	width: 19%;
-	height: 30%;
-	margin: 0 auto;
-	text-align: center;
-	font-size: 20px;
-	
-	.points {
-		display: block;
-		margin-top: 10px;
-	}
-}

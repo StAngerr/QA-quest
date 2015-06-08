@@ -25,7 +25,7 @@ define(function(require) {
 		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
 		var maxLeftCoordinate = 567;
 		var maxTopCoordinate = 275;
-		var minTop = 70;
+		var minTop = 70; /*correction because there are stat-blocks on the top of game field*/
 		/*intervals*/
 		var gameTime;
 
@@ -51,11 +51,11 @@ define(function(require) {
 		};
 
 		function resetVisual() {
-			$('.visualTimer').stop(true, true).css({'display' : 'block'});
-			showVisualization();
+			$('.visualTimer').stop(true, true).css({'display' : 'block'});	
 		};
 
 		function onGameInterface() {
+			$('.playGround .gameResults').addClass('closeBlock');
 			$('.playGround').removeClass('infoBackground');
 			$('.startGameBtn').addClass('closeBlock');
 			$('.clickCounter').removeClass('closeBlock');
@@ -64,29 +64,24 @@ define(function(require) {
 
 		function onInfoInterface() {
 			$('.playGround > .dot, .playGround > .fakeDot').remove();
-			//$('.playGround').addClass('infoBackground');
+			$('.playGround .gameResults').removeClass('closeBlock');
 			$('.startGameBtn').removeClass('closeBlock');
 			$('.clickCounter').addClass('closeBlock');
 			$('.timer').addClass('closeBlock');
 		};
 
 		function finishGame() {
+			resetVisual();
 			onInfoInterface();
-			showResults(points);
 			clearInterval(gameTime);
 			resetTimerAndPoints();
-			updatePoints(points);
-		};
-
-		function showResults(points) {
-			var resultBlock = '<p class="gameResults"> Your points: <span class="points">' + points + '</span></p>';
-			$('.playGround').prepend(resultBlock);
 		};
 
 		function resetTimerAndPoints() {
 			seconds = singleGameTime;
 			points = 0;
 			totalTime = 1;
+			$('.clickCounter .points').text(points);
 		};
 
 		function createNewDot() {
@@ -196,7 +191,7 @@ define(function(require) {
 
 		function decorateFakeDot(dot) {
 						/* yellow      blue        red         orange    */
-			var colors = ['#FFDAB9', '#FFFFA3', '#E6E6FA', '#A4D3DB'];
+			var colors = ['#e5d943', '#2dafbc', '#d95d5d', '#faae1a'];
 			var randomColor = Math.floor( Math.random() * 4);
 			var randomPicture = Math.floor( Math.random() * 4); 
 
@@ -224,15 +219,15 @@ define(function(require) {
 				top: parseInt( $(this).css('transform').split(',')[5], 10),
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
 			};
-/*
 			(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
-			totalTime++; */seconds += 10;
+			totalTime++;
 			showClickResult('+' + ((max - (totalTime / 10) > min) ? (max - (totalTime / 10)).toFixed(1) :  min) + ' sec', coordinates);
 			removeDot();
 			createNewDot();
 			points++;	
 			updatePoints(points);
 			resetVisual();
+			showVisualization();
 		}; 
 
 		function updatePoints(points) {
