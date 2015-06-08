@@ -19,12 +19,13 @@ define(function(require) {
     };
 
     function ClickOnDotGame() {
-    	var singleGameTime = 1;
+    	var singleGameTime = 5;
 		var points = 0;
 		var seconds = singleGameTime;
 		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
-		var maxLeftCoordinate = 410;
-		var maxTopCoordinate = 510;
+		var maxLeftCoordinate = 567;
+		var maxTopCoordinate = 275;
+		var minTop = 70;
 		/*intervals*/
 		var gameTime;
 
@@ -50,7 +51,7 @@ define(function(require) {
 		};
 
 		function resetVisual() {
-			$('.visualTimer').stop(true,true).css({'display' : 'block'});
+			$('.visualTimer').stop(true, true).css({'display' : 'block'});
 			showVisualization();
 		};
 
@@ -63,7 +64,7 @@ define(function(require) {
 
 		function onInfoInterface() {
 			$('.playGround > .dot, .playGround > .fakeDot').remove();
-			$('.playGround').addClass('infoBackground');
+			//$('.playGround').addClass('infoBackground');
 			$('.startGameBtn').removeClass('closeBlock');
 			$('.clickCounter').addClass('closeBlock');
 			$('.timer').addClass('closeBlock');
@@ -78,8 +79,8 @@ define(function(require) {
 		};
 
 		function showResults(points) {
-			var resultBlock = '<div class="gameResults"><p> Your points: ' + points + '</p></div>';
-			$('.playGround').append(resultBlock);
+			var resultBlock = '<p class="gameResults"> Your points: <span class="points">' + points + '</span></p>';
+			$('.playGround').prepend(resultBlock);
 		};
 
 		function resetTimerAndPoints() {
@@ -91,9 +92,10 @@ define(function(require) {
 		function createNewDot() {
 			if ($('.fakeDot').length) $('.fakeDot').remove();
 			var dot = $('<div class="dot"></div>');
-			var randomTop = Math.floor( Math.random() * maxTopCoordinate );
+			var randomTop = Math.floor( Math.random() * (maxTopCoordinate - minTop) + minTop);
 			var randomLeft = Math.floor( Math.random() * maxLeftCoordinate );
 
+			console.log('TOP: ' + randomTop, 'LEFT: ' + randomLeft);
 			$(dot).css({'transform' : 'translate(' + randomLeft + 'px,' + randomTop +'px)' });
 			$(dot).on('click', dotClick);	
 			$('.playGround').append(dot);
@@ -120,7 +122,7 @@ define(function(require) {
 
 		function createFakeDots(perc) {
 			var fakeDot = $('<div class="fakeDot"></div>');
-			var randomTop = Math.floor( Math.random() * maxTopCoordinate);
+			var randomTop = Math.floor( Math.random() * (maxTopCoordinate - minTop)) + minTop;
 			var randomLeft = Math.floor( Math.random() * maxLeftCoordinate);
 			var coordinates = correctCoordinates(randomTop, randomLeft);
 
@@ -136,25 +138,27 @@ define(function(require) {
 
 			switch(chekOnImposition(top, left, realDot)) {
 				case 1: 
-					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
+					((top + 50) > maxTopCoordinate) ? top -= 100 : top += 50;
+					((top + 50) > maxTopCoordinate) ? console.log('Case one  - 100') : console.log('Case one  +50');
 					break;
 				case 2:
-					((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-				break;
+					((top + 50) > maxTopCoordinate) ? top -= 100 : top += 50;
+					((top + 50) > maxTopCoordinate) ? console.log('Case two  - 100') : console.log('Case two  +50');
+					break;
 				case 3:
-					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-				break;
+					((top + 100) > maxTopCoordinate) ? top -= 50 : top += 100;
+					break;
 				case 4:
-					((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
-				break;
+					((top + 100) > maxTopCoordinate) ? top -= 50 : top += 100;
+					break;
 			}
 			if(fakeDot.length && chekOnImposition(top, left, fakeDot)) {
 				var correctState; 
 
-				((left + 160) > maxLeftCoordinate) ? left -= 160 : left += 160;
+				((left + 120) > maxLeftCoordinate) ? left -= 120 : left += 120;
 				correctState = chekOnImposition(top, left, realDot);
-				if(correctState == 1 || correctState == 2) ((top + 70) > maxTopCoordinate) ? top -= 140 : top += 70;
-				if(correctState == 3 || correctState == 4) ((top + 140) > maxTopCoordinate) ? top -= 70 : top += 140;
+				if(correctState == 1 || correctState == 2) ((top + 50) > maxTopCoordinate) ? top -= 100 : top += 50;
+				if(correctState == 3 || correctState == 4) ((top + 100) > maxTopCoordinate) ? top -= 50 : top += 100;
 			}
 			return {
 				top: top,
@@ -167,8 +171,8 @@ define(function(require) {
 			var fakeDot = $('.fakeDot');
 			var comparingDotLeft =  parseInt( $(dotToCompare).css('transform').split(',')[4], 10); 
 			var comparingDotTop = parseInt( $(dotToCompare).css('transform').split(',')[5], 10);
-			var dotHeight = 70;
-			var dotWidth = 70;
+			var dotHeight = 50;
+			var dotWidth = 50;
 			var case1 = 1,   /* imposition cases*/
 				case2 = 2,
 				case3 = 3,
@@ -219,10 +223,10 @@ define(function(require) {
 			var coordinates = {
 				top: parseInt( $(this).css('transform').split(',')[5], 10),
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
-			 };
-
+			};
+/*
 			(max - (totalTime / 10) > min) ? seconds += max - (totalTime / 10) : seconds += min;
-			totalTime++;	
+			totalTime++; */seconds += 10;
 			showClickResult('+' + ((max - (totalTime / 10) > min) ? (max - (totalTime / 10)).toFixed(1) :  min) + ' sec', coordinates);
 			removeDot();
 			createNewDot();

@@ -15,7 +15,7 @@
 
 .startGameBtn {
 	position: relative;
-	top: 231px;
+	top: 230px;
 	left: 225px;
 	width: 160px;
 	height: 65px;
@@ -131,8 +131,8 @@
 
 .playGround .dot{
 	position: absolute;
-	width: 70px;
-	height: 70px;
+	width: 50px;
+	height: 50px;
 	border-radius: 100px;
 	cursor: pointer;
 	background-color: #98FB98;
@@ -140,8 +140,8 @@
 
 .fakeDot {
 	position: absolute;
-	width: 70px;
-	height: 70px;
+	width: 50px;
+	height: 50px;
 	border-radius: 100px;
 	cursor: pointer;
 	background-repeat: no-repeat;
@@ -153,7 +153,6 @@
 	z-index: 999;
 	width: 90px;
 	height: 20px;
-	font-family: 'Indie Flower', cursive;
 	font-size: 1.5em;
 	font-weight: bold;
 }
@@ -163,19 +162,17 @@
 }
 
 .gameResults {
-	position: relative;
-	width: 50%;
+	position: absolute;
+	top: 101px;
+	left: 249px;
+	width: 19%;
 	height: 30%;
 	margin: 0 auto;
-	margin-top: 30%;
-	background: #FFB0B0;
-	border-radius: 10px;
-	border: 5px solid #610505;
 	text-align: center;
-	font-size: 2.9em;
-	font-weight: bold;
-}
-
-.gameResults p {
-	font-family: 'Indie Flower', cursive;
+	font-size: 20px;
+	
+	.points {
+		display: block;
+		margin-top: 10px;
+	}
 }
