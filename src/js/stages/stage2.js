@@ -28,8 +28,8 @@ define(function (require) {
         $('#hero').show();
         $('#inventory').show();
         stage2.dragNdrop = new DragNDrop();
-/*        turnOffTheLight();
-        addFlashLightEvents();*/
+        turnOffTheLight();
+        addFlashLightEvents();
         $('.choosePic').on ('click', function() {
             $('.man').animate({'left' : '450px'}, 1000, function() {
                 if(!canPlay) {
@@ -95,12 +95,12 @@ define(function (require) {
             // send picture  !!!!!!!!!!!
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
-            $('.detail-3').show();
+            $('#inventory').trigger('inventory:addItem',{name:'.detail-3'}); 
             
             setTimeout(function(){
-                $('#inventory').trigger('inventory:addItem',{name:'.detail-3'}); 
+                
                 startTicTacToeGame();
-                $('.item.detail-3').remove(); 
+                 
             }, 2000);          
         });
     };
@@ -140,7 +140,7 @@ define(function (require) {
     function addFlashLightEvents() {
         $(document).mousemove(function(e) {
             $('body').css({
-                '-webkit-clip-path': 'circle(100px at ' + e.pageX + 'px ' + e.pageY + 'px)'
+                '-webkit-clip-path': 'circle(130px at ' + e.pageX + 'px ' + e.pageY + 'px)'
             });
             $('.flashLightShadow').css({
                 'top': (e.pageY - 100) + 'px',
@@ -167,7 +167,8 @@ define(function (require) {
 
     function startTicTacToeGame() {
         $('#ticTacToe').show();
-        $('.field').on('click', function (event) {            
+        $('.field').on('click', function (event) {
+                  
             if(!canPlay) return false;          
             ticAppear($(this).attr('id'));
         }); 
