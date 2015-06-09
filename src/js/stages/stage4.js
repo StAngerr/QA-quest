@@ -85,14 +85,13 @@ define(function(require) {
 			resetTimerAndPoints();
 			// ADD INVENTORY!!!!!!!!!!!!!!
 			// temp code remove it later
-			$('.popupWrap').remove();
+/*			$('.popupWrap').remove();
 			$('#hero').show();
 			$('.ladder').animate({'height':'433px'}, 1000, function() {				
 				$('.man'). animate ({'top':'190px', 'left':'642px'}, 2000, function(){
 					// popup in the shuttle
 				})
-			});
-			
+			});*/
 		};
 
 		function resetTimerAndPoints() {
@@ -108,7 +107,6 @@ define(function(require) {
 			var randomTop = Math.floor( Math.random() * (maxTopCoordinate - minTop) + minTop);
 			var randomLeft = Math.floor( Math.random() * maxLeftCoordinate );
 
-			console.log('TOP: ' + randomTop, 'LEFT: ' + randomLeft);
 			$(dot).css({'transform' : 'translate(' + randomLeft + 'px,' + randomTop +'px)' });
 			$(dot).on('click', dotClick);	
 			$('.playGround').append(dot);
@@ -152,11 +150,9 @@ define(function(require) {
 			switch(chekOnImposition(top, left, realDot)) {
 				case 1: 
 					((top + 50) > maxTopCoordinate) ? top -= 100 : top += 50;
-					((top + 50) > maxTopCoordinate) ? console.log('Case one  - 100') : console.log('Case one  +50');
 					break;
 				case 2:
 					((top + 50) > maxTopCoordinate) ? top -= 100 : top += 50;
-					((top + 50) > maxTopCoordinate) ? console.log('Case two  - 100') : console.log('Case two  +50');
 					break;
 				case 3:
 					((top + 100) > maxTopCoordinate) ? top -= 50 : top += 100;
