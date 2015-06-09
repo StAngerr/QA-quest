@@ -61,7 +61,7 @@
 		height: 580px;
 		z-index: 11;
 		margin: 0 auto;
-		background: #fff;	
+		background: rgb(142, 184, 80);
 		border: 10px solid rgb(90,74,66);
 		
 		&.fixForFlowGame {
@@ -100,12 +100,38 @@
 }
 
 #wade_main_div {
-    position: relative;    
-    max-width: 740px;
-    max-height: 540px;    
+    position: absolute;    
+    max-width: 400px;
+    max-height: 400px; 
+    width: 400px;
+    height:400px;   
     z-index: 13;
     margin: 0 auto;
     padding: 0;
+    left: 750px;
+    top: 200px;
     outline: none;
+    canvas#wade_layer_5 {
+    	position: relative;
+    	left:50px !important;
+    	 max-width: 300px;
+    	max-height: 400px;
+    		width: 400px;
+    height: 400px;
+
+    z-index: 1
+    }
+    canvas#wade_layer_1{
+    	position: absolute;
+    	 max-width: 400px;
+    	max-height: 400px;
+    	width: 400px;
+    	height: 400px;  
+    	z-index: 2;
+    	top: 0;
+
+
+
+    }
 }
 

@@ -48,13 +48,8 @@
 			},
 			"properties": {},
 			"functions": {
-				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n           // player.getSprite().setSize(34, 100);\r\n            \r\nvar platformsMove = [];\r\nvar temp = wade.getObjectsInArea(1);\r\n\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() !='ground' &&  temp[index].getName() !='ground_back'&& !(temp[index].isBridge)) {\r\n       clearInterval(temp[index].moveInterval);\r\n        temp[index].move();\r\n    }\r\n    \r\n});\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n     if(player.getPosition().x <=-470) {\r\n        return false;\r\n    }\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (player.getPosition().x-70,  player.getPosition().y, 100);\r\n    \r\n} else if (code === 39) {\r\n     if(player.getPosition().x >= 500) {\r\n        return false;\r\n    }\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo (player.getPosition().x+70, player.getPosition().y, 100);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\n\r\nelse {\r\n    return false;\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n}",
-				"onAddToScene": "function (data)\n{\n}",
-				"onFocus": "function (data)\n{\n}",
-				"onUpdate": "function (data)\n{\n}",
-				"onKeyPress": "function (data)\n{\n}",
-				"moveBubbles": "function (data)\n{\n}",
-				"onClick": "function (data)\n{\n}"
+				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n           // player.getSprite().setSize(34, 100);\r\n            \r\nvar platformsMove = [];\r\n\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n     if(player.getPosition().x <=-470) {\r\n        return false;\r\n    }\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (player.getPosition().x-70,  player.getPosition().y, 100);\r\n    \r\n} else if (code === 39) {\r\n     if(player.getPosition().x >= 500) {\r\n        return false;\r\n    }\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo (player.getPosition().x+70, player.getPosition().y, 100);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\n\r\nelse {\r\n    return false;\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n}",
+				"onKeyUp": "function (data)\n{var temp = wade.getObjectsInArea(1);\r\n\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() !='ground' &&  temp[index].getName() !='ground_back'&& !(temp[index].isBridge)) {\r\n       clearInterval(temp[index].moveInterval);\r\n        temp[index].move();\r\n    }\r\n    \r\n});\n}"
 			}
 		},
 		{

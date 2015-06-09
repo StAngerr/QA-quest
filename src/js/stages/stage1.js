@@ -144,14 +144,12 @@ define(function(require) {
     function finishFlowGame() {
         $('#wade_main_div').remove();
         $('.popupWrap').remove();
-        $('.detail-2').show();
         flowGameStatus = 'finished';
         closePopup(); 
     };
 
     function closePopup(event) {
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
-        $('.item.detail-2').remove();
         $('.totalLevel').css({'opacity':'1'});   
     };
 

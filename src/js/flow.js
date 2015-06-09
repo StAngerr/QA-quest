@@ -18,8 +18,10 @@ define(function(require) {
         	gameState = 'loading';
         	 /*clear scene from level grid */
         	wade.clearScene();
+            wade.setScreenSize(1300, 850);
             var screenWidth = wade.getScreenWidth();
-            var screenHeight = wade.getScreenHeight();
+            var screenHeight = wade.getScreenHeight();   
+          
             var backSprite = new Sprite(null, 5);
             backSprite.setSize(screenWidth, screenHeight);
             backSprite.setDrawFunction(wade.drawFunctions.gradientFill_({x: 0, y: 1}, ['#444', '#000']));
@@ -148,6 +150,7 @@ define(function(require) {
             var size = grid.getSprite().getSize();
             var gridX = Math.floor((x - (pos.x - size.x / 2)) / (size.x / grid.numCells));
             var gridY = Math.floor((y - (pos.y - size.y / 2)) / (size.y / grid.numCells));
+
             return {x: gridX, y: gridY, valid: (gridX >=0 && gridY >=0 && gridX < grid.numCells && gridY < grid.numCells)};
         };
     /* this function returns coordinates in gred in should be a dot*/
