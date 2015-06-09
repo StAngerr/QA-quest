@@ -46,11 +46,11 @@ define(function(require) {
             $(module).on('inventory:addItem', function (event, item) {
                 quest.inventory.addItem(event, item.name);
             });
-        };               
-    };   
+        }; 
 
-    function clearMainContent() {
-        $('#mainContent > *').remove();
-    };
+        function clearMainContent() {
+            $('#mainContent > *').remove();
+        };
+    };   
     return Quest;
 });

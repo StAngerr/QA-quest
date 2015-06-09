@@ -5,10 +5,9 @@ define(function(require) {
     var DragNDrop = require('src/js/dragndrop.js');
     var wade = require('wade');
     var wordGameStatus = 'unfinished';
-    var manState = 'stand';
     var flowGameStatus = 'unfinished';
-    var counter = 0;
     var dragNdrop = new DragNDrop();
+    var manState = 'stand';
 
     stage1.initEvents = function() {
         $('#hero').show();
