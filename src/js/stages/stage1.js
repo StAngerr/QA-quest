@@ -17,7 +17,6 @@ define(function(require) {
         $(module1).on('first:itemAdded', function(event, item) {
             alert('ok');
         }); 
-
         $('#hero').show();
         $('#inventory').show();
         $('.door').on('click', function(event) {
@@ -41,12 +40,12 @@ define(function(require) {
         var stage_content = {
             taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
-        }; 
+        };
+
         if(wordGameStatus == 'unfinished') {
-            stage1.getTmpl('popupFrameTmpl.html');
-
-            stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);
-
+            stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
+                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
+            });   
             changeManState();
         } else {
             stage1.finishStage();
@@ -129,8 +128,9 @@ define(function(require) {
         $('.popupWrap').remove();/*!!!*/
         $('.man').animate({'left' : '450'}, 1000, function() {
             $('.totalLevel').remove();
-            stage1.getTmpl('popupFrameTmpl.html');
-            stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
+            stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
+                stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
+            });
             changeManState();
         });
     };

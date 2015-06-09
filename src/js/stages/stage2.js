@@ -35,7 +35,6 @@ define(function (require) {
             $('.man').animate({'left' : '450px'}, 1000, function() {
                 if(!canPlay) {
                     canPlay = true;
-                    stage2.getTmpl('popupFrameTmpl.html');
                     findRightPicture();
                 } else {
                     return false;
@@ -49,13 +48,13 @@ define(function (require) {
             } else {
                 return false;
             }         
-       
-        });      
-                  
+        });           
     };
 
-    function findRightPicture () {       
-        stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, startPictureMovingGame);
+    function findRightPicture () {    
+        stage2.getTmpl('popupFrameTmpl.html').then(function(n) {   
+            stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, startPictureMovingGame);
+        });
     };
 
      // add all event listeners for drag'n'drop
@@ -97,11 +96,8 @@ define(function (require) {
             $('#stage2Popup1').remove();
             $('.popupWrap').remove();
             $('#inventory').trigger('inventory:addItem',{name:'.detail-3'}); 
-            
             setTimeout(function(){
-                
                 startTicTacToeGame();
-                 
             }, 2000);          
         });
     };

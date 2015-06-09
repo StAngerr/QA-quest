@@ -10,8 +10,10 @@ define(function(require) {
     	$('#hero').show();
     	$('.ladder'). on('click',  function() {
 	    	$('.man'). animate ({'left':'602px'}, 1000, function() {
-	    		stage4.getTmpl('popupFrameTmpl.html');
-	    		stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, loadDotGame);
+	    		stage4.getTmpl('popupFrameTmpl.html').then(function() {
+	    			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, loadDotGame);
+	    		});
+	    		
 	    	});    		
     	});    	
     };

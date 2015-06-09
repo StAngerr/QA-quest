@@ -13,18 +13,19 @@ define(function(require) {
         };    
 
         this.getTmpl = function(tmplName, direction, dataToTempl, doAfterUpload) {
-            $.ajax({
+            return $.ajax({
                 url: 'src/templates/' + tmplName,
                 method: 'GET',
                 success: function(data) {
                     var target = direction || '#mainContent';                   
                     var content = dataToTempl ? _.template(data)(dataToTempl): data;
+
                     $(target).prepend(content);
                     if(stageLoad) {
                         currentStage.initEvents();
                         stageLoad = false;
                     } else {
-                       if(doAfterUpload) doAfterUpload();
+                        if(doAfterUpload) doAfterUpload();
                     }
                 }
             });

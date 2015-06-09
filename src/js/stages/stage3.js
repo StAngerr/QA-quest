@@ -20,8 +20,9 @@ define(function(require) {
 
 	        if(x <= 811 ) return false;
 	        $('.man').animate({'left' : '285px'}, 1300, function() {
-	      		stage3.getTmpl('popupFrameTmpl.html');
-	   			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
+	      		stage3.getTmpl('popupFrameTmpl.html').then(function() {
+	   				stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
+	      		});
 	        });         	
         });
     };
@@ -29,7 +30,7 @@ define(function(require) {
 	function bubbleStart() {
 	   $('.popupWrap').remove();/*!!!*/ 
 	   $('#stage3').append('<div class="bubbles-popup"></div>'); /* set sizes*/
-	   stage3.getTmpl('stage1FlowGameTmpl.html','.bubbles-popup',null, SOME);  
+	   stage3.getTmpl('stage1FlowGameTmpl.html','.bubbles-popup', null, SOME);  
     };
 
     function SOME() {wade.init('src/js/lib/wade_src/bubbles.js'); };
