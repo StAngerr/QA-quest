@@ -5,27 +5,23 @@ define(function(require) {
     var DragNDrop = require('src/js/dragndrop.js');
     var wade = require('wade');
     var wordGameStatus = 'unfinished';
-    var manState = 'stand';
     var flowGameStatus = 'unfinished';
-    var word = ''; /* temp variable just to access  to stage 2*/
-    var that;
-    var counter = 0;
+    var dragNdrop = new DragNDrop();
+    var manState = 'stand';
 
     stage1.initEvents = function() {
-
-        var module1 = $('#hero');
-        $(module1).on('first:itemAdded', function(event, item) {
-            alert('ok');
-        }); 
         $('#hero').show();
         $('#inventory').show();
         $('.door').on('click', function(event) {
-            if(manState == 'stand') stage1.moveToDoor();
+            if(manState == 'stand') moveToDoor();
         });
     };
+    
+    stage1.finishStage = function() {
+        $('#mainSection').trigger('main:stageFinished');
+    };
 
-    stage1.moveToDoor = function() {
-
+    function moveToDoor() {
         changeManState(); 
         if($('.man').css('left') !== '750px') {
             $('.man').animate({'left' : '750'}, 2000, openWordGame);
@@ -33,12 +29,9 @@ define(function(require) {
             openWordGame();
         }  
     };
-
-    stage1.dragNdrop = new DragNDrop();
-
+    //stage1.dragNdrop = new DragNDrop();
     function openWordGame() {
         var stage_content = {
-           
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         };
 
@@ -53,81 +46,60 @@ define(function(require) {
     };
 
     function  startWordGame() {
-        $('#sendWord').on('click', showWord);
-        /*Drag n drop*/
-        var leafes = $('.letters');
+        $('#sendWord').on('click', sendWord);
+        var letters = $('.letters');
         var wordSpot = $('.makeWord')[0];
         var fieldToDrop = $('.all-letters')[0];
-        $('.letters').attr("draggable","true");
-        wordSpot.addEventListener('dragover', stage1.dragNdrop.allowDrop);
-        wordSpot.addEventListener('drop', function(event) {                        
-            stage1.dragNdrop.drop(event, addNewLetter); 
-                 
-        });
-        fieldToDrop.addEventListener('dragover', stage1.dragNdrop.allowDrop);
-        fieldToDrop.addEventListener('drop', function(event) {          
-            stage1.dragNdrop.drop(event, addNewLetter);   
-        });
 
-        for (var i = 0; i < leafes.length; i++) {
-            leafes[i].addEventListener("dragstart",stage1.dragNdrop.drag);
-            leafes[i].addEventListener("dragover", stage1.dragNdrop.over);
-            leafes[i].addEventListener("dragleave", stage1.dragNdrop.leave);
+        $(letters).attr("draggable","true");
+        wordSpot.addEventListener('dragover', dragNdrop.allowDrop);
+        wordSpot.addEventListener('drop', function(event) {                        
+            dragNdrop.drop(event, addNewLetter);      
+        });
+        fieldToDrop.addEventListener('dragover', dragNdrop.allowDrop);
+        fieldToDrop.addEventListener('drop', function(event) {          
+            dragNdrop.drop(event, addNewLetter);   
+        });
+        for (var i = 0; i < letters.length; i++) {
+            letters[i].addEventListener("dragstart",dragNdrop.drag);
+            letters[i].addEventListener("dragover", dragNdrop.over);
+            letters[i].addEventListener("dragleave", dragNdrop.leave);
         };          
-       
     };
 
     function addNewLetter () {
-        that = stage1.dragNdrop.data;               
-        if ($(event.target)[0].nodeName !== 'DIV') {
-            var target = $(event.target).closest('div');
+        var target = event.target;
+        var data = dragNdrop.data; 
 
+        if ($(target)[0].nodeName !== 'DIV') {
             if (target.html() !== '') {                   
-                $(event.target).closest('div').append(that.context);                                                   
+                $(target).closest('div').append(data.context);                                                   
             } else {
-                $(event.target).closest('div').html(that);
+                $(target).closest('div').html(data);
             }          
-        } else if ($(event.target).html() !== '') {
-            $(event.target).append(that.context);           
+        } else if ($(target).html() !== '') {
+            $(target).append(data.context);           
         }      
     };
 
-    stage1.finishStage = function() {
-        $('#mainSection').trigger('main:stageFinished');
-    };
+    function sendWord(event) {
+        var totalLevel = $('.totalLevel');
 
-    function showWord() {  
-        word =  $('.makeWord').children().children(1).text();        
-        $('#stage1Popup1').remove();
-        $('.popupWrap').remove();
-        $('.detail-1').show();         
-        sendDnDWord(); 
-    };
-
-    function sendDnDWord(event) {
-        // add the first inventory
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  
-        $('.item.detail-1').remove();
-        $('.door').css('opacity','0');
-        $('.totalLevel').css({'display': 'block', 'opacity' : '1'});
-        var myVar = setInterval(function() { 
-            /*remove leafes*/
-            if($('.leafes')) $('.leafes').remove();
-            /*flashing box border animation*/
-            $('.totalLevel').animate({'opacity': '1'}, 400, function() { $('.totalLevel').animate({'opacity' : '0'}, 400); } );
-        }, 830);
-        $('.totalLevel').on('click', function() {
-            clearInterval(myVar);
-           if(manState == 'stand' && flowGameStatus == 'unfinished') moveToBox();
+        $('.door').addClass('transparentDoor');
+        if($('.leafes')) $('.leafes').remove();
+        $(totalLevel).addClass('blinkAnimation');
+        $(totalLevel).on('click', function() {   /*   change man movement*/
+            $(totalLevel).removeClass('blinkAnimation');
+            if(manState == 'stand' && flowGameStatus == 'unfinished') moveToBox();
         });
         wordGameStatus = 'finished';
+        stage1.closePopup();  
     };
 
     function moveToBox() {
         changeManState();
-        $('.popupWrap').remove();/*!!!*/
         $('.man').animate({'left' : '450'}, 1000, function() {
-            $('.totalLevel').remove();
             stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
                 stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
             });
@@ -143,17 +115,11 @@ define(function(require) {
 
     function finishFlowGame() {
         $('#wade_main_div').remove();
-        $('.popupWrap').remove();
         flowGameStatus = 'finished';
-        closePopup(); 
-    };
-
-    function closePopup(event) {
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
-        $('.totalLevel').css({'opacity':'1'});   
+        $('.totalLevel').remove();  
+        stage1.closePopup();
     };
-
-  
 
     function changeManState() {
         (manState == 'stand') ? manState = 'moving' : manState = 'stand';

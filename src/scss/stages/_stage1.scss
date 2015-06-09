@@ -1,4 +1,3 @@
-
 #stage1 {
 	background: url('../images/stage1Bg.jpg') no-repeat 0 0;
 
@@ -10,6 +9,26 @@
 		width: 74px;
 		height: 108px;
 		background: url("../images/box.png") no-repeat 0 0;
+
+		&.blinkAnimation {
+			display: block;
+			opacity: 1;
+			animation-duration: .8s;
+			animation-name: blicking;
+			animation-iteration-count: infinite;
+		}
+		@-webkit-keyframes blicking { 
+			0% {
+				opacity: 0;
+			}
+			50% {
+				opacity: 1;
+			}
+
+			100% {
+				opacity: 0;
+			}
+		}
 	}
 
 	.door {
@@ -21,6 +40,9 @@
 		opacity: 1;
 		background: url("../images/door.png") no-repeat 0 0;
 		
+		&.transparentDoor {
+			opacity: 0;
+		}
 	}
 
 	.tree {
@@ -31,7 +53,6 @@
 		height: 235px;
 		z-index: 7;
 		background: url("../images/Tree_small.png") no-repeat 0 0;
-		
 	}
 
 	.leafes {

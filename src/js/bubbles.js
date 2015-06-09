@@ -10,11 +10,9 @@ define(function(require) {
 		this.finish = function() {
 			$('.bubbles-popup').remove();
 			$('#inventory').trigger('inventory:addItem',{name:'.detail-6'}); 
-
 	    setTimeout(function () {
-	
-	    		$('#mainSection').trigger('main:stageFinished'); 
-	    	}, 2500);
+	    	$('#mainSection').trigger('main:stageFinished'); 
+	    }, 2500);
 		}	
 	};
 	return App;

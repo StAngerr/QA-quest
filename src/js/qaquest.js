@@ -1,7 +1,7 @@
 define(function(require) {
     var $ = require('jquery');
     var allStages = require('./levels.js'); 
-    var Invetory = require('./inventory.js');
+    var Invetory = require('./Inventory.js');
 
     var Quest = function() {         
         var quest = this;
@@ -46,11 +46,11 @@ define(function(require) {
             $(module).on('inventory:addItem', function (event, item) {
                 quest.inventory.addItem(event, item.name);
             });
-        };               
-    };   
+        }; 
 
-    function clearMainContent() {
-        $('#mainContent > *').remove();
-    };
+        function clearMainContent() {
+            $('#mainContent > *').remove();
+        };
+    };   
     return Quest;
 });

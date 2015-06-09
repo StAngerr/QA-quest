@@ -29,7 +29,11 @@ define(function(require) {
                     }
                 }
             });
-        };       
+        };
+
+        this.closePopup = function() {
+            $('.popupWrap').remove();
+        };     
     };
     return Stage;   
 });
