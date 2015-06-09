@@ -5,12 +5,18 @@ define(function(require) {
     require('jqueryUi');
 
     stage4.initEvents = function() {
-    	stage4.getTmpl('popupFrameTmpl.html');
-    	stage4.getTmpl('stage4DotGameTmpl.html','.popup', null,loadDotGame);
+    	$('#inventory').show();
+    	$('#hero').css({'left':'87px', 'top':'580px'});
+    	$('#hero').show();
+    	$('.ladder'). on('click',  function() {
+	    	$('.man'). animate ({'left':'602px'}, 1000, function() {
+	    		stage4.getTmpl('popupFrameTmpl.html');
+	    		stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, loadDotGame);
+	    	});    		
+    	});    	
     };
 
     function loadDotGame() {
-    	$('#inventory').show();
     	$('#hero').hide();
     	/* its temporarily until standard control is not define*/
     	var dotGame = new ClickOnDotGame();
@@ -75,6 +81,16 @@ define(function(require) {
 			onInfoInterface();
 			clearInterval(gameTime);
 			resetTimerAndPoints();
+			// ADD INVENTORY!!!!!!!!!!!!!!
+			// temp code remove it later
+			$('.popupWrap').remove();
+			$('#hero').show();
+			$('.ladder').animate({'height':'433px'}, 1000, function() {				
+				$('.man'). animate ({'top':'190px', 'left':'642px'}, 2000, function(){
+					// popup in the shuttle
+				})
+			});
+			
 		};
 
 		function resetTimerAndPoints() {

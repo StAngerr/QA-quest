@@ -12,6 +12,7 @@ define(function (require) {
 
     stage2.initEvents = function () {
         var mainSection = $('#mainSection');
+
         
         $(mainSection).on('first:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
@@ -140,7 +141,8 @@ define(function (require) {
     function addFlashLightEvents() {
         $(document).mousemove(function(e) {
             $('body').css({
-                '-webkit-clip-path': 'circle(130px at ' + e.pageX + 'px ' + e.pageY + 'px)'
+                '-webkit-clip-path': 'circle(130px at ' + e.pageX + 'px ' + e.pageY + 'px)',
+                'cursor': 'url("../images/flashlight.ico")'
             });
             $('.flashLightShadow').css({
                 'top': (e.pageY - 100) + 'px',
@@ -168,7 +170,7 @@ define(function (require) {
     function startTicTacToeGame() {
         $('#ticTacToe').show();
         $('.field').on('click', function (event) {
-                  
+
             if(!canPlay) return false;          
             ticAppear($(this).attr('id'));
         }); 
@@ -485,9 +487,9 @@ define(function (require) {
              logicOne();
             if (all == 2) {
                 // 0 won
-                showInwentory() ;             
+                finishTicTacToe();            
             } else if (all == 1 || all == 3) {          
-                showInwentory();
+                finishTicTacToe();
             }
         };
 
@@ -544,18 +546,13 @@ define(function (require) {
             }
             t--;
         }
-    }; // startTicTacToeGame function end
-       
-    function showInwentory (){
-        $('.newGameB').css('visibility', 'hidden');
-        $('.detail-4').show();
-        setTimeout(finishTicTacToe, 3000);
-    }; 
-  
+    };        
+    
      // end of game tictactoe
     function finishTicTacToe() {
-        $('#inventory').trigger('inventory:addItem',{name:'.detail-4'});     
-        $('#ticTacToe').remove();
+        $('.newGameB').css('visibility', 'hidden');        
+        $('#inventory').trigger('inventory:addItem',{name:'.detail-4'}); 
+        $('#ticTacToe').remove();       
     };
 
     return stage2;

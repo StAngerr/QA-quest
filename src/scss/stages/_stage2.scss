@@ -1,4 +1,6 @@
+
 #stage2 {
+    cursor: url('../images/flashlight1.ico'), default;
     background: url('../images/stage2Bg.jpg') no-repeat 0 0;
 
     .choosePic {
@@ -17,7 +19,7 @@
         height: 255px;
         background: url("../images/stone.png") no-repeat 0 0;
     }
-
+// styles for tictactoe game
     #ticTacToe {
         position: absolute;
         right: 59px;
@@ -42,7 +44,6 @@
     }
     .field {
         position: relative;
-        left:5px;
         width: 30px;
         height: 30px;
         display: inline-block;
@@ -78,7 +79,7 @@
         background: url('../images/Game_2_Refresh_btn.png') no-repeat 0 0;
     }
 }
-
+//sytles to turn off the light
 .lightOff {
     background-color: #000;
     overflow: hidden;
@@ -86,22 +87,22 @@
 
 .flashLight {
     background-color: #fff;
-    -webkit-clip-path: circle(00px at 50% 50%);
+    -webkit-clip-path: circle(00px at 50% 50%);     
 }
 
 .flashLightShadow {
-    position: absolute;
+    position: absolute;    
     top: 0;
     left: 0;
-    width: 215px;
-    height: 215px;
+    width: 150px;
+    height: 150px;
     background: transperent;
-    border-radius: 135px;
-    box-shadow: -260px -95px 90px rgba(204, 204, 204, 0.6);
+    border-radius: 135px;   
 }
 
 #stage2Popup1.popup-common {
-     transform: rotateY(-5deg) rotateX(0deg);
+     transform: rotateY(-5deg);
+    
 
     .field-with-pictures, .pictures-to-choose {
         display: inline-block;
