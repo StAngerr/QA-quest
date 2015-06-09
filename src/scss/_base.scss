@@ -56,26 +56,6 @@ a {
         border: 2px solid black;        
     }
 
-    #wade_main_div {        
-        position: relative;        
-        z-index: 13;
-        top: 0;
-        max-height: 550px;
-        max-width: 750px;
-        margin: 0 auto;
-        padding: 0;
-        outline: none;
-    }
-    canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        max-width: 740px;
-        max-height: 540px;
-        margin: 0;
-        padding: 0;       
-    }
-
     .popup-common {
         height: 100%;
         padding: 2em;
@@ -106,5 +86,20 @@ a {
         height: 0;
         content: "";
         clear: both;
+    }
+}
+
+.rules {
+    height: 20%;
+    font-size: 20px;
+    text-align: center;
+    font-style: italic;
+    
+    .mainRulesPart {    
+        font-weight: bold;
+    }
+
+    .subRulesPart {
+        display: block;
     }
 }

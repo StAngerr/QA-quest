@@ -5,7 +5,8 @@ define(function(require) {
         var SceneObject = require('lib/wade_src/sceneObject');
         var TextSprite = require('lib/wade_src/textSprite');
     	var gameState;
-    	var colors = ['', 'green', 'red', 'blue', 'yellow', 'orange', 'purple'];
+    	// var colors = ['', 'green', 'red', 'blue', 'yellow', 'orange', 'purple'];
+        var colors = ['', 'rgb(200,201,47)', 'rgb(217, 93, 93)', 'rgb(40,176,188)', 'rgb(252, 216,8)', 'rgb(252, 173,28)', 'rgb(140, 174 ,80)'];
     	var lines = [];
     	var currentLineId;
     	var gridLines = [];
@@ -18,11 +19,13 @@ define(function(require) {
         	gameState = 'loading';
         	 /*clear scene from level grid */
         	wade.clearScene();
+            wade.setScreenSize(760, 500);
             var screenWidth = wade.getScreenWidth();
-            var screenHeight = wade.getScreenHeight();
+            var screenHeight = wade.getScreenHeight();   
+          
             var backSprite = new Sprite(null, 5);
             backSprite.setSize(screenWidth, screenHeight);
-            backSprite.setDrawFunction(wade.drawFunctions.gradientFill_({x: 0, y: 1}, ['#444', '#000']));
+            backSprite.setDrawFunction(wade.drawFunctions.gradientFill_({x: 0, y: 1}, ['#eee', '#fff']));
             var backObject = new SceneObject(backSprite);
             wade.addSceneObject(backObject);
             // create loading text
@@ -62,7 +65,7 @@ define(function(require) {
         	/*paint grid*/
     	    var gridSprite = new Sprite();
     	    gridSprite.setSize(minSize, minSize);
-    	    gridSprite.setDrawFunction(wade.drawFunctions.grid_(numCells, numCells, 'white', 3));
+    	    gridSprite.setDrawFunction(wade.drawFunctions.grid_(numCells, numCells, 'rgb(113, 104, 89)', 3));
     	    var grid = new SceneObject(gridSprite);
     	    grid.numCells = numCells;
     	    grid.setName('grid');
@@ -121,7 +124,7 @@ define(function(require) {
     		            context.lineCap = context.lineJoin = 'round';
     		            // draw line
     		            context.beginPath();
-    		            var worldPoint = wade.app.gridToWorld(points[0].x, points[0].y);
+                        var worldPoint = wade.app.gridToWorld(points[0].x, points[0].y);
     		            context.moveTo(worldPoint.x, worldPoint.y);
     		            for (var i=1; i < points.length; i++) {
     		                worldPoint = wade.app.gridToWorld(points[i].x, points[i].y);
@@ -148,6 +151,7 @@ define(function(require) {
             var size = grid.getSprite().getSize();
             var gridX = Math.floor((x - (pos.x - size.x / 2)) / (size.x / grid.numCells));
             var gridY = Math.floor((y - (pos.y - size.y / 2)) / (size.y / grid.numCells));
+
             return {x: gridX, y: gridY, valid: (gridX >=0 && gridY >=0 && gridX < grid.numCells && gridY < grid.numCells)};
         };
     /* this function returns coordinates in gred in should be a dot*/
@@ -174,6 +178,7 @@ define(function(require) {
                             gridLines[p.x][p.y] = 0;
                         }
                     }
+
                     lines[currentLineId].points = [gridCoords];
                     lines[currentLineId].connected = false;
                     gridLines[gridCoords.x][gridCoords.y] = currentLineId;
@@ -223,6 +228,8 @@ define(function(require) {
                         }
                     }
                 }
+
+
                 else if (gridLines[gridCoords.x][gridCoords.y]) {
                     return;
                 }

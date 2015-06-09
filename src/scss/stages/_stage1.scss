@@ -57,17 +57,25 @@
 		top: 150px;
 		max-width: 780px;
 		max-height: 580px;
-		min-width: 380px;
+		min-width: 580px;
 		height: 580px;
 		z-index: 11;
 		margin: 0 auto;
-		background: #fff;	
+		background: rgb(142, 184, 80);
 		border: 10px solid rgb(90,74,66);
 		
 		&.fixForFlowGame {
 			position: static;
 			margin-top: 110px;
+			max-width: 570px;
+			max-height: 570px;
+			min-width: 570px;
+			min-height: 570px;
 		}	
+
+		.rules {			
+			padding: 10px 0 0 0;		
+		}
 		
 		.popup-common {					
 			.letters {
@@ -99,13 +107,40 @@
 	}
 }
 
-#wade_main_div {
-    position: relative;    
-    max-width: 740px;
-    max-height: 540px;    
+	
+	#wade_main_div {
+    position: absolute;    
+    max-width: 1230px;
+    max-height: 730px; 
+    width: 330px;
+    height:330px;   
     z-index: 13;
     margin: 0 auto;
     padding: 0;
+    left: 350px;
+    top: 60px;
     outline: none;
+
+    canvas#wade_layer_5 {
+    position: absolute;    
+    max-width: 320px;
+    max-height: 320px;
+    width: 320px;
+    height: 320px;
+    border: 2px solid rgb(113, 104, 89);
+    }
+
+    canvas#wade_layer_1 {
+     position: absolute;
+     max-width: 1210px;
+     max-height: 620px;
+     top: 0;
+     left: -100px;
+
+
+
+    }
 }
+
+
 

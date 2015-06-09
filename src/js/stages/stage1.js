@@ -38,7 +38,7 @@ define(function(require) {
 
     function openWordGame() {
         var stage_content = {
-            taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
+           
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         };
 
@@ -144,14 +144,12 @@ define(function(require) {
     function finishFlowGame() {
         $('#wade_main_div').remove();
         $('.popupWrap').remove();
-        $('.detail-2').show();
         flowGameStatus = 'finished';
         closePopup(); 
     };
 
     function closePopup(event) {
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
-        $('.item.detail-2').remove();
         $('.totalLevel').css({'opacity':'1'});   
     };
 
