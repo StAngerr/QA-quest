@@ -1,39 +1,73 @@
 #stage3 {
 	background: url('../images/stage3Bg.jpg') no-repeat 0 0;
 
-	.bridge {
-		display: none;
-		position: absolute;
-		top: 636px;
-		left: 312px;
-		width:337px;
-		height: 50px;
-		background: url('../images/Game_3screen_bridge.png') no-repeat 0 0;		
-	}
-		
 	.bubbles-popup {	
 		position: absolute;
 		top: 5px;
-		left: 350px;
+		left: 380px;
 		width: 800px;
-		height: 800px;
+		height: 850px;
 
+		// 	#wade_main_div {
+//     position: absolute;    
+//     max-width: 1230px;
+//     max-height: 730px; 
+//     width: 330px;
+//     height:330px;   
+//     z-index: 13;
+//     margin: 0 auto;
+//     padding: 0;
+//     left: 350px;
+//     top: 60px;
+//     outline: none;
+
+//     canvas#wade_layer_5 {
+//     position: absolute;    
+//     max-width: 320px;
+//     max-height: 320px;
+//     width: 320px;
+//     height: 320px;
+//     border: none;
+//     }
+
+//     canvas#wade_layer_1 {
+//      position: absolute;
+//      max-width: 1210px;
+//      max-height: 620px;
+//      top: 0;
+//      left: -100px;
+
+
+
+//     }
+// }
 		div#wade_main_div {
+			margin: 0 !important;
+			//border: 2px solid blue;
 			position: relative;
-			top: 100px;
-			left: -300px;
-			max-width:1100px;
-			width: 1100px;			
-			max-height: 750px;
+			top: 120px;
+			left: -150px;
+			max-width: 901px;
+			width: 901px;			
+			max-height: 700px;
+			z-index: 15;
 			
 			#wade_layer_1, #wade_layer_5 {
 				position: absolute;				
-				width: 1100px;	
-				max-width: 1100px;
-				max-height: 700px;
-				margin: 0;
+				width: 900px;	
+				max-width: 900px;
+				max-height: 750px;
+				margin: 0 !important;
+				left: -85px !important;
+
 			}
+
+			 canvas#wade_layer_5{
+			 	
+			 }
 		}
+	
+		
 	}
 }
 

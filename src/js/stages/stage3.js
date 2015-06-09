@@ -5,6 +5,7 @@ define(function(require) {
     var wade = require('wade');
 
     stage3.initEvents = function() {
+    	
     	/* itі temporarily until standard control is not define*/
     	var heroChange = {
 			left : '40px',
@@ -29,8 +30,7 @@ define(function(require) {
 
 	function bubbleStart() {
 	   $('.popupWrap').remove();/*!!!*/ 
-	   $('#stage3').append('<div class="bubbles-popup"></div>'); /* set sizes*/
-	   stage3.getTmpl('stage1FlowGameTmpl.html','.bubbles-popup', null, SOME);  
+	    stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, SOME);  
     };
 
     function SOME() {wade.init('src/js/lib/wade_src/bubbles.js'); };
@@ -74,10 +74,10 @@ define(function(require) {
 
 			printWhoWon(winner);
 	        $('.popupWrap').remove();
-	        $('.detail-5').show();        
+	         $('#inventory').trigger('inventory:addItem',{name:'.detail-5'});      
 			setTimeout(function(){
-				$('#inventory').trigger('inventory:addItem',{name:'.detail-5'}); 
-				$('.item.detail-5').remove();
+				
+			
 				bubbleStart();
 			}, 1500);
 		};

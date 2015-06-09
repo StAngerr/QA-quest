@@ -3,8 +3,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 4.960000000000001,
-				"y": -6.0600000000000005
+				"x": 2.260000000000001,
+				"y": 9.040000000000004
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -48,7 +48,7 @@
 			},
 			"properties": {},
 			"functions": {
-				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n           // player.getSprite().setSize(34, 100);\r\n            \r\nvar platformsMove = [];\r\n\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n     if(player.getPosition().x <=-470) {\r\n        return false;\r\n    }\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (player.getPosition().x-70,  player.getPosition().y, 100);\r\n    \r\n} else if (code === 39) {\r\n     if(player.getPosition().x >= 500) {\r\n        return false;\r\n    }\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo (player.getPosition().x+70, player.getPosition().y, 100);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\n\r\nelse {\r\n    return false;\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n}",
+				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n           // player.getSprite().setSize(34, 100);\r\n            \r\nvar platformsMove = [];\r\n\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n     if(player.getPosition().x <=-470) {\r\n        return false;\r\n    }\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (player.getPosition().x-170,  player.getPosition().y, 50);\r\n    \r\n} else if (code === 39) {\r\n     if(player.getPosition().x >= 500) {\r\n        return false;\r\n    }\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo (player.getPosition().x+70, player.getPosition().y, 50);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\n\r\nelse {\r\n    return false;\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n}",
 				"onKeyUp": "function (data)\n{var temp = wade.getObjectsInArea(1);\r\n\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() !='ground' &&  temp[index].getName() !='ground_back'&& !(temp[index].isBridge)) {\r\n       clearInterval(temp[index].moveInterval);\r\n        temp[index].move();\r\n    }\r\n    \r\n});\n}"
 			}
 		},
@@ -210,8 +210,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -243.3599999999999,
-				"y": 70.6
+				"x": -218.71999999999986,
+				"y": -28.820000000000057
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -359,8 +359,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 19.168299518444115,
-						"y": 96.26745980374156
+						"x": 43.777582413145375,
+						"y": 135.76341117609422
 					},
 					"autoResize": false,
 					"visible": true,
@@ -378,8 +378,8 @@
 				}
 			],
 			"alignment": {
-				"x": "right",
-				"y": "bottom"
+				"x": "center",
+				"y": "center"
 			},
 			"name": "hero",
 			"addToScene": {
@@ -393,17 +393,17 @@
 			},
 			"functions": {
 				"onMoveComplete": "function (data)\n{if(this.direction === \"left\") {\n    this.getSprite().playAnimation('idleLeft');\n} else {\n     this.getSprite().playAnimation('idleRight');\n}\n}",
-				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  \n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); wade.stop();  \n wade.app.finish();        break;\n        } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        \n        var depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y);\n       \n        if (depth > 20) {\n            continue;\n        }\n        \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n\n\n\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
+				"onUpdate": "function (data)\n{// keep hero on the screen\n\n //this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  \n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n   wade.stop(); wade.app.finish();     break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        \n        var depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y);\n       \n        if (depth > 20) {\n            continue;\n        }\n        \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n\n\n\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
 				"jump": "function (data)\n{// var x = Math.round(this.getPosition().x);\n// if(( x >= 410 &&this.direction == 'right') || (x <= 213 && this.direction == 'left')) {\n//     return false;\n\n// }\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -500};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
-				"onFocus": "function (data)\n{ //   moving bubbles \nvar interval;\nvar movePlatforms = wade.getSceneObject('hero').getSprite().getOverlappingObjects();\nconsole.log(movePlatforms);\n$.each (movePlatforms, function(i) {\n    if (movePlatforms[i].getName() == \"ground\") return false;\n    else {\n        var that = movePlatforms[i].getPosition();\n        if (that.y <= -250) {\n            movePlatforms[i].moveTo(that.x, 450);\n            return false;\n        }\n        interval = setInterval(function() {\n              movePlatforms[i].moveTo(that.x + ((Math.random()>0.5)?-1:2), that.y - 2);\n        }, 1000);\n    }\n});\n}",
+				"onFocus": "function (data)\n{\n}",
 				"onRemoveFromScene": "function (data)\n{\n}"
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 307.75499999999954,
-				"y": 222.54500000000002
+				"x": 339.2049999999995,
+				"y": 161.375
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -418,8 +418,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 50.50584020005549,
-						"y": 29.011803238278784
+						"x": 38.57641840339405,
+						"y": 27.122849502310636
 					},
 					"autoResize": false,
 					"visible": true,
@@ -457,8 +457,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 349.5049999999994,
-				"y": 119.49499999999988
+				"x": 452.0749999999994,
+				"y": -30.055000000000213
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -473,8 +473,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 59.68056768312665,
-						"y": 36.75692821718021
+						"x": 31.19026428264559,
+						"y": 25.5517563012031
 					},
 					"autoResize": false,
 					"visible": true,
@@ -512,8 +512,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 441.18499999999955,
-				"y": -125.00500000000012
+				"x": 423.4549999999994,
+				"y": 214.30499999999998
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -528,8 +528,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 46.177621697892675,
-						"y": 24.830046058337636
+						"x": 67.61493584562774,
+						"y": 59.10435146847437
 					},
 					"autoResize": false,
 					"visible": true,
@@ -567,8 +567,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 258.3749999999992,
-				"y": 11.444999999999851
+				"x": 295.81499999999915,
+				"y": 3.524999999999835
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -583,8 +583,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 40.39218736536505,
-						"y": 24.821706468219613
+						"x": 37.653586245669324,
+						"y": 31.554229943753285
 					},
 					"autoResize": false,
 					"visible": true,
@@ -623,8 +623,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 439.33499999999947,
-				"y": 30.14499999999992
+				"x": 406.4949999999994,
+				"y": 68.265
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -639,8 +639,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 74.14625119275905,
-						"y": 50.11844079702505
+						"x": 29.402899295259193,
+						"y": 19.87460517402731
 					},
 					"autoResize": false,
 					"visible": true,
@@ -678,8 +678,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -242.80500000000004,
-				"y": 393.98499999999996
+				"x": -16.555000000000007,
+				"y": 397.60499999999996
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -729,8 +729,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -131.29500000000004,
-				"y": 217.21000000000004
+				"x": -124.19500000000004,
+				"y": 226.30000000000007
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -745,8 +745,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 300.5316254863242,
-						"y": 46.112527197153845
+						"x": 337,
+						"y": 50
 					},
 					"autoResize": false,
 					"visible": true,
@@ -775,6 +775,62 @@
 			"properties": {
 				"isPlatform": true,
 				"isBridge": true
+			}
+		},
+		{
+			"type": "SceneObject",
+			"position": {
+				"x": 489.7749999999994,
+				"y": 94.64499999999981
+			},
+			"rotation": 0,
+			"behaviors": [],
+			"sprites": [
+				{
+					"type": "Sprite",
+					"animations": {},
+					"currentAnimation": "default",
+					"sortPoint": {
+						"x": 0,
+						"y": 0
+					},
+					"layer": 1,
+					"size": {
+						"x": 31.19026428264559,
+						"y": 25.5517563012031
+					},
+					"autoResize": false,
+					"visible": true,
+					"image": "bubble.png",
+					"name": "",
+					"drawModifiers": [],
+					"properties": {}
+				}
+			],
+			"spriteOffsets": [
+				{
+					"x": 0,
+					"y": 0,
+					"angle": 0
+				}
+			],
+			"alignment": {
+				"x": "left",
+				"y": "center"
+			},
+			"name": "platform6",
+			"isTemplate": false,
+			"addToScene": {
+				"autoListen": true,
+				"params": null
+			},
+			"properties": {
+				"isPlatform": true
+			},
+			"functions": {
+				"onMouseIn": "function (data)\n{\n}",
+				"onAddToScene": "function (data)\n{\n}",
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 283);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-5, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
 			}
 		}
 	],

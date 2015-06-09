@@ -108,16 +108,17 @@
 }
 
 	
-	#wade_main_div {
+	div.popup.fixForFlowGame {
+		#wade_main_div {
     position: absolute;    
-    max-width: 1230px;
+    max-width: 1270px;
     max-height: 730px; 
     width: 330px;
-    height:330px;   
+    height: 330px;   
     z-index: 13;
     margin: 0 auto;
     padding: 0;
-    left: 350px;
+    left: 330px;
     top: 60px;
     outline: none;
 
@@ -135,9 +136,9 @@
      max-width: 1210px;
      max-height: 620px;
      top: 0;
-     left: -100px;
+     //left: -150px;
 
-
+}
 
     }
 }
