@@ -100,60 +100,102 @@
                 }
 
                 @-webkit-keyframes detail1 {
-                    from {
-                       transform: translate(780px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
                         transform: translate(0px, 0px);
                     }
                 }
                 @-webkit-keyframes detail2 {
-                    from {
-                        transform: translate(695px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
-                        transform: translate(0px,0px)
-                    }   
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
+                        transform: translate(0px, 0px);
+                    } 
                 }
                 @-webkit-keyframes detail3 {
-                    from {
-                        transform: translate(610px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
-                        transform: translate(0px,0px)
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
+                        transform: translate(0px, 0px);
                     }   
                 }
                 @-webkit-keyframes detail4 {
-                    from {
-                        transform: translate(525px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
-                        transform: translate(0px,0px)
-                    }   
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
+                        transform: translate(0px, 0px);
+                    }  
                 } 
                 @-webkit-keyframes detail5 {
-                    from {
-                        transform: translate(440px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
-                        transform: translate(0px,0px)
-                    }   
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
+                        transform: translate(0px, 0px);
+                    }  
                 }
                 @-webkit-keyframes detail6 {
-                    from {
-                        transform: translate(355px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
-                        transform: translate(0px,0px)
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
+                        transform: translate(0px, 0px);
                     }   
                 }
                 @-webkit-keyframes detail7 {
-                    from {
-                        transform: translate(270px, -200px);
+                   0% {
+                       transform: translate(780px, -200px) scale(1,1);
                     }
-                    to {
-                        transform: translate(0px,0px)
-                    }   
+                    10% {
+                        transform: translate(780px, -200px) scale(2,2);
+                    }
+                    25% {
+                        transform: translate(780px, -200px) scale(1,1);
+                    }
+                    100% {
+                        transform: translate(0px, 0px);
+                    } 
                 }
             }
 

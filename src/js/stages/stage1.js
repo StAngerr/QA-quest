@@ -39,7 +39,7 @@ define(function(require) {
 
     function openWordGame() {
         var stage_content = {
-            taskDescription: 'Your task is to make a right word with all these letters. You should move them to text field',
+           
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         }; 
         if(wordGameStatus == 'unfinished') {

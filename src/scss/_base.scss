@@ -88,3 +88,18 @@ a {
         clear: both;
     }
 }
+
+.rules {
+    height: 20%;
+    font-size: 20px;
+    text-align: center;
+    font-style: italic;
+    
+    .mainRulesPart {    
+        font-weight: bold;
+    }
+
+    .subRulesPart {
+        display: block;
+    }
+}
