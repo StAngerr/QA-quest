@@ -1,5 +1,5 @@
 define(function (require) {
-	var Quest = require('src/js/qaquest.js');
+	var Quest = require('src/js/Qaquest.js');
 	var quest = new Quest();
 	var $ = require('jquery');
 	var timer;

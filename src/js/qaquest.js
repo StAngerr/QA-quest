@@ -1,7 +1,7 @@
 define(function(require) {
     var $ = require('jquery');
     var allStages = require('./levels.js'); 
-    var Invetory = require('./inventory.js');
+    var Invetory = require('./Inventory.js');
 
     var Quest = function() {         
         var quest = this;

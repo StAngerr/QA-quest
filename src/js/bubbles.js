@@ -10,7 +10,7 @@ define(function(require) {
 		this.finish = function() {
 			$('.bubbles-popup').remove();
 	    	setTimeout(function () {
-	    		$('#inventory').trigger('inventory:addItem', {data:'.detail-6'}); 
+	    		$('#inventory').trigger('inventory:addItem', {name:'.detail-6'}); 
 	    		$('#mainSection').trigger('main:stageFinished'); 
 	    	}, 2500);
 		}	
