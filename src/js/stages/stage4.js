@@ -5,25 +5,24 @@ define(function(require) {
     require('jqueryUi');
 
     stage4.initEvents = function() {
+    	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
-    	$('#hero').css({'left':'87px', 'top':'580px'});
     	$('#hero').show();
-    	$('.ladder'). on('click',  function() {
-	    	$('.man'). animate ({'left':'602px'}, 1000, function() {
-	    		stage4.getTmpl('popupFrameTmpl.html').then(function() {
-	    			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, loadDotGame);
-	    		});
-	    		
-	    	});    		
+    	$('.ladder').on('click',  function() {
+    		$(hero).trigger('hero:moveForward', {distance: 602});
+    		$(hero).on('hero:heroHasCome', loadDotGame);
     	});    	
     };
 
     function loadDotGame() {
-    	$('#hero').hide();
-    	/* its temporarily until standard control is not define*/
+		stage4.getTmpl('popupFrameTmpl.html').then(function() {
+			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
+		});
+    };
+
+    function startDotGame() {
     	var dotGame = new ClickOnDotGame();
     	$('.startGameBtn').on('click', dotGame.startClickGame);
-		/*------------------------------------------*/
     };
 
     function ClickOnDotGame() {
