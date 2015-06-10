@@ -21,8 +21,19 @@ define(function(require) {
     };
 
     function moveToDoor() {
-        $(hero).trigger('hero:moveForward', {distance: 750});
-        $(hero).on('hero:heroHasCome', openWordGame);
+        var moveTo = 750;
+        if(checkPosition(moveTo)) {
+            openWordGame();
+        } else {
+            $(hero).trigger('hero:moveForward', {distance: moveTo});
+            $(hero).on('hero:heroHasCome', openWordGame);
+        }
+    };
+
+    function checkPosition(posX) {
+        var coordinateX = $(hero).css('transform').split(',')[4];
+        if(coordinateX == posX) return true;
+        return false; 
     };
 
     function openWordGame() {
