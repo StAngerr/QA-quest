@@ -11,12 +11,12 @@ define(function(require) {
 
     stage1.initEvents = function() {
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
-        $(hero).show();
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
     };
     
     stage1.finishStage = function() {
+        $(hero).trigger('hero:clearHasComeEvent');
         $('#mainSection').trigger('main:stageFinished');
     };
 
@@ -104,7 +104,7 @@ define(function(require) {
 
     function moveToBox() {
         $(hero).trigger('hero:moveBack', {distance: 450});
-        $(hero).off('hero:heroHasCome');
+        $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', function() {
             stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
                 stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
@@ -113,17 +113,17 @@ define(function(require) {
     };
 
     function addFlowGame() {
+        $(hero).off('hero:heroHasCome');
         wade.init('src/js/flow.js');
         $('.popup').on('flowGameFinished', finishFlowGame); 
         $('.popup').addClass('fixForFlowGame');
     };
 
     function finishFlowGame() {
-        $('#wade_main_div').remove();
+        stage1.closePopup();
         flowGameStatus = 'finished';
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
-        $('.totalLevel').remove();  
-        stage1.closePopup();
+        $('.totalLevel').remove();   
     };
    return stage1;
 });

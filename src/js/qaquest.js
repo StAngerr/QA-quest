@@ -15,12 +15,12 @@ define(function(require) {
             initMainModuleEvents();
             initInventoryModuleEvents();
             initCharacterModuleEvents();   
-            quest.nextStage( getStageFromLS() );
+            quest.nextStage(getStageFromLS());
         };
 
         quest.nextStage = function(stageFromLS) {  
             var stageObj = {};
-            
+            resetCharacter();
             (parseInt(stageFromLS)) ? quest.currentStage = stageFromLS : quest.currentStage++;
             writeStageToLS(quest.currentStage);
             clearMainContent();           
@@ -63,7 +63,14 @@ define(function(require) {
             $(module).on('hero:initialPosition', function(event, position) {
                 quest.character.setStartPosition(position.coordinates);
             });
+            $(module).on('hero:clearHasComeEvent', function() {
+                quest.character.clearHasComeEvent();
+            });
         }; 
+
+        function resetCharacter() {
+            $(hero).off('hero:heroHasCome');
+        };
 
         function clearMainContent() {
             $('#mainContent > *').remove();

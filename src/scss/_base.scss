@@ -44,10 +44,10 @@ a {
     }
 
     .man {
-        display: none;
+        display: block;
         z-index: 6;
         position: absolute;
-        //transform: translate(30px, 426px);
+        transform: translate(0px, 0px);
         top: 0px;
         left: 0px;
         width: 50px;
@@ -55,7 +55,11 @@ a {
         background: #cf0;
         font-size: 2.5em;        
         border: 2px solid black; 
-        transition: transform 2s;       
+        transition: transform 2s;      
+        
+        &.hideHero {
+            display: none;
+        } 
     }
 
     .popup-common {

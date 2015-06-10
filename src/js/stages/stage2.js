@@ -8,47 +8,36 @@ define(function (require) {
     var stage_content = {
             taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
             src : ['_brown.png', '_white.png']           
-        }; 
+    }; 
+    var hero = $('#hero');
 
     stage2.initEvents = function () {
         var mainSection = $('#mainSection');
 
-        
+        $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  565}});
+        /* This event is needed to finish stage after finishing tic tac toe game.*/        
         $(mainSection).on('first:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
                 stage2.finishStage();
             }
-        });
-     /* set hero to the right position*/   
-        var heroPosition = {
-            left : '20px',
-            top:'575px',
-            height: '150px'
-        };
-        $('#hero').css( heroPosition );
-        $('#hero').show();
+        });      
         $('#inventory').show();
         stage2.dragNdrop = new DragNDrop();
-        turnOffTheLight();
-        addFlashLightEvents();
-        $('.choosePic').on ('click', function() {
-            $('.man').animate({'left' : '450px'}, 1000, function() {
-                if(!canPlay) {
-                    canPlay = true;
-                    findRightPicture();
-                } else {
-                    return false;
-                }             
-            });
-        });
-   
-        $('.stone').on('click', function() {
-            if ($('.man').css('left') !== '750px') {
-                $('.man').animate({'left' : '750px'}, 1000);
+        /*turnOffTheLight();
+        addFlashLightEvents();*/
+        $('.choosePic').on('click', openPictureGame);        
+    };
+
+    function openPictureGame() {
+        $(hero).trigger('hero:moveForward', {distance: 450}); 
+        $(hero).on('hero:heroHasCome', function() {
+            if(!canPlay) {
+                canPlay = true;
+                findRightPicture();
             } else {
                 return false;
-            }         
-        });           
+            }        
+        });         
     };
 
     function findRightPicture () {    
@@ -56,7 +45,6 @@ define(function (require) {
             stage2.getTmpl('stage2PictureGameTmpl.html','.popup', stage_content, startPictureMovingGame);
         });
     };
-
      // add all event listeners for drag'n'drop
     function startPictureMovingGame() {
         var pictureDraggable = $('.pic-to-drag');    
@@ -91,15 +79,19 @@ define(function (require) {
         fieldToDrop.addEventListener('drop', function() {
             stage2.dragNdrop.drop (event, dropPicture);
         });
-        $('#sendPicture').on('click', function() {
-            // send picture  !!!!!!!!!!!
-            $('#stage2Popup1').remove();
-            $('.popupWrap').remove();
-            $('#inventory').trigger('inventory:addItem',{name:'.detail-3'}); 
-            setTimeout(function(){
-                startTicTacToeGame();
-            }, 2000);          
-        });
+        $('#sendPicture').on('click',finishPictureGame);
+    };
+
+    function finishPictureGame() {
+        stage2.closePopup();
+        $('#inventory').trigger('inventory:addItem', {name:'.detail-3'});      
+        $('.stone').on('click', startTicTacToe);
+    };
+
+    function startTicTacToe() {
+        $(hero).trigger('hero:moveForward', {distance: 865});
+        $(hero).trigger('hero:clearHasComeEvent');
+        $(hero).on('hero:heroHasCome', startTicTacToeGame);       
     };
     
     function dropPicture () {

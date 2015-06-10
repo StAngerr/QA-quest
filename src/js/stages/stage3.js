@@ -3,29 +3,25 @@ define(function(require) {
     var stage3 = new Stage('stage3Tmpl.html');
     var $ = require('jquery');
     var wade = require('wade');
+    var hero = $('#hero');
 
     stage3.initEvents = function() {
-    	
-    	/* itі temporarily until standard control is not define*/
-    	var heroChange = {
-			left : '40px',
-			top:'530px',
-			height: '130px'
-        };
-        $('#hero').show();
-        $('#hero').css(heroChange);
+    	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
         $('#inventory').show();
-        $('#stage3').on('click', function(e){
-        	var x = e.pageX;
-            var y = e.pageY;
+        $('#stage3').on('click', function(event){
+	        if(x <= 611 ) return false;
+        	var x = event.pageX;
+            var y = event.pageY;
 
-	        if(x <= 811 ) return false;
-	        $('.man').animate({'left' : '285px'}, 1300, function() {
-	      		stage3.getTmpl('popupFrameTmpl.html').then(function() {
-	   				stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
-	      		});
-	        });         	
+	        $(hero).trigger('hero:moveForward', {distance: 285});
+	        $(hero).on('hero:heroHasCome', openDotGame);    	
         });
+    };
+
+    function openDotGame() {
+		stage3.getTmpl('popupFrameTmpl.html').then(function() {
+			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
+		});
     };
 
 	function bubbleStart() {

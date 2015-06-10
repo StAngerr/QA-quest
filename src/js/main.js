@@ -5,6 +5,7 @@ define(function (require) {
 	var timer;
 
 	(checkLS()) ? quest.startQuest() : $('.startBtn').on('click', function () {
+		$('#hero').removeClass('hideHero'); 
 		clearTimeout(timer);
 		quest.startQuest()
 	});
