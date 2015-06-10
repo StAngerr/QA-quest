@@ -47,13 +47,15 @@ a {
         display: none;
         z-index: 6;
         position: absolute;
-        top: 450px;
-        left: 10px;
+        //transform: translate(30px, 426px);
+        top: 0px;
+        left: 0px;
         width: 50px;
         height: 200px;
         background: #cf0;
         font-size: 2.5em;        
-        border: 2px solid black;        
+        border: 2px solid black; 
+        transition: transform 2s;       
     }
 
     .popup-common {

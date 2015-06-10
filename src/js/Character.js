@@ -1,27 +1,36 @@
 define(function (require) {
 	var Character = function() {
 		var positionX = 0;
-		var positionY = 0;
+		var positionY = 426;
 		var hero = $('#hero');
+		var animationTime = 2; /* seconds */
 
-		this.moveForward = function(coordinates) {
-			
+		this.moveForward = function(distance) {
+			$(hero).css('-webkit-transform', 'translate(' + distance + 'px, ' + positionY + 'px)');
+			var timer = setTimeout(function() {
+				hasСome();
+				clearTimeout(timer);
+			}, (animationTime * 1000) + 10);
 		};	
 
-		this.moveBack = function() {
-
+		this.moveBack = function(distance) {
+			$(hero).css('-webkit-transform','translate(' + distance + 'px, ' + positionY + 'px)');
+			var timer = setTimeout(function() {
+				hasСome();
+				clearTimeout(timer);
+			}, (animationTime * 1000) + 10);
 		};
 
 		this.setStartPosition = function(coordinates) {
 			positionY = coordinates.y;
 			positionX = coordinates.x;
+			$(hero).css('-webkit-transform', 'translate(' + positionX + 'px, ' + positionY + 'px)');
 		};
-
 
 		function hasСome() {
-			var module = $('#mainSection');
+			$(hero).trigger('hero:heroHasCome');
 
-			$(module).trigger('main:heroHasCome');
 		};
 	};
-};
+	return Character;
+});

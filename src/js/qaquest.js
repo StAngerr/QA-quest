@@ -2,16 +2,19 @@ define(function(require) {
     var $ = require('jquery');
     var allStages = require('./levels.js'); 
     var Invetory = require('./Inventory.js');
+    var Character = require('./Character.js');
 
-    var Quest = function() {         
+    var Quest = function() {          
         var quest = this;
         quest.currentStage = 0;
         quest.inventory = new Invetory();
+        quest.character = new Character();
        
 
         quest.startQuest = function() {         
             initMainModuleEvents();
-            initInventoryModuleEvents();   
+            initInventoryModuleEvents();
+            initCharacterModuleEvents();   
             quest.nextStage( getStageFromLS() );
         };
 
@@ -43,8 +46,22 @@ define(function(require) {
         function initInventoryModuleEvents() {  
             var module = $('#inventory');         
             
-            $(module).on('inventory:addItem', function (event, item) {
+            $(module).on('inventory:addItem', function(event, item) {
                 quest.inventory.addItem(event, item.name);
+            });
+        };
+
+        function initCharacterModuleEvents() {
+            var module = $('#hero');
+
+            $(module).on('hero:moveForward', function(event, move) {
+                quest.character.moveForward(move.distance);
+            });
+            $(module).on('hero:moveBack', function(event, move) {
+                quest.character.moveBack(move.distance);
+            });
+            $(module).on('hero:initialPosition', function(event, position) {
+                quest.character.setStartPosition(position.coordinates);
             });
         }; 
 

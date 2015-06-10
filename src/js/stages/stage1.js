@@ -7,14 +7,13 @@ define(function(require) {
     var wordGameStatus = 'unfinished';
     var flowGameStatus = 'unfinished';
     var dragNdrop = new DragNDrop();
-    var manState = 'stand';
+    var hero = $('#hero');
 
     stage1.initEvents = function() {
-        $('#hero').show();
+        $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
+        $(hero).show();
         $('#inventory').show();
-        $('.door').on('click', function(event) {
-            if(manState == 'stand') moveToDoor();
-        });
+        $('.door').on('click', moveToDoor);
     };
     
     stage1.finishStage = function() {
@@ -22,14 +21,21 @@ define(function(require) {
     };
 
     function moveToDoor() {
-        changeManState(); 
-        if($('.man').css('left') !== '750px') {
-            $('.man').animate({'left' : '750'}, 2000, openWordGame);
-        } else {
+        var moveTo = 750;
+        if(checkPosition(moveTo)) {
             openWordGame();
-        }  
+        } else {
+            $(hero).trigger('hero:moveForward', {distance: moveTo});
+            $(hero).on('hero:heroHasCome', openWordGame);
+        }
     };
-    //stage1.dragNdrop = new DragNDrop();
+
+    function checkPosition(posX) {
+        var coordinateX = $(hero).css('transform').split(',')[4];
+        if(coordinateX == posX) return true;
+        return false; 
+    };
+
     function openWordGame() {
         var stage_content = {
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
@@ -38,8 +44,7 @@ define(function(require) {
         if(wordGameStatus == 'unfinished') {
             stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
                 stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
-            });   
-            changeManState();
+            });
         } else {
             stage1.finishStage();
         }
@@ -89,21 +94,21 @@ define(function(require) {
         $('.door').addClass('transparentDoor');
         if($('.leafes')) $('.leafes').remove();
         $(totalLevel).addClass('blinkAnimation');
-        $(totalLevel).on('click', function() {   /*   change man movement*/
+        $(totalLevel).on('click', function() {  
             $(totalLevel).removeClass('blinkAnimation');
-            if(manState == 'stand' && flowGameStatus == 'unfinished') moveToBox();
+            if(flowGameStatus == 'unfinished') moveToBox();
         });
         wordGameStatus = 'finished';
         stage1.closePopup();  
     };
 
     function moveToBox() {
-        changeManState();
-        $('.man').animate({'left' : '450'}, 1000, function() {
+        $(hero).trigger('hero:moveBack', {distance: 450});
+        $(hero).off('hero:heroHasCome');
+        $(hero).on('hero:heroHasCome', function() {
             stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
                 stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
             });
-            changeManState();
         });
     };
 
@@ -119,10 +124,6 @@ define(function(require) {
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
         $('.totalLevel').remove();  
         stage1.closePopup();
-    };
-
-    function changeManState() {
-        (manState == 'stand') ? manState = 'moving' : manState = 'stand';
     };
    return stage1;
 });
