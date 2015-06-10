@@ -8,6 +8,7 @@ define(function(require) {
 		};
 
 		this.finish = function() {
+			wade.stop();
 			$('.bubbles-popup').remove();
 			$('#inventory').trigger('inventory:addItem',{name:'.detail-6'}); 
 	    setTimeout(function () {

@@ -121,16 +121,16 @@ define(function (require) {
     };
 
     function turnOffTheLight() {
-         $('html').addClass('lightOff');
-         $('body').addClass('flashLight');
-         $('body').append('<div class="flashLightShadow"></div>');
+         $('#mainContent').addClass('lightOff');
+         $('#stage2').addClass('flashLight');
+         $('#stage2').append('<div class="flashLightShadow"></div>');
     };
 
      /*    Move events to flash light*/
     function addFlashLightEvents() {
         $(document).mousemove(function(e) {
-            $('body').css({
-                '-webkit-clip-path': 'circle(130px at ' + e.pageX + 'px ' + e.pageY + 'px)',
+            $('#stage2').css({
+                '-webkit-clip-path': 'circle(130px at ' + (e.pageX -300) + 'px ' + e.pageY + 'px)',
                 'cursor': 'url("../images/flashlight.ico")'
             });
             $('.flashLightShadow').css({
@@ -142,19 +142,13 @@ define(function (require) {
 
     function removeFlashLightEvents() {
         $(document).off('mousemove');
-        $('html').removeClass('lightOff');
-        $('body').removeClass('flashLight');
+        $('#mainContent').removeClass('lightOff');
+        $('#stage2').removeClass('flashLight');
         $('.flashLightShadow').remove();
-        $('body').css({'-webkit-clip-path': 'none'});
+        $('#stage2').css({'-webkit-clip-path': 'none'});
     };
 
-    function removeFlashLightEvents() {
-        $(document).off('mousemove');
-        $('html').removeClass('lightOff');
-        $('body').css({'-webkit-clip-path': 'none' });
-        $('body').removeClass('flashLight');
-        $('.flashLightShadow').remove();
-    };
+   
 
     function startTicTacToeGame() {
         $('#ticTacToe').show();
