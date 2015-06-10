@@ -7,7 +7,6 @@ define(function(require) {
     stage4.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
-    	$('#hero').show();
     	$('.ladder').on('click',  function() {
     		$(hero).trigger('hero:moveForward', {distance: 602});
     		$(hero).on('hero:heroHasCome', loadDotGame);

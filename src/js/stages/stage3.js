@@ -7,7 +7,6 @@ define(function(require) {
 
     stage3.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
-        $(hero).show();
         $('#inventory').show();
         $('#stage3').on('click', function(event){
 	        if(x <= 611 ) return false;

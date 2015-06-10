@@ -21,7 +21,6 @@ define(function (require) {
                 stage2.finishStage();
             }
         });      
-        $(hero).show();
         $('#inventory').show();
         stage2.dragNdrop = new DragNDrop();
         /*turnOffTheLight();

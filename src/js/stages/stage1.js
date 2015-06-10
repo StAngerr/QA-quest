@@ -11,7 +11,6 @@ define(function(require) {
 
     stage1.initEvents = function() {
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
-        $(hero).show();
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
     };
