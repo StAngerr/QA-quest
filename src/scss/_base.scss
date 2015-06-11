@@ -31,7 +31,31 @@ main {
 a {
     cursor: pointer;
 }
+// animation to do moving image
+          
+@-webkit-keyframes test {
+    $percent: 0;
+    
+    @if $percent < 100 {
+        @for $i from 0 to 4 { 
+            $y:(-51 - $i*322); 
+            @for $j from 0 to 5 {
+                $x:(-92 - $j*240);
+                #{$percent * 1%} {                       
+                    background-position-x: #{$x}px;
+                    background-position-y: #{$y}px;
+                } 
+                $j: $j+1;
+                $percent: $percent+5;
+            }            
+            
+            $j: 0; 
+            $i: $i+1;             
+        }    
+    } 
+}
 
+       
 #mainSection {
     position: relative;
     max-width: 1200px;
@@ -48,13 +72,14 @@ a {
         z-index: 6;
         position: absolute;
         transform: translate(0px, 0px);
-        top: 0px;
+        top: -188px;
         left: 0px;
-        width: 50px;
-        height: 200px;
+        width: 55px;
+        height: 208px;
         background: #cf0;
+        background-size: cover;
         font-size: 2.5em;        
-        border: 2px solid black; 
+
         transition: transform 2s;
 
         &.animFix {
@@ -63,7 +88,27 @@ a {
         &.hideHero {
             display: none;
         }
+        &.stay-left {
+            background: url(../images/bot/bot_static_reverse.png) no-repeat;
+            background-position: -92px -51px;           
+            animation: test 0.01ms infinite; 
+        }
+        &.stay-right {
+            background: url(../images/bot/bot_static_direct.png) no-repeat;
+            background-position: -93px -51px;           
+            animation: test 0.01ms infinite;
+            -webkit-animation-timing-function: linear; 
+        }
+         &.move-right {
+            background: url(../images/bot/bot_direct.png) no-repeat;
+            background-position: -93px -51px;           
+            animation: test 0.01ms infinite;
+            -webkit-animation-timing-function: linear; 
+        }
     }
+         
+    
+ 
 
     .popup-common {
         height: 100%;
