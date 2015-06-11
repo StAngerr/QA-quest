@@ -55,11 +55,14 @@ a {
         background: #cf0;
         font-size: 2.5em;        
         border: 2px solid black; 
-        transition: transform 2s;      
-        
+        transition: transform 2s;
+
+        &.animFix {
+            transition: none;
+        }
         &.hideHero {
             display: none;
-        } 
+        }
     }
 
     .popup-common {

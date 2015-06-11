@@ -22,6 +22,7 @@ define(function(require) {
 
     function moveToDoor() {
         var moveTo = 750;
+        
         if(checkPosition(moveTo)) {
             openWordGame();
         } else {
@@ -42,7 +43,7 @@ define(function(require) {
         };
 
         if(wordGameStatus == 'unfinished') {
-            stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
+            stage1.getTmpl('popupFrameTmpl.html').then(function() {
                 stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
             });
         } else {
@@ -57,7 +58,6 @@ define(function(require) {
 
         dragNdrop.makeDragabble($('.letters'));
         dragNdrop.makeDroppable([fieldToDrop, wordSpot], addNewLetter);
-                 
     };
 
     function addNewLetter () {

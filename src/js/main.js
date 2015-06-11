@@ -4,11 +4,16 @@ define(function (require) {
 	var $ = require('jquery');
 	var timer;
 
-	(checkLS()) ? quest.startQuest() : $('.startBtn').on('click', function () {
+	if(checkLS()) {
 		$('#hero').removeClass('hideHero'); 
-		clearTimeout(timer);
 		quest.startQuest()
-	});
+	} else {
+		$('.startBtn').on('click', function () {
+			$('#hero').removeClass('hideHero'); 
+			quest.startQuest()
+		});
+	}
+	
 	function checkLS() {
 		if(localStorage.getItem("currentStage")) {
 			return true;
