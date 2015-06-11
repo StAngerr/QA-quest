@@ -4,11 +4,14 @@ define(function(require) {
     var $ = require('jquery');
     var wade = require('wade');
     var hero = $('#hero');
+    var isStickGameOpened = false;
 
     stage3.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
         $('#inventory').show();
         $('#stage3').on('click', function(event){
+        	if(isStickGameOpened) return;
+        	isStickGameOpened = true;
 	        if(x <= 611 ) return false;
         	var x = event.pageX;
             var y = event.pageY;

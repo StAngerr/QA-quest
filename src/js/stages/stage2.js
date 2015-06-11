@@ -10,6 +10,7 @@ define(function (require) {
             src : ['_brown.png', '_white.png']           
     }; 
     var hero = $('#hero');
+    var isTicTacToeOpened = false;
 
     stage2.initEvents = function () {
         var mainSection = $('#mainSection');
@@ -105,6 +106,8 @@ define(function (require) {
     };
 
     function startTicTacToe() {
+        if(isTicTacToeOpened) return;
+        isTicTacToeOpened = true; 
         $(hero).trigger('hero:moveForward', {distance: 865});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', startTicTacToeGame);       

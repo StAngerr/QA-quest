@@ -4,8 +4,9 @@ define(function(require) {
     var $ = require('jquery');
     var DragNDrop = require('src/js/dragndrop.js');
     var wade = require('wade');
-    var wordGameStatus = 'unfinished';
-    var flowGameStatus = 'unfinished';
+    var isWordGameFinished = false;
+    var isWordGameOpened = false;
+    var isFlowGameOpened = false;
     var dragNdrop = new DragNDrop();
     var hero = $('#hero');
 
@@ -23,6 +24,8 @@ define(function(require) {
     function moveToDoor() {
         var moveTo = 750;
         
+        if(isWordGameOpened && !isWordGameFinished) return;
+        isWordGameOpened = true;
         if(checkPosition(moveTo)) {
             openWordGame();
         } else {
@@ -33,6 +36,7 @@ define(function(require) {
 
     function checkPosition(posX) {
         var coordinateX = $(hero).css('transform').split(',')[4];
+
         if(coordinateX == posX) return true;
         return false; 
     };
@@ -42,7 +46,7 @@ define(function(require) {
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
         };
 
-        if(wordGameStatus == 'unfinished') {
+        if(!isWordGameFinished) {
             stage1.getTmpl('popupFrameTmpl.html').then(function() {
                 stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
             });
@@ -78,19 +82,20 @@ define(function(require) {
     function sendWord(event) {
         var totalLevel = $('.totalLevel');
 
+        stage1.closePopup();
+        isWordGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  
         $('.door').addClass('transparentDoor');
         if($('.leafes')) $('.leafes').remove();
         $(totalLevel).addClass('blinkAnimation');
         $(totalLevel).on('click', function() {  
             $(totalLevel).removeClass('blinkAnimation');
-            if(flowGameStatus == 'unfinished') moveToBox();
-        });
-        wordGameStatus = 'finished';
-        stage1.closePopup();  
+            if(!isFlowGameOpened) moveToBox();
+        });    
     };
 
     function moveToBox() {
+        isFlowGameOpened = true;
         $(hero).trigger('hero:moveBack', {distance: 450});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', function() {
@@ -109,7 +114,6 @@ define(function(require) {
 
     function finishFlowGame() {
         stage1.closePopup();
-        flowGameStatus = 'finished';
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
         $('.totalLevel').remove();   
     };

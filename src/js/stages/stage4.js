@@ -3,11 +3,14 @@ define(function(require) {
     var stage4 = new Stage('stage4Tmpl.html');
     var $ = require('jquery');
     require('jqueryUi');
+    var isDotGameOpened = false;
 
     stage4.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
     	$('.ladder').on('click',  function() {
+    		if(isDotGameOpened) return;
+    		isDotGameOpened = true;
     		$(hero).trigger('hero:moveForward', {distance: 602});
     		$(hero).on('hero:heroHasCome', loadDotGame);
     	});    	
