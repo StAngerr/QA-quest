@@ -26,7 +26,10 @@ define(function (require) {
 		this.setStartPosition = function(coordinates) { 
 			positionY = coordinates.y;
 			positionX = coordinates.x;
-			$(hero).css('-webkit-transform', 'translate(' + positionX + 'px, ' + positionY + 'px)');
+			$(hero).css({top: '20px',  left: '200px'});
+			//$(hero).removeClass('movement');
+			//$(hero).css('-webkit-transform', 'translate(' + positionX + 'px, ' + positionY + 'px)');
+			$(hero).addClass('movement');
 		};
 
 		this.clearHasComeEvent = function() {

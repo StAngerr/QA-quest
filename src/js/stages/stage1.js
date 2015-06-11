@@ -22,6 +22,7 @@ define(function(require) {
 
     function moveToDoor() {
         var moveTo = 750;
+        
         if(checkPosition(moveTo)) {
             openWordGame();
         } else {
@@ -42,7 +43,7 @@ define(function(require) {
         };
 
         if(wordGameStatus == 'unfinished') {
-            stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
+            stage1.getTmpl('popupFrameTmpl.html').then(function() {
                 stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
             });
         } else {
@@ -57,6 +58,7 @@ define(function(require) {
         var fieldToDrop = $('.all-letters')[0];
 
         $(letters).attr("draggable","true");
+
         wordSpot.addEventListener('dragover', dragNdrop.allowDrop);
         wordSpot.addEventListener('drop', function(event) {                        
             dragNdrop.drop(event, addNewLetter);      
@@ -65,6 +67,7 @@ define(function(require) {
         fieldToDrop.addEventListener('drop', function(event) {          
             dragNdrop.drop(event, addNewLetter);   
         });
+
         for (var i = 0; i < letters.length; i++) {
             letters[i].addEventListener("dragstart",dragNdrop.drag);
             letters[i].addEventListener("dragover", dragNdrop.over);
