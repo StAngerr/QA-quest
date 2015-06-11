@@ -9,16 +9,17 @@ define(function(require) {
     stage3.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
         $('#inventory').show();
-        $('#stage3').on('click', function(event){
-        	if(isStickGameOpened) return;
-        	isStickGameOpened = true;
-	        if(x <= 611 ) return false;
-        	var x = event.pageX;
-            var y = event.pageY;
+        $('#stage3').on('click', moveToRiver);
+    };
 
-	        $(hero).trigger('hero:moveForward', {distance: 285});
-	        $(hero).on('hero:heroHasCome', openDotGame);    	
-        });
+    function moveToRiver() {
+    	if(isStickGameOpened) return;
+    	isStickGameOpened = true;
+        if(x <= 611 ) return false;
+    	var x = event.pageX;
+        var y = event.pageY;
+        $(hero).trigger('hero:moveForward', {distance: 285});
+        $(hero).on('hero:heroHasCome', openDotGame);    	
     };
 
     function openDotGame() {

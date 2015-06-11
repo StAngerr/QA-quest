@@ -16,7 +16,8 @@ define(function(require) {
         $('.door').on('click', moveToDoor);
     };
     
-    stage1.finishStage = function() {
+     function finishStage() {
+        stage1.isStageFinished = true;
         $(hero).trigger('hero:clearHasComeEvent');
         $('#mainSection').trigger('main:stageFinished');
     };
@@ -51,7 +52,7 @@ define(function(require) {
                 stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
             });
         } else {
-            stage1.finishStage();
+            if(!stage1.isStageFinished) finishStage();
         }
     };
 
