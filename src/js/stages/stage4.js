@@ -81,6 +81,7 @@ define(function(require) {
 			onInfoInterface();
 			clearInterval(gameTime);
 			resetTimerAndPoints();
+			$('#inventory').trigger('inventory:addItem',{name:'.detail-7'}); 
 			// ADD INVENTORY!!!!!!!!!!!!!!
 			// temp code remove it later
 /*			$('.popupWrap').remove();

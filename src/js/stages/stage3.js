@@ -70,10 +70,8 @@ define(function(require) {
 
 			printWhoWon(winner);
 	        $('.popupWrap').remove();
-	         $('#inventory').trigger('inventory:addItem',{name:'.detail-5'});      
+	        $('#inventory').trigger('inventory:addItem',{name:'.detail-5'});      
 			setTimeout(function(){
-				
-			
 				bubbleStart();
 			}, 1500);
 		};
