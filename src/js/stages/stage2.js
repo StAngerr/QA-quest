@@ -10,6 +10,7 @@ define(function (require) {
             src : ['_brown.png', '_white.png']           
     }; 
     var hero = $('#hero');
+    var isTicTacToeOpened = false;
 
     stage2.initEvents = function () {
         var mainSection = $('#mainSection');
@@ -18,14 +19,19 @@ define(function (require) {
         /* This event is needed to finish stage after finishing tic tac toe game.*/        
         $(mainSection).on('first:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
-                stage2.finishStage();
+                if(!stage2.isStageFinished)  finishStage();
             }
         });      
         $('#inventory').show();
-       
         /*turnOffTheLight();
         addFlashLightEvents();*/
         $('.choosePic').on('click', openPictureGame);        
+    };
+
+    function finishStage() {
+        stage2.isStageFinished = true;
+        removeFlashLightEvents();
+        $('#mainSection').trigger('main:stageFinished');
     };
 
     function openPictureGame() {
@@ -51,11 +57,9 @@ define(function (require) {
         var fieldToReturn =  $('.pictures-to-choose')[0];
         
         changeColorOnHover();
-
         dragNdrop.makeDragabble($('.pic-to-drag'));
         dragNdrop.makeDroppable([fieldToDrop], dropPicture);
         dragNdrop.makeDroppable([fieldToReturn], returnPictureBack);
-
         $('#sendPicture').on('click',finishPictureGame);
     };
 
@@ -79,22 +83,24 @@ define(function (require) {
        $('.pictures-to-choose').append(data); 
     };
 
-     function changeColorOnHover () {
+    function changeColorOnHover () {
         var pictureDraggable = $('.pic-to-drag');
-        for (var i=0; i < pictureDraggable.length; i++) { 
+
+        for (var i = 0; i < pictureDraggable.length; i++) { 
             $(pictureDraggable[i]).on('mouseover', function() {
                 var old_src = $(this).children().attr('src');
-                var  new_src = old_src.slice(0,27) + stage_content.src[0];                
+                var  new_src = old_src.slice(0,27) + stage_content.src[0]; 
+
                 $(this).children().attr('src', new_src);
             });
-        $(pictureDraggable[i]).on('mouseleave', function() { 
-            if (!$(this).parent().hasClass('field-to-drop')) {
-                var old_src = $(this).children().attr('src');
-                var new_src = old_src.slice(0,27) + stage_content.src[1];                
-                $(this).children().attr('src', new_src);
-            }
-        });
-           
+            $(pictureDraggable[i]).on('mouseleave', function() { 
+                if (!$(this).parent().hasClass('field-to-drop')) {
+                    var old_src = $(this).children().attr('src');
+                    var new_src = old_src.slice(0,27) + stage_content.src[1];  
+
+                    $(this).children().attr('src', new_src);
+                }
+            });    
         }
      };
 
@@ -105,14 +111,11 @@ define(function (require) {
     };
 
     function startTicTacToe() {
+        if(isTicTacToeOpened) return;
+        isTicTacToeOpened = true; 
         $(hero).trigger('hero:moveForward', {distance: 865});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', startTicTacToeGame);       
-    };
-
-    stage2.finishStage = function() {
-        removeFlashLightEvents();
-        $('#mainSection').trigger('main:stageFinished');
     };
 
     function turnOffTheLight() {
@@ -529,7 +532,7 @@ define(function (require) {
      // end of game tictactoe
     function finishTicTacToe() {
         $('.newGameB').css('visibility', 'hidden');        
-        $('#inventory').trigger('inventory:addItem',{name:'.detail-4'}); 
+        $('#inventory').trigger('inventory:addItem', {name:'.detail-4'}); 
         $('#ticTacToe').remove();       
     };
 

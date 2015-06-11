@@ -10,6 +10,7 @@ define(function (require) {
 	} else {
 		$('.startBtn').on('click', function () {
 			$('#hero').removeClass('hideHero'); 
+			clearTimeout(timer);
 			quest.startQuest()
 		});
 	}

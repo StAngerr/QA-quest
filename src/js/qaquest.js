@@ -10,7 +10,6 @@ define(function(require) {
         quest.inventory = new Invetory();
         quest.character = new Character();
        
-
         quest.startQuest = function() {         
             initMainModuleEvents();
             initInventoryModuleEvents();
@@ -25,8 +24,7 @@ define(function(require) {
             writeStageToLS(quest.currentStage);
             clearMainContent();           
             stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array has zero index*/         
-            stageObj.openStage(stageObj);
-            
+            stageObj.openStage(stageObj); 
         };
 
         function writeStageToLS(stage) {

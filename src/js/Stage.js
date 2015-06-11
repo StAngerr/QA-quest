@@ -6,6 +6,7 @@ define(function(require) {
         this.templateUrl = templ;
         this.initEvents;
         this.finishStage;
+        this.isStageFinished = false;
 
         this.openStage = function(stage) {
             this.getTmpl(this.templateUrl);
