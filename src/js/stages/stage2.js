@@ -3,8 +3,8 @@ define(function (require) {
     var stage2 = new Stage('stage2Tmpl.html');
     var $ = require('jquery');
     var DragNDrop = require('src/js/dragndrop.js');
+    var dragNdrop = new DragNDrop();
     var canPlay = false;
-    var that;
     var stage_content = {
             taskDescription: 'Your task is to assemble the right combination of shapes. You should move them to clean field',  
             src : ['_brown.png', '_white.png']           
@@ -22,7 +22,7 @@ define(function (require) {
             }
         });      
         $('#inventory').show();
-        stage2.dragNdrop = new DragNDrop();
+       
         /*turnOffTheLight();
         addFlashLightEvents();*/
         $('.choosePic').on('click', openPictureGame);        
@@ -46,41 +46,57 @@ define(function (require) {
         });
     };
      // add all event listeners for drag'n'drop
-    function startPictureMovingGame() {
-        var pictureDraggable = $('.pic-to-drag');    
+    function startPictureMovingGame() {            
         var fieldToDrop = $('.field-to-drop')[0];
         var fieldToReturn =  $('.pictures-to-choose')[0];
+        
+        changeColorOnHover();
 
-        for (var i=0; i < pictureDraggable.length; i++) {
-            $(pictureDraggable[i]).attr('draggable','true');
+        dragNdrop.makeDragabble($('.pic-to-drag'));
+        dragNdrop.makeDroppable([fieldToDrop], dropPicture);
+        dragNdrop.makeDroppable([fieldToReturn], returnPictureBack);
 
-            $(pictureDraggable[i]).on('mouseover', function(){
+        $('#sendPicture').on('click',finishPictureGame);
+    };
+
+       
+    function dropPicture () {
+        data = dragNdrop.data;        
+        if ($(event.target)[0].nodeName !== 'DIV') {
+            var target = $(event.target).closest('div');
+
+            if (target.html() !== '') {                   
+                return false;                                            
+            } else {
+                $(event.target).closest('div').html(data);
+            }          
+        } else if ($(event.target).html() !== '') {
+            return false;          
+        }  
+    };
+
+    function returnPictureBack (event, data) {      
+       $('.pictures-to-choose').append(data); 
+    };
+
+     function changeColorOnHover () {
+        var pictureDraggable = $('.pic-to-drag');
+        for (var i=0; i < pictureDraggable.length; i++) { 
+            $(pictureDraggable[i]).on('mouseover', function() {
                 var old_src = $(this).children().attr('src');
                 var  new_src = old_src.slice(0,27) + stage_content.src[0];                
                 $(this).children().attr('src', new_src);
             });
-            $(pictureDraggable[i]).on('mouseleave', function() { 
-                if (!$(this).parent().hasClass('field-to-drop')) {
-                    var old_src = $(this).children().attr('src');
-                    var new_src = old_src.slice(0,27) + stage_content.src[1];                
-                    $(this).children().attr('src', new_src);
-                }
-            });
-            pictureDraggable[i].addEventListener("dragstart", stage2.dragNdrop.drag);
-            pictureDraggable[i].addEventListener("dragover", stage2.dragNdrop.over);
-            pictureDraggable[i].addEventListener("dragleave", stage2.dragNdrop.leave);
+        $(pictureDraggable[i]).on('mouseleave', function() { 
+            if (!$(this).parent().hasClass('field-to-drop')) {
+                var old_src = $(this).children().attr('src');
+                var new_src = old_src.slice(0,27) + stage_content.src[1];                
+                $(this).children().attr('src', new_src);
+            }
+        });
+           
         }
-       
-        fieldToReturn.addEventListener('dragover', stage2.dragNdrop.allowDrop);
-        fieldToReturn.addEventListener('drop', function() {
-            stage2.dragNdrop.drop (event, returnPictureBack);
-        });
-        fieldToDrop.addEventListener('dragover', stage2.dragNdrop.allowDrop);
-        fieldToDrop.addEventListener('drop', function() {
-            stage2.dragNdrop.drop (event, dropPicture);
-        });
-        $('#sendPicture').on('click',finishPictureGame);
-    };
+     };
 
     function finishPictureGame() {
         stage2.closePopup();
@@ -92,26 +108,6 @@ define(function (require) {
         $(hero).trigger('hero:moveForward', {distance: 865});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', startTicTacToeGame);       
-    };
-    
-    function dropPicture () {
-        that = stage2.dragNdrop.data;
-        if ($(event.target)[0].nodeName !== 'DIV') {
-            var target = $(event.target).closest('div');
-
-            if (target.html() !== '') {                   
-                return false;                                            
-            } else {
-                $(event.target).closest('div').html(that);
-            }          
-        } else if ($(event.target).html() !== '') {
-            return false;          
-        }  
-    };
-
-    function returnPictureBack () {
-       that = stage2.dragNdrop.data;
-       $('.pictures-to-choose').append(that); 
     };
 
     stage2.finishStage = function() {

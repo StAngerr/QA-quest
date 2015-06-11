@@ -51,25 +51,13 @@ define(function(require) {
     };
 
     function  startWordGame() {
-        $('#sendWord').on('click', sendWord);
-        var letters = $('.letters');
+        $('#sendWord').on('click', sendWord);       
         var wordSpot = $('.makeWord')[0];
         var fieldToDrop = $('.all-letters')[0];
 
-        $(letters).attr("draggable","true");
-        wordSpot.addEventListener('dragover', dragNdrop.allowDrop);
-        wordSpot.addEventListener('drop', function(event) {                        
-            dragNdrop.drop(event, addNewLetter);      
-        });
-        fieldToDrop.addEventListener('dragover', dragNdrop.allowDrop);
-        fieldToDrop.addEventListener('drop', function(event) {          
-            dragNdrop.drop(event, addNewLetter);   
-        });
-        for (var i = 0; i < letters.length; i++) {
-            letters[i].addEventListener("dragstart",dragNdrop.drag);
-            letters[i].addEventListener("dragover", dragNdrop.over);
-            letters[i].addEventListener("dragleave", dragNdrop.leave);
-        };          
+        dragNdrop.makeDragabble($('.letters'));
+        dragNdrop.makeDroppable([fieldToDrop, wordSpot], addNewLetter);
+                 
     };
 
     function addNewLetter () {
@@ -77,10 +65,10 @@ define(function(require) {
         var data = dragNdrop.data; 
 
         if ($(target)[0].nodeName !== 'DIV') {
-            if (target.html() !== '') {                   
+            if ($(target).html() !== '') {                   
                 $(target).closest('div').append(data.context);                                                   
             } else {
-                $(target).closest('div').html(data);
+                return false;
             }          
         } else if ($(target).html() !== '') {
             $(target).append(data.context);           

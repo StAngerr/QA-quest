@@ -3,6 +3,24 @@ define(function() {
 	var DragNDrop = function () {
 		that = this;        
 
+		this.makeDragabble = function (arr) {
+			$(arr).each(function(index) {
+				$(arr[index]).attr("draggable","true");
+				arr[index].addEventListener('dragstart',that.drag);
+        arr[index].addEventListener('dragover', that.over);
+        arr[index].addEventListener('dragleave', that.leave);
+			});
+		};
+
+		this.makeDroppable = function (arr, callback) {
+			$(arr).each(function(index) {
+				arr[index].addEventListener('dragover', that.allowDrop);
+        arr[index].addEventListener('drop', function(event) {
+        		that.drop(event, callback);
+        });       
+			});
+		};
+
 		this.allowDrop = function(event) {          
 		 	event.preventDefault();
 		 	return false;
@@ -33,7 +51,7 @@ define(function() {
 			if ($(event.target)[0].nodeName === 'DIV' && $(event.target).html() == '') {
 				$(event.target).html(that.data);
 			} else {
-				callback();
+				callback(event,that.data );
 				return false;		
 			}       
 		};
