@@ -147,55 +147,42 @@
                 @-webkit-keyframes toTop1 {
                     0% {
                         transform: translate(0px, 0px);
-
-                    }
-                    90% {
-                        opacity: 1;
                     }
                     100% {
                         transform: translate(382px, -781px);
-                        opacity: 0;
                     }
                 }
                 
-               @-webkit-keyframes toTop2 {
+                @-webkit-keyframes toTop2 {
                     0% {
                         transform: translate(0px, 0px);
                     }
-
                     100% {
                         transform: translate(278px, -781px);
-                        visibility: hidden;
                     }
                 }
                 @-webkit-keyframes toTop3 {
                     0% {
                         transform: translate(0px, 0px);
                     }
-
                     100% {
                         transform: translate(174px, -781px);
-                        visibility: hidden;
                     }
                 }
                 @-webkit-keyframes toTop4 {
                     0% {
                         transform: translate(0px, 0px);
                     }
-
                     100% {
                         transform: translate(68px, -781px);
-                        visibility: hidden;
                     }
                 }
                 @-webkit-keyframes toTop5 {
                     0% {
                         transform: translate(0px, 0px);
                     }
-
                     100% {
                         transform: translate(-35px, -781px);
-                        visibility: hidden;
                     }
                 }
                 
@@ -206,17 +193,14 @@
 
                     100% {
                         transform: translate(-138px, -781px);
-                        visibility: hidden;
                     }
                 }
                 @-webkit-keyframes toTop7 {
                     0% {
                         transform: translate(0px, 0px);
                     }
-
                     100% {
                         transform: translate(-242px, -781px);
-                        visibility: hidden;
                     }
                 }
                 

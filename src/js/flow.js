@@ -5,7 +5,6 @@ define(function(require) {
         var SceneObject = require('lib/wade_src/sceneObject');
         var TextSprite = require('lib/wade_src/textSprite');
     	var gameState;
-    	// var colors = ['', 'green', 'red', 'blue', 'yellow', 'orange', 'purple'];
         var colors = ['', 'rgb(200,201,47)', 'rgb(217, 93, 93)', 'rgb(40,176,188)', 'rgb(252, 216,8)', 'rgb(252, 173,28)', 'rgb(140, 174 ,80)'];
     	var lines = [];
     	var currentLineId;

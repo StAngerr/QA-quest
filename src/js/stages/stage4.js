@@ -92,7 +92,6 @@ define(function(require) {
 			$('.playGround .gameResults').removeClass('closeBlock');
 			$('.retryBtn').removeClass('closeBlock');
 			$('.attempts').removeClass('closeBlock');
-			//$('.startGameBtn').removeClass('closeBlock');
 			$('.clickCounter').addClass('closeBlock');
 			$('.timer').addClass('closeBlock');
 		};
