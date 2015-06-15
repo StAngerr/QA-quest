@@ -1,12 +1,13 @@
 define(function(require) {
     var Stage = require('src/js/Stage.js');    
     var stage1 = new Stage('stage1Tmpl.html');
-    var $ = require('jquery');
+    var $ = require('jquery'); 
     var DragNDrop = require('src/js/dragndrop.js');
     var wade = require('wade');
     var isWordGameFinished = false;
     var isWordGameOpened = false;
     var isFlowGameOpened = false;
+    var isFlowGameFinished = false;
     var dragNdrop = new DragNDrop();
     var hero = $('#hero');
 
@@ -23,15 +24,14 @@ define(function(require) {
     };
 
     function moveToDoor() {
-        var moveTo = 750;
-        
-        if(isWordGameOpened && !isWordGameFinished) return;
-        isWordGameOpened = true;
+        var moveTo = 750;        
+        if ((!isFlowGameFinished && isFlowGameOpened) ) return;
+        isFlowGameOpened = true;
         if(checkPosition(moveTo)) {
-            openWordGame();
+            openFlowGame();
         } else {
             $(hero).trigger('hero:moveForward', {distance: moveTo});
-            $(hero).on('hero:heroHasCome', openWordGame);
+            $(hero).on('hero:heroHasCome', openFlowGame);
         }
     };
 
@@ -42,27 +42,27 @@ define(function(require) {
         return false; 
     };
 
-    function openWordGame() {
-        var stage_content = {
-            letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
-        };
-
-        if(!isWordGameFinished) {
+    function openFlowGame() {
+        if(!isFlowGameFinished) {
             stage1.getTmpl('popupFrameTmpl.html').then(function() {
-                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);  
+                stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
             });
         } else {
-            if(!stage1.isStageFinished) finishStage();
+            if(isWordGameFinished){
+                if(!stage1.isStageFinished) finishStage();
+            } else {
+                return;
+            }            
         }
     };
 
-    function  startWordGame() {
-        $('#sendWord').on('click', sendWord);       
+    function  startWordGame() {        
         var wordSpot = $('.makeWord')[0];
         var fieldToDrop = $('.all-letters')[0];
 
         dragNdrop.makeDragabble($('.letters'));
         dragNdrop.makeDroppable([fieldToDrop, wordSpot], addNewLetter);
+         $('#sendWord').on('click', sendWord); 
     };
 
     function addNewLetter () {
@@ -81,42 +81,46 @@ define(function(require) {
     };
 
     function sendWord(event) {
-        var totalLevel = $('.totalLevel');
-
         stage1.closePopup();
         isWordGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  
-        $('.door').addClass('transparentDoor');
-        if($('.leafes')) $('.leafes').remove();
-        $(totalLevel).addClass('blinkAnimation');
-        $(totalLevel).on('click', function() {  
-            $(totalLevel).removeClass('blinkAnimation');
-            if(!isFlowGameOpened) moveToBox();
-        });    
+        $('.door').addClass('transparentDoor');        
     };
 
-    function moveToBox() {
-        isFlowGameOpened = true;
+    function moveToBox() {        
+        var stage_content = {
+            letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
+        };       
         $(hero).trigger('hero:moveBack', {distance: 450});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', function() {
+            if (isWordGameFinished ) return;
             stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
-                stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
+                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame); 
+                $('.totalLevel').remove(); 
             });
-        });
+        });        
     };
 
     function addFlowGame() {
+        isFlowGameOpened = true;
         $(hero).off('hero:heroHasCome');
         wade.init('src/js/flow.js');
         $('.popup').on('flowGameFinished', finishFlowGame); 
-        $('.popup').addClass('fixForFlowGame');
+        $('.popup').addClass('fixForFlowGame');       
     };
 
     function finishFlowGame() {
-        stage1.closePopup();
-        $('#inventory').trigger('inventory:addItem', {name:'.detail-2'});  
-        $('.totalLevel').remove();   
+        isFlowGameFinished = true;
+        $('#inventory').trigger('inventory:addItem', {name:'.detail-2'}); 
+        if($('.leafes')) $('.leafes').remove();
+        var totalLevel = $('.totalLevel');
+        $(totalLevel).addClass('blinkAnimation');
+        $(totalLevel).on('click', function() {  
+            $(totalLevel).removeClass('blinkAnimation');
+            if(isFlowGameFinished) moveToBox();
+        });    
+        stage1.closePopup();       
     };
    return stage1;
 });

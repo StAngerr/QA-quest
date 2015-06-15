@@ -11,6 +11,10 @@ define(function(require) {
     	$('.ladder').on('click',moveToLadder);
     };
 
+    function stageFinished() {
+
+    };
+
     function moveToLadder() {
 		if(isDotGameOpened) return;
 		isDotGameOpened = true;
@@ -26,7 +30,8 @@ define(function(require) {
 
     function startDotGame() {
     	var dotGame = new ClickOnDotGame();
-    	$('.startGameBtn').on('click', dotGame.startClickGame);
+
+    	$('.startGameBtn').on('click', dotGame.startClickGame); 
     };
 
     function ClickOnDotGame() {

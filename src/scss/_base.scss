@@ -31,30 +31,12 @@ main {
 a {
     cursor: pointer;
 }
-// animation to do moving image
-          
-@-webkit-keyframes test {
-    $percent: 0;
-    
-    @if $percent < 100 {
-        @for $i from 0 to 4 { 
-            $y:(-51 - $i*322); 
-            @for $j from 0 to 5 {
-                $x:(-92 - $j*240);
-                #{$percent * 1%} {                       
-                    background-position-x: #{$x}px;
-                    background-position-y: #{$y}px;
-                } 
-                $j: $j+1;
-                $percent: $percent+5;
-            }            
-            
-            $j: 0; 
-            $i: $i+1;             
-        }    
-    } 
-}
 
+@keyframes play {
+    0%{ background-position:  -91px -51px;}
+    50% {background-position:  -4898px -51px;}
+    100% {  background-position:  -91px -51px;}
+}
        
 #mainSection {
     position: relative;
@@ -72,10 +54,10 @@ a {
         z-index: 6;
         position: absolute;
         transform: translate(0px, 0px);
-        top: -188px;
+        top: 0px;
         left: 0px;
-        width: 55px;
-        height: 208px;
+        width: 150px;
+        height: 203px;
         background: #cf0;
         background-size: cover;
         font-size: 2.5em;        
@@ -88,27 +70,28 @@ a {
         &.hideHero {
             display: none;
         }
-        &.stay-left {
+        &.stand-left {
             background: url(../images/bot/bot_static_reverse.png) no-repeat;
-            background-position: -92px -51px;           
-            animation: test 0.01ms infinite; 
+            // background-position:  0px 0px;           
+            animation: play 4.6s steps(20) infinite; 
         }
-        &.stay-right {
+        &.stand-right {
             background: url(../images/bot/bot_static_direct.png) no-repeat;
-            background-position: -93px -51px;           
-            animation: test 0.01ms infinite;
-            -webkit-animation-timing-function: linear; 
+            // background-position:  0px 0px;           
+            animation: play 1s steps(20) infinite; 
         }
          &.move-right {
             background: url(../images/bot/bot_direct.png) no-repeat;
-            background-position: -93px -51px;           
-            animation: test 0.01ms infinite;
-            -webkit-animation-timing-function: linear; 
+            // background-position:  0px 0px;           
+            animation: play 1s steps(20) infinite; 
         }
-    }
-         
-    
- 
+       
+        &.move-left {
+            background: url(../images/bot/bot_reverse.png) no-repeat;
+            // background-position:  0px 0px;           
+            animation: play 2s steps(20) infinite; 
+        }
+   }  
 
     .popup-common {
         height: 100%;
@@ -123,14 +106,14 @@ a {
 
         .popup-btn {
             display: block;
-            width: 90%;
+            width: 30%;
             margin: 1em auto;
-            padding: 1em;
+            padding: .6em;
             border-radius: 10px;
             background: rgb(118, 76, 41);
             color: rgb(142, 184, 80);
             text-transform: uppercase;
-            font-size: 20px;
+            font-size: 28px;
         }  
     }    
 

@@ -11,9 +11,6 @@ define(function(require) {
 			wade.stop();
 			$('.bubbles-popup').remove();
 			$('#inventory').trigger('inventory:addItem',{name:'.detail-6'}); 
-	    setTimeout(function () {
-	    	$('#mainSection').trigger('main:stageFinished'); 
-	    }, 2500);
 		}	
 	};
 	return App;

@@ -13,7 +13,7 @@ define(function (require) {
     var isTicTacToeOpened = false;
 
     stage2.initEvents = function () {
-        var mainSection = $('#mainSection');
+        var mainSection = $('#mainSection'); 
 
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  565}});
         /* This event is needed to finish stage after finishing tic tac toe game.*/        
@@ -23,8 +23,8 @@ define(function (require) {
             }
         });      
         $('#inventory').show();
-        /*turnOffTheLight();
-        addFlashLightEvents();*/
+        turnOffTheLight();
+        addFlashLightEvents();
         $('.choosePic').on('click', openPictureGame);        
     };
 
@@ -131,7 +131,7 @@ define(function (require) {
                 '-webkit-clip-path': 'circle(130px at ' + (e.pageX -300) + 'px ' + e.pageY + 'px)',
                 'cursor': 'url("../images/flashlight.ico")'
             });
-            $('.flashLightShadow').css({
+            $('.flashLightShadow').css({/* DELETE*/
                 'top': (e.pageY - 100) + 'px',
                 'left': (e.pageX + 102) + 'px'
             });
@@ -144,18 +144,14 @@ define(function (require) {
         $('#stage2').removeClass('flashLight');
         $('.flashLightShadow').remove();
         $('#stage2').css({'-webkit-clip-path': 'none'});
-    };
-
-   
+    }; 
 
     function startTicTacToeGame() {
-        $('#ticTacToe').show();
+        $('#ticTacToe').show(); /* calss*/
         $('.field').on('click', function (event) {
-
             if(!canPlay) return false;          
             ticAppear($(this).attr('id'));
         }); 
-
         $('.newGameB').on('click', playAgain);     
          /*functions and variables to play tictictoe game*/
         var x = "src/images/x.png";
@@ -468,6 +464,7 @@ define(function (require) {
              logicOne();
             if (all == 2) {
                 // 0 won
+              
                 finishTicTacToe();            
             } else if (all == 1 || all == 3) {          
                 finishTicTacToe();
@@ -528,13 +525,11 @@ define(function (require) {
             t--;
         }
     };        
-    
      // end of game tictactoe
     function finishTicTacToe() {
-        $('.newGameB').css('visibility', 'hidden');        
+        $('.newGameB').css('visibility', 'hidden');  /* CLASS*/   
         $('#inventory').trigger('inventory:addItem', {name:'.detail-4'}); 
         $('#ticTacToe').remove();       
     };
-
     return stage2;
 });

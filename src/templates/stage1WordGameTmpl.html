@@ -4,7 +4,6 @@
 		<p class="subRulesPart">You should move them to text field.</p>
 	</div>	
 	<div class="makeWord" ></div>
-	<button id="sendWord" class="popup-btn">Send</button>
 	<div class="all-letters">
 		<% for(var i=0; i < letters.length; i++) {%>
 			<figure class="letters"> 
@@ -12,5 +11,6 @@
 				<span draggable="false"><%= letters[i].toUpperCase() %></span>
 			</figure>
 		<%}%>	
-	</div>		
+	</div>	
+	<button id="sendWord" class="popup-btn">Send</button>	
 </div>

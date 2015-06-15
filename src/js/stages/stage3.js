@@ -7,9 +7,19 @@ define(function(require) {
     var isStickGameOpened = false;
 
     stage3.initEvents = function() {
-    	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
+      	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
         $('#inventory').show();
         $('#stage3').on('click', moveToRiver);
+		$(mainSection).on('first:itemAdded', function(event, item) {
+		    if(item.name.indexOf('detail-6') !== -1) {
+		        if(!stage3.isStageFinished)  finishStage();
+		    }
+		});      
+    };
+
+    function finishStage() {
+    	stage3.isStageFinished = true;
+    	$('#mainSection').trigger('main:stageFinished'); 
     };
 
     function moveToRiver() {
@@ -18,9 +28,10 @@ define(function(require) {
         if(x <= 611 ) return false;
     	var x = event.pageX;
         var y = event.pageY;
+
         $(hero).trigger('hero:moveForward', {distance: 285});
         $(hero).on('hero:heroHasCome', openDotGame);    	
-    };
+    }; 
 
     function openDotGame() {
 		stage3.getTmpl('popupFrameTmpl.html').then(function() {
