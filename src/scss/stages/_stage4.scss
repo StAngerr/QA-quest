@@ -61,7 +61,7 @@
             background: #ECF4DD url("../images/infoBackground.png") no-repeat 91px 26px;
         }
 
-        .startGameBtn {
+        .startGameBtn, .retryBtn {
             position: relative;
             top: 229px;
             left: 226px;
@@ -141,11 +141,27 @@
             background-position: 50% 50%;
         }
 
+        .attempts {
+            position: absolute;
+            width: 20%; 
+            height: 30%;
+            top: 40px;
+            left: 249px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 20px;
+            
+            .attemptCount {
+                display: block;
+                margin-top: 10px;
+            }
+        }
+
         .gameResults {
             position: absolute;
             width: 19%;
             height: 30%;
-            top: 101px;
+            top: 131px;
             left: 249px;
             margin: 0 auto;
             text-align: center;

@@ -31,7 +31,7 @@ define(function(require) {
     function startDotGame() {
     	var dotGame = new ClickOnDotGame();
 
-    	$('.startGameBtn').on('click', dotGame.startClickGame); 
+    	$('.startGameBtn, .retryBtn').on('click', dotGame.startClickGame); 
     };
 
     function ClickOnDotGame() {
@@ -44,16 +44,23 @@ define(function(require) {
 		var minTop = 70; /*correction because there are stat-blocks on the top of game field*/
 		/*intervals*/
 		var gameTime;
+		var attempts = 3;
 
 		this.startClickGame = function() {
 			onGameInterface();
 			createNewDot();
 			showVisualization();
+			attempts--;
 			gameTime = setInterval(function() {
 				seconds -= 0.1;
 				if( seconds <= 0) { 
 					clearInterval(gameTime);
-					finishGame();
+					if((points >= 30) || (attempts == 0)) {
+						finishGame();
+					} else {
+						onInfoInterface();
+						resetTimerAndPoints();
+					}
 				}
 			}, 100);
 		};
@@ -74,14 +81,18 @@ define(function(require) {
 			$('.playGround .gameResults').addClass('closeBlock');
 			$('.playGround').removeClass('infoBackground');
 			$('.startGameBtn').addClass('closeBlock');
+			$('.retryBtn').addClass('closeBlock');
 			$('.clickCounter').removeClass('closeBlock');
 			$('.timer').removeClass('closeBlock');
+			$('.attempts').addClass('closeBlock');
 		};
 
 		function onInfoInterface() {
 			$('.playGround > .dot, .playGround > .fakeDot').remove();
 			$('.playGround .gameResults').removeClass('closeBlock');
-			$('.startGameBtn').removeClass('closeBlock');
+			$('.retryBtn').removeClass('closeBlock');
+			$('.attempts').removeClass('closeBlock');
+			//$('.startGameBtn').removeClass('closeBlock');
 			$('.clickCounter').addClass('closeBlock');
 			$('.timer').addClass('closeBlock');
 		};
@@ -91,16 +102,8 @@ define(function(require) {
 			onInfoInterface();
 			clearInterval(gameTime);
 			resetTimerAndPoints();
+			stage4.closePopup();
 			$('#inventory').trigger('inventory:addItem',{name:'.detail-7'}); 
-			// ADD INVENTORY!!!!!!!!!!!!!!
-			// temp code remove it later
-/*			$('.popupWrap').remove();
-			$('#hero').show();
-			$('.ladder').animate({'height':'433px'}, 1000, function() {				
-				$('.man'). animate ({'top':'190px', 'left':'642px'}, 2000, function(){
-					// popup in the shuttle
-				})
-			});*/
 		};
 
 		function resetTimerAndPoints() {
@@ -108,6 +111,7 @@ define(function(require) {
 			points = 0;
 			totalTime = 1;
 			$('.clickCounter .points').text(points);
+			$('.attempts .attemptCount').text(attempts);
 		};
 
 		function createNewDot() {
