@@ -17,8 +17,24 @@
 		width: 42px;
 		height: 143px;
 		background: url('../images/Screen_4_ladder.png') no-repeat 0 0;
+
+        &.show-ladder {
+            animation: showLadder 1s;
+            height: 459px;
+        }
 		
 	}
+    .cabin {
+        background: url('http://sdelanounas.ru/i/a/w/aWMucGljcy5saXZlam91cm5hbC5jb20vaXZrdWRyaXl2aW4vMzAyMzE4OTAvMzMyNjIzLzMzMjYyM19vcmlnaW5hbC5qcGc_X19pZD0zMDIzNA==.jpg');
+    }
+}
+@-webkit-keyframes showLadder {
+    from {
+        height: 143px
+    }
+    to {
+        height: 459px;
+    }
 }
 #gameField {
 	width: 100%;

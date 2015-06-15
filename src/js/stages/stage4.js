@@ -8,24 +8,43 @@ define(function(require) {
     stage4.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
-    	$('.ladder').on('click',moveToLadder);
+    	$('.ladder').on('click', moveToLadder);
+    	$(mainSection).on('first:itemAdded', function(event, item) {
+	    	if(item.name.indexOf('detail-7') !== -1) {
+	       	$('.ladder').addClass('show-ladder');
+	       	// hero UP!!!
+	       $(hero).hide(); // remove it
+	       setTimeout(insideCabin, 3200);	
+	      }
+	    	
+			}); 
     };
 
     function stageFinished() {
 
     };
-
+    function insideCabin () {
+			stage4.getTmpl('popupFrameTmpl.html').then(function() {
+				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
+			});
+		};
+		
+		function start404Task () {
+			$('.popup-btn').on('click', function(){
+				stage4.closePopup();
+			})
+		}
     function moveToLadder() {
-		if(isDotGameOpened) return;
-		isDotGameOpened = true;
-		$(hero).trigger('hero:moveForward', {distance: 602});
-		$(hero).on('hero:heroHasCome', loadDotGame);	
+			if(isDotGameOpened) return;
+			isDotGameOpened = true;
+			$(hero).trigger('hero:moveForward', {distance: 602});
+			$(hero).on('hero:heroHasCome', loadDotGame);	
     };
 
     function loadDotGame() {
-		stage4.getTmpl('popupFrameTmpl.html').then(function() {
-			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
-		});
+			stage4.getTmpl('popupFrameTmpl.html').then(function() {
+				stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
+			});
     };
 
     function startDotGame() {
@@ -103,12 +122,11 @@ define(function(require) {
 			clearInterval(gameTime);
 			resetTimerAndPoints();
 			stage4.closePopup();
-			$('#inventory').trigger('inventory:addItem',{name:'.detail-7'}); 
-			
+			$('#inventory').trigger('inventory:addItem',{name:'.detail-7'}); 			
 			setTimeout(function() {
-
-			$('#inventory').trigger('inventory:addAllItems');
+				$('#inventory').trigger('inventory:addAllItems');				
 			}, 3000);
+			
 		};
 
 		function resetTimerAndPoints() {
@@ -275,6 +293,6 @@ define(function(require) {
 					$('.underDotMsg').remove();
 				});
 		};
-    };
+  };
     return stage4;
 });
