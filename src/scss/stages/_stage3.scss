@@ -8,42 +8,9 @@
 		width: 800px;
 		height: 850px;
 
-		// 	#wade_main_div {
-//     position: absolute;    
-//     max-width: 1230px;
-//     max-height: 730px; 
-//     width: 330px;
-//     height:330px;   
-//     z-index: 13;
-//     margin: 0 auto;
-//     padding: 0;
-//     left: 350px;
-//     top: 60px;
-//     outline: none;
-
-//     canvas#wade_layer_5 {
-//     position: absolute;    
-//     max-width: 320px;
-//     max-height: 320px;
-//     width: 320px;
-//     height: 320px;
-//     border: none;
-//     }
-
-//     canvas#wade_layer_1 {
-//      position: absolute;
-//      max-width: 1210px;
-//      max-height: 620px;
-//      top: 0;
-//      left: -100px;
-
-
-
-//     }
-// }
+		
 		div#wade_main_div {
 			margin: 0 !important;
-			//border: 2px solid blue;
 			position: relative;
 			top: 120px;
 			left: -150px;
@@ -59,15 +26,8 @@
 				max-height: 750px;
 				margin: 0 !important;
 				left: -85px !important;
-
-			}
-
-			 canvas#wade_layer_5{
-			 	
-			 }
-		}
-	
-		
+			}			 
+		}	
 	}
 }
 

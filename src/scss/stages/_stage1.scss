@@ -158,12 +158,54 @@
      max-width: 1210px;
      max-height: 620px;
      top: 0;
-     //left: -150px;
-
-}
+     }
 
     }
 }
+@media screen and (max-width: 1720px) and (min-width: 1401px){
+	div.popup.fixForFlowGame {
+		#wade_main_div {
+    position: absolute;    
+    max-width: 70%;
+    max-height: 730px; 
+    width: 330px;
+    height: 330px;   
+    z-index: 13;
+    margin: 0 auto;
+    padding: 0;
+    left: 14%;
+    top: 60px;
+    outline: none;
 
+    canvas#wade_layer_5 {
+    position: absolute;    
+    max-width: 35%;
+    max-height: 340px;
+    width: 320px;
+    height: 320px;
+    border: 2px solid rgb(113, 104, 89);
+    }
 
+    canvas#wade_layer_1 {
+     position: absolute;
+     max-width: 97%;
+     max-height: 620px;
+     top: 0;
+     }
+
+    }
+	}
+}
+
+@media screen and (max-width: 1400px) and (min-width: 1080px) {
+	div.popup.fixForFlowGame {
+		#wade_main_div {
+			max-width: 100%;
+			 left: 0;
+			  canvas#wade_layer_1 {
+			  	max-width: 65%;
+			 }
+		}
+	}
+}
 
