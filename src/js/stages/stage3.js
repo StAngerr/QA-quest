@@ -34,12 +34,14 @@ define(function(require) {
     }; 
 
     function openDotGame() {
+    $('.man').addClass('hideHero');
 		stage3.getTmpl('popupFrameTmpl.html').then(function() {
 			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
 		});
     };
 
 	function bubbleStart() {
+
 	   $('.popupWrap').remove();/*!!!*/ 
 	    stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, SOME);  
     };

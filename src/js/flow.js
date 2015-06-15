@@ -19,7 +19,7 @@ define(function(require) {
         	gameState = 'loading';
         	 /*clear scene from level grid */
         	wade.clearScene();
-            wade.setScreenSize(760, 500);
+            wade.setScreenSize(700, 500);
             var screenWidth = wade.getScreenWidth();
             var screenHeight = wade.getScreenHeight();   
           
@@ -59,6 +59,7 @@ define(function(require) {
             this.levelData = levelData;
             gameState = 'playing';
             var minSize = Math.min(wade.getScreenWidth(), wade.getScreenHeight());
+
         	var cellSize = minSize / numCells;
         	/*when resizeng*/
         	wade.setMinScreenSize(minSize, minSize);
