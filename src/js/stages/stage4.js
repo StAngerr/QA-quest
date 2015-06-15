@@ -35,7 +35,7 @@ define(function(require) {
     };
 
     function ClickOnDotGame() {
-    	var singleGameTime = 5;
+    	var singleGameTime = 1;
 		var points = 0;
 		var seconds = singleGameTime;
 		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
@@ -44,7 +44,7 @@ define(function(require) {
 		var minTop = 70; /*correction because there are stat-blocks on the top of game field*/
 		/*intervals*/
 		var gameTime;
-		var attempts = 3;
+		var attempts = 1;
 
 		this.startClickGame = function() {
 			onGameInterface();
@@ -104,6 +104,11 @@ define(function(require) {
 			resetTimerAndPoints();
 			stage4.closePopup();
 			$('#inventory').trigger('inventory:addItem',{name:'.detail-7'}); 
+			
+			setTimeout(function() {
+
+			$('#inventory').trigger('inventory:addAllItems');
+			}, 3000);
 		};
 
 		function resetTimerAndPoints() {

@@ -42,10 +42,13 @@ define(function(require) {
         };
 
         function initInventoryModuleEvents() {  
-            var module = $('#inventory');         
+            var module = $('#inventory');  
             
             $(module).on('inventory:addItem', function(event, item) {
                 quest.inventory.addItem(event, item.name);
+            });
+            $(module).on('inventory:addAllItems', function() {
+                quest.inventory.addAllItemsAnimation();
             });
         };
 

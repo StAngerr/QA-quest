@@ -23,8 +23,8 @@ define(function (require) {
             }
         });      
         $('#inventory').show();
-        turnOffTheLight();
-        addFlashLightEvents();
+       /* turnOffTheLight();
+        addFlashLightEvents();*/
         $('.choosePic').on('click', openPictureGame);        
     };
 

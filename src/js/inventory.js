@@ -1,19 +1,32 @@
 define(function() {
 	var Inventory = function() {
-		this.activateItem = function(event, item) {			
-			$(item).removeClass('noItem').addClass('activeItem');	 
-		};
-
 		this.addItem = function(event, itemName) {
 			var timeout;
 			var module = $('#mainSection');
 			
-			$(itemName).addClass('addAnimation');
+			$(itemName).addClass('addAnimation').removeClass('noItem');
 			timeout = setTimeout(function() {
 				$(module).trigger('first:itemAdded', {name: itemName});
 				clearTimeout(timeout);
 			}, 2600);			
+		};
+
+		this.addAllItemsAnimation = function() {
+			var allItems = $('.itemIcon');
+
+			$(allItems).removeClass('addAnimation');
+			$(allItems).addClass('allToTopAnimation');
+			setTimeout(function() {
+				$(allItems).remove()
+				closeInventory();
+			}, 1300);
 		};		
+		
+		function closeInventory() {
+			$('#inventory').animate({'opacity':'0'}, 300, function() {
+				$(this).remove();
+			});
+		};
 	}
 	return Inventory;
 });
