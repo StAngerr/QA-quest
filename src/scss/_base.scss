@@ -33,9 +33,9 @@ a {
 }
 
 @keyframes play {
-    0%{ background-position:  -91px -51px;}
-    50% {background-position:  -4898px -51px;}
-    100% {  background-position:  -91px -51px;}
+    0%{ background-position:  -102px -51px;}
+   // 50% {background-position:  -4898px -51px;}
+    100% {  background-position:  -4898px -51px;}
 }
        
 #mainSection {
@@ -87,9 +87,9 @@ a {
         }
        
         &.move-left {
-            background: url(../images/bot/bot_reverse.png) no-repeat;
+            background: url(../images/bot/folder/bot_static_direct_line.png) no-repeat;
             // background-position:  0px 0px;           
-            animation: play 2s steps(20) infinite; 
+            animation: play 2s steps(20) infinite;
         }
    }  
 
