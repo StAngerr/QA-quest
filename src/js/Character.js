@@ -6,18 +6,32 @@ define(function (require) {
 		var animationTime = 2; /* seconds */
 
 		this.moveForward = function(distance) {
-			if(checkPosition(distance)) return; 
+			if(checkPosition(distance)) return;
+			$('#hero')
+				.removeClass('stand-right')
+				.removeClass('stand-left')
+				.removeClass('move-right')   
+				.removeClass('move-left'); 
+			$('#hero').addClass('move-right');
 			$(hero).css('-webkit-transform', 'translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
+				$('#hero').removeClass('move-right').addClass('stand-right');
 				hasСome();
 				clearTimeout(timer);
 			}, (animationTime * 1000) + 10);
 		};	
 
 		this.moveBack = function(distance) {
-			if(checkPosition(distance)) return; 
+			if(checkPosition(distance)) return;
+			$('#hero')
+				.removeClass('stand-right')
+				.removeClass('stand-left')
+				.removeClass('move-right')   
+				.removeClass('move-left');
+			$('#hero').addClass('move-left');	 
 			$(hero).css('-webkit-transform','translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
+				$('#hero').removeClass('move-left').addClass('stand-left');	 
 				hasСome();
 				clearTimeout(timer);
 			}, (animationTime * 1000) + 10);

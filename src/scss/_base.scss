@@ -20,7 +20,9 @@ body {
     font-family: 'Noto Sans', sans-serif;    
 }
 
-
+button {
+    ountline: none;
+}
 main {
     position: relative;
     display: block;
@@ -32,11 +34,6 @@ a {
     cursor: pointer;
 }
 
-@keyframes play {
-    0%{ background-position:  -102px -51px;}
-   // 50% {background-position:  -4898px -51px;}
-    100% {  background-position:  -4898px -51px;}
-}
        
 #mainSection {
     position: relative;
@@ -70,26 +67,28 @@ a {
         &.hideHero {
             display: none;
         }
-        &.stand-left {
-            background: url(../images/bot/bot_static_reverse.png) no-repeat;
-            // background-position:  0px 0px;           
-            animation: play 4.6s steps(20) infinite; 
-        }
         &.stand-right {
-            background: url(../images/bot/bot_static_direct.png) no-repeat;
-            // background-position:  0px 0px;           
-            animation: play 1s steps(20) infinite; 
+            background: url(../images/bot/folder/bot_static_direct_line.png) no-repeat;         
+            animation: play 2s steps(20) infinite; 
         }
-         &.move-right {
-            background: url(../images/bot/bot_direct.png) no-repeat;
-            // background-position:  0px 0px;           
-            animation: play 1s steps(20) infinite; 
+        &.stand-left {
+            background: url(../images/bot/folder/bot_static_reverse_line.png) no-repeat;         
+            animation: play 2s steps(20) infinite; 
         }
-       
+        &.move-right {
+            background: url(../images/bot/folder/bot_walk_direct_line.png) no-repeat;        
+            animation: play 2s steps(20) infinite; 
+        }
         &.move-left {
-            background: url(../images/bot/folder/bot_static_direct_line.png) no-repeat;
-            // background-position:  0px 0px;           
+            background: url(../images/bot/folder/bot_walk_reverse_line.png) no-repeat;     
             animation: play 2s steps(20) infinite;
+        }
+
+
+        @keyframes play {
+            0%{ background-position:  -90px -51px;}
+           // 50% {background-position:  -4898px -51px;}
+            100% {  background-position:  -4898px -51px;}
         }
    }  
 
