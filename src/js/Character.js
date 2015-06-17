@@ -3,7 +3,7 @@ define(function (require) {
 		var positionX = 0;
 		var positionY = 426;
 		var hero = $('#hero');
-		var animationTime = 2; /* seconds */
+		var animationTime = 3; /* seconds */
 
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
@@ -20,7 +20,7 @@ define(function (require) {
 			
 				clearTimeout(timer);
 					hasСome();
-			}, (animationTime * 830) + 10);
+			}, (animationTime * 1000) + 10);
 		};	
 
 		this.moveBack = function(distance) {
