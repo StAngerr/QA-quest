@@ -107,8 +107,8 @@
 				
 				span {
 					position: absolute;
-					top: 10px;
-					left: 15%;
+					top: 4px;
+					left: 5px;
 					height: 69px;
 					width: 51px;
 					font-size: 30pt;
@@ -116,7 +116,9 @@
 					font-weight: 800;
 				}
 			}
-			
+			.all-letters {
+				min-height: 100px;
+			}
 			.makeWord {
 				width: 90%;
 				min-height: 100px;
@@ -178,33 +180,35 @@
     outline: none;
 
     canvas#wade_layer_5 {
-    position: absolute;    
-    max-width: 35%;
-    max-height: 340px;
-    width: 320px;
-    height: 320px;
-    border: 2px solid rgb(113, 104, 89);
+	    position: absolute;    
+	    max-width: 35%;
+	    max-height: 340px;
+	    width: 320px;
+	    height: 320px;
+	    border: 2px solid rgb(113, 104, 89);
     }
 
     canvas#wade_layer_1 {
-     position: absolute;
-     max-width: 97%;
-     max-height: 620px;
-     top: 0;
-     }
-
+	     position: absolute;
+	     max-width: 97%;
+	     max-height: 620px;
+	     top: 0;
+    }
     }
 	}
 }
 
 @media screen and (max-width: 1400px) and (min-width: 1080px) {
-	div.popup.fixForFlowGame {
-		#wade_main_div {
-			max-width: 100%;
-			 left: 0;
-			  canvas#wade_layer_1 {
-			  	max-width: 65%;
-			 }
+	div.popup.fixForFlowGame {		
+		#wade_main_div {			
+			left: 0;
+			 canvas#wade_layer_5 {		        
+		    max-width: 40%;
+		    max-height: 360px;		    
+    	}
+    	canvas#wade_layer_1 {	    
+	      max-width: 80%;	      		  	
+			}
 		}
 	}
 }
