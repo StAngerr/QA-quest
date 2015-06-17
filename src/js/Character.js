@@ -3,7 +3,7 @@ define(function (require) {
 		var positionX = 0;
 		var positionY = 426;
 		var hero = $('#hero');
-		var animationTime = 3; /* seconds */
+		var animationTime = 1; /* seconds */
 
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
@@ -14,13 +14,14 @@ define(function (require) {
 				.removeClass('move-right')   
 				.removeClass('move-left'); 
 			$('#hero').addClass('move-right');
-			$(hero).css('-webkit-transform', 'translate(' + distance + 'px, ' + positionY + 'px)');
+			test(distance);
+/*			$(hero).css('-webkit-transform', 'translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
 				$('#hero').removeClass('move-right').addClass('stand-right');
 			
 				clearTimeout(timer);
 					hasСome();
-			}, (animationTime * 1000) + 10);
+			}, (animationTime * 1000) + 10);*/
 		};	
 
 		this.moveBack = function(distance) {
@@ -31,14 +32,53 @@ define(function (require) {
 				.removeClass('stand-left')
 				.removeClass('move-right')   
 				.removeClass('move-left');
-			$('#hero').addClass('move-left');	 
-			$(hero).css('-webkit-transform','translate(' + distance + 'px, ' + positionY + 'px)');
+			$('#hero').addClass('move-left');
+			test1(distance);	 
+/*			$(hero).css('-webkit-transform','translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
 				$('#hero').removeClass('move-left').addClass('stand-left');	 
 				hasСome();
 				clearTimeout(timer);
-			}, (animationTime * 900) + 10);
+			}, (animationTime * 1200) + 50);*/
 		};
+
+		function test(distance) {
+			var fps = 50;
+			var timer = setInterval(some, 1000/fps);
+			
+			function some() {
+				var curY = parseInt($(hero).css('transform').split(',')[5]);
+				var curX = parseInt($(hero).css('transform').split(',')[4]);
+				
+				if(curX >= distance) {
+					clearInterval(timer);
+					$('#hero').removeClass('move-right').addClass('stand-right');
+					hasСome();
+					return;
+				}
+				$(hero).css('-webkit-transform', 'translate(' + (curX + 5) + 'px, ' + positionY + 'px)');	
+			}
+		};
+
+
+		function test1(distance) {
+			var fps = 50;
+			var timer = setInterval(some, 1000/fps);
+			
+			function some() {
+				var curY = parseInt($(hero).css('transform').split(',')[5]);
+				var curX = parseInt($(hero).css('transform').split(',')[4]);
+				
+				if(curX <= distance) {
+					clearInterval(timer);
+					$('#hero').removeClass('move-right').addClass('stand-right');
+					hasСome();
+					return;
+				}
+				$(hero).css('-webkit-transform', 'translate(' + (curX - 5) + 'px, ' + positionY + 'px)');
+			}
+		};
+
 
 		this.climbUp = function() {
 			$('#hero')
@@ -47,7 +87,6 @@ define(function (require) {
 				.removeClass('move-right')   
 				.removeClass('move-left');
 			$('#hero').addClass('climb-up');
-			console.log('X: ' + positionX, 'Y: ' + positionY);
 			$(hero).css('-webkit-transform','translate(' + positionX + 'px, ' + 100 + 'px)');
 			var timer = setTimeout(function() {
 				hasСome();
