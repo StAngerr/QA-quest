@@ -35,6 +35,7 @@ define(function (require) {
     };
 
     function openPictureGame() {
+        if (isTicTacToeOpened) return;
         $(hero).trigger('hero:moveForward', {distance: 450}); 
         $(hero).on('hero:heroHasCome', function() {
             if(!canPlay) {

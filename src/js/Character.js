@@ -17,9 +17,10 @@ define(function (require) {
 			$(hero).css('-webkit-transform', 'translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
 				$('#hero').removeClass('move-right').addClass('stand-right');
-				hasСome();
+			
 				clearTimeout(timer);
-			}, (animationTime * 500) + 10);
+					hasСome();
+			}, (animationTime * 830) + 10);
 		};	
 
 		this.moveBack = function(distance) {
@@ -36,7 +37,7 @@ define(function (require) {
 				$('#hero').removeClass('move-left').addClass('stand-left');	 
 				hasСome();
 				clearTimeout(timer);
-			}, (animationTime * 500) + 10);
+			}, (animationTime * 900) + 10);
 		};
 
 		this.climbUp = function() {
@@ -68,7 +69,10 @@ define(function (require) {
 		};
 
 		function hasСome() {
-			$(hero).trigger('hero:heroHasCome');
+			setTimeout(function() {
+				$(hero).trigger('hero:heroHasCome');
+			}, 600);
+			
 		};
 
 		function checkPosition(posX) {

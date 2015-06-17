@@ -54,7 +54,7 @@ a {
         top: 0px;
         left: 0px;
         width: 55px;
-        height: 203px;
+        height: 202px;
         background: #cf0;
         background-size: cover;
         font-size: 2.5em;        
@@ -85,7 +85,8 @@ a {
         }
         &.climb-up {
             background: url(../images/bot/folder/bot_up_line.png) no-repeat;     
-            animation: play .7s steps(20) infinite;            
+            animation: play .7s steps(20) infinite;  
+            width: 80px;          
         }
       
         @keyframes play {
