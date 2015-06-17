@@ -57,9 +57,7 @@ a {
         height: 202px;
         background: #cf0;
         background-size: cover;
-        font-size: 2.5em;        
-
-        transition: transform 3s linear;
+        font-size: 2.5em;
 
         &.animFix {
             transition: none;
@@ -84,9 +82,10 @@ a {
             animation: play .2s steps(20) infinite;
         }
         &.climb-up {
+            width: 80px;          
+            transition: transform 2s linear;
             background: url(../images/bot/folder/bot_up_line.png) no-repeat;     
             animation: play .7s steps(20) infinite;  
-            width: 80px;          
         }
       
         @keyframes play {
