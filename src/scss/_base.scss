@@ -83,12 +83,18 @@ a {
             background: url(../images/bot/folder/bot_walk_reverse_line.png) no-repeat;     
             animation: play 2s steps(20) infinite;
         }
-
+        &.climb-up {
+            background: url(../images/bot/folder/bot_up_line.png) no-repeat;     
+            animation: play .7s steps(20) infinite;            
+        }
+        /* @keyframes climb {
+            0%{ background-position:  -90px -51px;}
+            100% {  background-position:  -4890px -51px;}
+        } */
 
         @keyframes play {
             0%{ background-position:  -90px -51px;}
-           // 50% {background-position:  -4898px -51px;}
-            100% {  background-position:  -4898px -51px;}
+            100% {  background-position:  -4890px -51px;}
         }
    }  
 

@@ -6,18 +6,20 @@ define(function(require) {
     var isDotGameOpened = false;
 
     stage4.initEvents = function() {
-    	insideCabin();
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
     	$('.ladder').on('click', moveToLadder);
     	$(mainSection).on('first:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-7') !== -1) {
 	       	$('.ladder').addClass('show-ladder');
-	       	// hero UP!!!
-	        $(hero).hide(); // remove it
-	        setTimeout(insideCabin, 3200);	
+	       	$('.ladder').on('click',climbUpToShip);   		
 	      }
 		}); 
+    };
+
+    function climbUpToShip() {
+    	$('#hero').trigger('hero:climbUp');
+    	$('#hero').on('hero:heroHasCome', insideCabin);
     };
 
     function stageFinished() {
@@ -44,15 +46,15 @@ define(function(require) {
 		stage4.getTmpl('iframeWith404.html','.popup');
 	};
 
-
     function moveToLadder() {
 		if(isDotGameOpened) return;
 		isDotGameOpened = true;
-		$(hero).trigger('hero:moveForward', {distance: 602});
+		$(hero).trigger('hero:moveForward', {distance: 625});
 		$(hero).on('hero:heroHasCome', loadDotGame);	
     };
 
     function loadDotGame() {
+    	$(hero).trigger('hero:clearHasComeEvent');
 		stage4.getTmpl('popupFrameTmpl.html').then(function() {
 			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
 		});
@@ -262,6 +264,7 @@ define(function(require) {
 				top: parseInt( $(this).css('transform').split(',')[5], 10),
 			 	left: parseInt( $(this).css('transform').split(',')[4], 10)
 			};
+
 			seconds -= 0.2;
 			showClickResult('-0.2 sec', coordinates);
 			$(this).remove();

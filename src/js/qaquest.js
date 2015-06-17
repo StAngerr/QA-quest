@@ -61,6 +61,9 @@ define(function(require) {
             $(module).on('hero:moveBack', function(event, move) {
                 quest.character.moveBack(move.distance);
             });
+            $(module).on('hero:climbUp', function() {
+                quest.character.climbUp();
+            });
             $(module).on('hero:initialPosition', function(event, position) {
                 quest.character.setStartPosition(position.coordinates);
             });

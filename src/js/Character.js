@@ -7,6 +7,7 @@ define(function (require) {
 
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
+			positionX = distance;
 			$('#hero')
 				.removeClass('stand-right')
 				.removeClass('stand-left')
@@ -23,6 +24,7 @@ define(function (require) {
 
 		this.moveBack = function(distance) {
 			if(checkPosition(distance)) return;
+			positionX = distance;
 			$('#hero')
 				.removeClass('stand-right')
 				.removeClass('stand-left')
@@ -35,6 +37,21 @@ define(function (require) {
 				hasСome();
 				clearTimeout(timer);
 			}, (animationTime * 1000) + 10);
+		};
+
+		this.climbUp = function() {
+			$('#hero')
+				.removeClass('stand-right')
+				.removeClass('stand-left')
+				.removeClass('move-right')   
+				.removeClass('move-left');
+			$('#hero').addClass('climb-up');
+			console.log('X: ' + positionX, 'Y: ' + positionY);
+			$(hero).css('-webkit-transform','translate(' + positionX + 'px, ' + 100 + 'px)');
+			var timer = setTimeout(function() {
+				hasСome();
+				clearTimeout(timer);
+			}, (animationTime * 1000) + 10);						
 		};
 
 		this.setStartPosition = function(coordinates) { 
