@@ -56,7 +56,7 @@
 			"type": "SceneObject",
 			"position": {
 				"x": 250.755,
-				"y": -264.03499999999994
+				"y": -284.03499999999994
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -72,7 +72,7 @@
 					"layer": 1,
 					"size": {
 						"x": 273.7545400184968,
-						"y": 18.130013582784983
+						"y": 8.130013582784983
 					},
 					"autoResize": false,
 					"visible": false,
@@ -102,7 +102,7 @@
 				"isStar": true
 			},
 			"functions": {
-				"onClick": "function (data)\n{\n\n}"
+				
 			}
 		},
 		{
