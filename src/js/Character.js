@@ -7,14 +7,14 @@ define(function (require) {
 
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
-			positionX = distance;
+			//positionX = distance;
 			$('#hero')
 				.removeClass('stand-right')
 				.removeClass('stand-left')
 				.removeClass('move-right')   
 				.removeClass('move-left'); 
 			$('#hero').addClass('move-right');
-			test(distance);
+			moveAnimation(distance);
 /*			$(hero).css('-webkit-transform', 'translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
 				$('#hero').removeClass('move-right').addClass('stand-right');
@@ -33,7 +33,7 @@ define(function (require) {
 				.removeClass('move-right')   
 				.removeClass('move-left');
 			$('#hero').addClass('move-left');
-			test1(distance);	 
+			moveAnimation(distance);	 
 /*			$(hero).css('-webkit-transform','translate(' + distance + 'px, ' + positionY + 'px)');
 			var timer = setTimeout(function() {
 				$('#hero').removeClass('move-left').addClass('stand-left');	 
@@ -42,26 +42,33 @@ define(function (require) {
 			}, (animationTime * 1200) + 50);*/
 		};
 
-		function test(distance) {
+		function moveAnimation(distance) {
 			var fps = 50;
+			var forward = (distance > positionX) ? true : false;
 			var timer = setInterval(some, 1000/fps);
 			
 			function some() {
 				var curY = parseInt($(hero).css('transform').split(',')[5]);
 				var curX = parseInt($(hero).css('transform').split(',')[4]);
+				var step = (forward) ? curX + 5 : curX - 5;
 				
-				if(curX >= distance) {
+				if( (forward && curX >= distance) || (!forward && curX <= distance)) {
 					clearInterval(timer);
-					$('#hero').removeClass('move-right').addClass('stand-right');
+					$('#hero')
+						.removeClass('stand-right')
+						.removeClass('stand-left')
+						.removeClass('move-right')   
+						.removeClass('move-left');
+					$('#hero').addClass('stand-right');
 					hasСome();
 					return;
 				}
-				$(hero).css('-webkit-transform', 'translate(' + (curX + 5) + 'px, ' + positionY + 'px)');	
-			}
+				$(hero).css('-webkit-transform', 'translate(' + (step) + 'px, ' + positionY + 'px)');	
+			};
 		};
 
 
-		function test1(distance) {
+		/*function test1(distance) {
 			var fps = 50;
 			var timer = setInterval(some, 1000/fps);
 			
@@ -77,8 +84,7 @@ define(function (require) {
 				}
 				$(hero).css('-webkit-transform', 'translate(' + (curX - 5) + 'px, ' + positionY + 'px)');
 			}
-		};
-
+		};*/
 
 		this.climbUp = function() {
 			$('#hero')
@@ -111,7 +117,6 @@ define(function (require) {
 			setTimeout(function() {
 				$(hero).trigger('hero:heroHasCome');
 			}, 600);
-			
 		};
 
 		function checkPosition(posX) {
