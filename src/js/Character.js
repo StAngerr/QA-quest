@@ -7,22 +7,22 @@ define(function (require) {
 
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
-			clearClass();
+			clearClasses();
 			$('#hero').addClass('move-right');
 			moveAnimation(distance);
 		};	
 
 		this.moveBack = function(distance) {
 			if(checkPosition(distance)) return;
-			clearClass();
-			$('#hero').addClass('move-left');
+			clearClasses();
+			$(hero).addClass('move-left');
 			moveAnimation(distance);	 
 		};
 
 		function moveAnimation(distance) {
 			var fps = 50;
 			var forward = (distance > positionX) ? true : false;
-			var timer = setInterval(animation, 1000/fps);
+			var timer = setInterval(animation, 1000 / fps);
 			positionX = distance;
 
 			function animation() {
@@ -32,8 +32,8 @@ define(function (require) {
 				
 				if( (forward && curX >= distance) || (!forward && curX <= distance)) {
 					clearInterval(timer);
-					clearClass();
-					(forward) ? $('#hero').addClass('stand-right') : $('#hero').addClass('stand-left');
+					clearClasses();
+					(forward) ? $(hero).addClass('stand-right') : $(hero).addClass('stand-left');
 					hasСome();
 					return;
 				}
@@ -41,18 +41,18 @@ define(function (require) {
 			};
 		};
 
-		function clearClass() {
-			var classList = $('#hero').attr('class').split(/\s+/);
+		function clearClasses() {
+			var classList = $(hero).attr('class').split(/\s+/);
 			var pattern = /stand-|move-/;
 			
 			$.each(classList, function(index, item){
-				if(pattern.test(item)) $('#hero').removeClass(item);
+				if(pattern.test(item)) $(hero).removeClass(item);
 			});
 		};
 
 		this.climbUp = function() {
-			clearClass();
-			$('#hero').addClass('climb-up');
+			clearClasses();
+			$(hero).addClass('climb-up');
 			$(hero).css('-webkit-transform','translate(' + positionX + 'px, ' + 100 + 'px)');
 			var timer = setTimeout(function() {
 				hasСome();
