@@ -53,7 +53,7 @@ a {
         transform: translate(0px, 0px);
         top: 0px;
         left: 0px;
-        width: 150px;
+        width: 55px;
         height: 203px;
         background: #cf0;
         background-size: cover;
@@ -77,21 +77,17 @@ a {
         }
         &.move-right {
             background: url(../images/bot/folder/bot_walk_direct_line.png) no-repeat;        
-            animation: play 2s steps(20) infinite; 
+            animation: play .3s steps(20) infinite; 
         }
         &.move-left {
             background: url(../images/bot/folder/bot_walk_reverse_line.png) no-repeat;     
-            animation: play 2s steps(20) infinite;
+            animation: play .2s steps(20) infinite;
         }
         &.climb-up {
             background: url(../images/bot/folder/bot_up_line.png) no-repeat;     
             animation: play .7s steps(20) infinite;            
         }
-        /* @keyframes climb {
-            0%{ background-position:  -90px -51px;}
-            100% {  background-position:  -4890px -51px;}
-        } */
-
+      
         @keyframes play {
             0%{ background-position:  -90px -51px;}
             100% {  background-position:  -4890px -51px;}

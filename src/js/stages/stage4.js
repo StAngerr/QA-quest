@@ -6,6 +6,7 @@ define(function(require) {
     var isDotGameOpened = false;
 
     stage4.initEvents = function() {
+    	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
     	$('.ladder').on('click', moveToLadder);
@@ -27,6 +28,7 @@ define(function(require) {
     };
 
     function insideCabin() {
+    $('.man').addClass('hideHero');
 		stage4.getTmpl('popupFrameTmpl.html').then(function() {
 			stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
 		});

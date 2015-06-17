@@ -19,7 +19,7 @@ define(function (require) {
 				$('#hero').removeClass('move-right').addClass('stand-right');
 				hasСome();
 				clearTimeout(timer);
-			}, (animationTime * 1000) + 10);
+			}, (animationTime * 500) + 10);
 		};	
 
 		this.moveBack = function(distance) {
@@ -36,7 +36,7 @@ define(function (require) {
 				$('#hero').removeClass('move-left').addClass('stand-left');	 
 				hasСome();
 				clearTimeout(timer);
-			}, (animationTime * 1000) + 10);
+			}, (animationTime * 500) + 10);
 		};
 
 		this.climbUp = function() {
