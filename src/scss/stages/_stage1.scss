@@ -64,27 +64,7 @@
 }
 
 .popupWrap {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 10;
-	margin: 0px auto;
-	background: rgba(154,154,154, 0.7);	
-		
 	.popup {
-		position: relative;
-		top: 150px;
-		max-width: 780px;
-		max-height: 580px;
-		min-width: 580px;
-		height: 580px;
-		z-index: 11;
-		margin: 0 auto;
-		background: rgb(142, 184, 80);
-		border: 10px solid rgb(90,74,66);
-		
 		&.fixForFlowGame {
 			position: static;
 			margin-top: 110px;
@@ -105,7 +85,7 @@
 				text-align: justify;
 				background: none;
 				
-				span {
+				.single-letter {
 					position: absolute;
 					top: 4px;
 					left: 5px;
@@ -132,69 +112,68 @@
 }
 
 	
-	div.popup.fixForFlowGame {
-		#wade_main_div {
-    position: absolute;    
-    max-width: 1270px;
-    max-height: 730px; 
-    width: 330px;
-    height: 330px;   
-    z-index: 13;
-    margin: 0 auto;
-    padding: 0;
-    left: 330px;
-    top: 60px;
-    outline: none;
+div.popup.fixForFlowGame {
+	#wade_main_div {
+	    position: absolute;    
+	    max-width: 1270px;
+	    max-height: 730px; 
+	    width: 330px;
+	    height: 330px;   
+	    z-index: 13;
+	    margin: 0 auto;
+	    padding: 0;
+	    left: 330px;
+	    top: 60px;
+	    outline: none;
 
-    canvas#wade_layer_5 {
-    position: absolute;    
-    max-width: 320px;
-    max-height: 320px;
-    width: 320px;
-    height: 320px;
-    border: 2px solid rgb(113, 104, 89);
-    }
+	    canvas#wade_layer_5 {
+		    position: absolute;    
+		    max-width: 320px;
+		    max-height: 320px;
+		    width: 320px;
+		    height: 320px;
+		    border: 2px solid rgb(113, 104, 89);
+	    }
 
-    canvas#wade_layer_1 {
-     position: absolute;
-     max-width: 1210px;
-     max-height: 620px;
-     top: 0;
-     }
-
+	    canvas#wade_layer_1 {
+		    position: absolute;
+		    max-width: 1210px;
+		    max-height: 620px;
+		    top: 0;
+ 		}
     }
 }
-@media screen and (max-width: 1720px) and (min-width: 1401px){
+@media screen and (max-width: 1720px) and (min-width: 1401px) {
 	div.popup.fixForFlowGame {
 		#wade_main_div {
-    position: absolute;    
-    max-width: 70%;
-    max-height: 730px; 
-    width: 330px;
-    height: 330px;   
-    z-index: 13;
-    margin: 0 auto;
-    padding: 0;
-    left: 14%;
-    top: 60px;
-    outline: none;
+		    position: absolute;    
+		    max-width: 70%;
+		    max-height: 730px; 
+		    width: 330px;
+		    height: 330px;   
+		    z-index: 13;
+		    margin: 0 auto;
+		    padding: 0;
+		    left: 14%;
+		    top: 60px;
+		    outline: none;
 
-    canvas#wade_layer_5 {
-	    position: absolute;    
-	    max-width: 35%;
-	    max-height: 340px;
-	    width: 320px;
-	    height: 320px;
-	    border: 2px solid rgb(113, 104, 89);
-    }
+		    canvas#wade_layer_5 {
+			    position: absolute;    
+			    max-width: 35%;
+			    max-height: 340px;
+			    width: 320px;
+			    height: 320px;
+			    border: 2px solid rgb(113, 104, 89);
+		    }
 
-    canvas#wade_layer_1 {
-	     position: absolute;
-	     max-width: 97%;
-	     max-height: 620px;
-	     top: 0;
-    }
-    }
+		    canvas#wade_layer_1 {
+			    position: absolute;
+			    max-width: 97%;
+			    max-height: 620px;
+			    top: 0;
+		    }
+		}
 	}
 }
 
@@ -202,12 +181,12 @@
 	div.popup.fixForFlowGame {		
 		#wade_main_div {			
 			left: 0;
-			 canvas#wade_layer_5 {		        
-		    max-width: 40%;
-		    max-height: 360px;		    
-    	}
-    	canvas#wade_layer_1 {	    
-	      max-width: 80%;	      		  	
+			canvas#wade_layer_5 {		        
+		    	max-width: 40%;
+		    	max-height: 360px;		    
+    		}
+    		canvas#wade_layer_1 {	    
+	      		max-width: 80%;	      		  	
 			}
 		}
 	}

@@ -1,0 +1,47 @@
+.man {
+    display: block;
+    z-index: 6;
+    position: absolute;
+    transform: translate(0px, 0px);
+    top: 0px;
+    left: 0px;
+    width: 55px;
+    height: 202px;
+    background: #cf0;
+    background-size: cover;
+    font-size: 2.5em;
+
+    &.animFix {
+        transition: none;
+    }
+    &.hideHero {
+        display: none;
+    }
+    &.stand-right {
+        background: url(../images/bot/bot_static_direct_line.png) no-repeat;         
+        animation: play 2s steps(20) infinite; 
+    }
+    &.stand-left {
+        background: url(../images/bot/bot_static_reverse_line.png) no-repeat;         
+        animation: play 2s steps(20) infinite; 
+    }
+    &.move-right {
+        background: url(../images/bot/bot_walk_direct_line.png) no-repeat;        
+        animation: play .3s steps(20) infinite; 
+    }
+    &.move-left {
+        background: url(../images/bot/bot_walk_reverse_line.png) no-repeat;     
+        animation: play .2s steps(20) infinite;
+    }
+    &.climb-up {
+        width: 80px;          
+        transition: transform 2s linear;
+        background: url(../images/bot/bot_up_line.png) no-repeat;     
+        animation: play .7s steps(20) infinite;  
+    }
+  
+    @keyframes play {
+        0%{ background-position:  -90px -51px;}
+        100% {  background-position:  -4890px -51px;}
+    }
+} 

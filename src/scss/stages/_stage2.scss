@@ -1,4 +1,3 @@
-
 #stage2 {
     cursor: url('../images/flashlight1.ico'), default;
     background: url('../images/stage2Bg.jpg') no-repeat 0 0;
@@ -23,8 +22,7 @@
     
     }
 // styles for tictactoe game
-    #ticTacToe {
-        
+    #ticTacToe {        
         position: absolute;
         right: 59px;
         bottom: 100px;
@@ -106,8 +104,7 @@
 }
 
 #stage2Popup1.popup-common {
-     transform: rotateY(-5deg);
-    
+     transform: rotateY(-5deg);    
 
     .field-with-pictures, .pictures-to-choose {
         display: inline-block;
@@ -120,15 +117,13 @@
 
     .field-with-pictures {
         width: 270px;
-
     }
 
     .pictures-to-choose {
         width: 178px;
-    }
+    }    
     
-    
-    figure,.field-to-drop {
+    .pic-to-drag, .picture, .field-to-drop {
         display: inline-block;
         width: 86px;
         height: 86px;

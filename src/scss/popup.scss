@@ -1,0 +1,68 @@
+.popupWrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    margin: 0px auto;
+    background: rgba(154,154,154, 0.7); 
+        
+    .popup {
+        position: relative;
+        top: 150px;
+        max-width: 780px;
+        max-height: 580px;
+        min-width: 580px;
+        height: 580px;
+        z-index: 11;
+        margin: 0 auto;
+        background: rgb(142, 184, 80);
+        border: 10px solid rgb(90,74,66);
+    }
+}
+.popup-common {
+    height: 100%;
+    padding: 2em;
+    background: rgb(142, 184, 80);
+    text-align: center;
+    font-size: 20px;
+    
+    .task-description {
+        text-align: center;
+    }
+
+    .popup-btn {
+        display: block;
+        width: 30%;
+        margin: 1em auto;
+        padding: .6em;
+        border-radius: 10px;
+        background: rgb(118, 76, 41);
+        color: rgb(142, 184, 80);
+        text-transform: uppercase;
+        font-size: 28px;
+    }  
+}    
+
+.clearFix:after {
+    display: block;
+    height: 0;
+    content: "";
+    clear: both;
+}
+
+.rules {
+    height: 20%;
+    font-size: 20px;
+    text-align: center;
+    font-style: italic;
+    
+    .mainRulesPart {    
+        font-weight: bold;
+    }
+
+    .subRulesPart {
+        display: block;
+    }
+}

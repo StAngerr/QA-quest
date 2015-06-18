@@ -21,17 +21,17 @@
         &.show-ladder {
             animation: showLadder 1s;
             height: 459px;
-        }
-		
+        }		
 	}
 }
-    .cabin {
-        height: 100%;
-        width: 100%;  
-        
-        background: url('../images/inside_cabin.jpg') no-repeat 0 0; 
-        background-size: cover;
-    }
+.cabin {
+    height: 100%;
+    width: 100%;  
+    
+    background: url('../images/inside_cabin.jpg') no-repeat 0 0; 
+    background-size: cover;
+}
+
 @-webkit-keyframes showLadder {
     from {
         height: 143px
@@ -40,6 +40,7 @@
         height: 459px;
     }
 }
+
 #gameField {
 	width: 100%;
 	height: 100%;
@@ -58,13 +59,7 @@
             font-size: 20px;
             line-height: 110%;
             color: #515055;
-        }    
-
-        h3 {
-            margin-top: 6px;
-            font-size: 20px;
-            color: #4A4A54;
-        }
+        }        
     }
     
     .playGround {
@@ -217,15 +212,18 @@
 }
 
 .panelButton {
-    width: 200px;
-    height: 200px;
+    position: absolute;
+    top: 424px;
+    left: 559px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: #ccc;
+    background: none;
     margin: 0 auto;
     border: none;
 }
 
-.FRAME {
+.error-page-frame {
     width: 100%;
     height: 100%;
     background: url("../images/404_page.jpg") no-repeat 0 0 ;
