@@ -1,7 +1,7 @@
 define(function (require) {
+    var $ = require('jquery');
     var Stage = require('src/js/Stage.js');
     var stage2 = new Stage('stage2Tmpl.html');
-    var $ = require('jquery');
     var DragNDrop = require('src/js/dragndrop.js');
     var dragNdrop = new DragNDrop();
     var canPlay = false;
@@ -10,7 +10,6 @@ define(function (require) {
             src : ['_brown.png', '_white.png']           
     }; 
     var hero = $('#hero');
-   /* var isPictureGameFinised = false;*/
     var isPictureGameOpened = false;
     var isTicTacToeGameOpened = false;
 
@@ -37,7 +36,7 @@ define(function (require) {
     };
 
     function openPictureGame() {
-        if(isPictureGameOpened /*|| isPictureGameFinised*/) return;
+        if(isPictureGameOpened) return;
         isPictureGameOpened = true;
         $(hero).trigger('hero:moveForward', {distance: 450}); 
         $(hero).on('hero:heroHasCome', findRightPicture);         

@@ -24,10 +24,14 @@
         }
 		
 	}
-    .cabin {
-        background: url('http://sdelanounas.ru/i/a/w/aWMucGljcy5saXZlam91cm5hbC5jb20vaXZrdWRyaXl2aW4vMzAyMzE4OTAvMzMyNjIzLzMzMjYyM19vcmlnaW5hbC5qcGc_X19pZD0zMDIzNA==.jpg');
-    }
 }
+    .cabin {
+        height: 100%;
+        width: 100%;  
+        
+        background: url('../images/inside_cabin.jpg') no-repeat 0 0; 
+        background-size: cover;
+    }
 @-webkit-keyframes showLadder {
     from {
         height: 143px
@@ -224,5 +228,6 @@
 .FRAME {
     width: 100%;
     height: 100%;
-    background: #fff;
+    background: url("../images/404_page.jpg") no-repeat 0 0 ;
+    border: none;
 }
