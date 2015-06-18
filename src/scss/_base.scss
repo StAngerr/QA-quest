@@ -66,25 +66,25 @@ a {
             display: none;
         }
         &.stand-right {
-            background: url(../images/bot/folder/bot_static_direct_line.png) no-repeat;         
+            background: url(../images/bot/bot_static_direct_line.png) no-repeat;         
             animation: play 2s steps(20) infinite; 
         }
         &.stand-left {
-            background: url(../images/bot/folder/bot_static_reverse_line.png) no-repeat;         
+            background: url(../images/bot/bot_static_reverse_line.png) no-repeat;         
             animation: play 2s steps(20) infinite; 
         }
         &.move-right {
-            background: url(../images/bot/folder/bot_walk_direct_line.png) no-repeat;        
+            background: url(../images/bot/bot_walk_direct_line.png) no-repeat;        
             animation: play .3s steps(20) infinite; 
         }
         &.move-left {
-            background: url(../images/bot/folder/bot_walk_reverse_line.png) no-repeat;     
+            background: url(../images/bot/bot_walk_reverse_line.png) no-repeat;     
             animation: play .2s steps(20) infinite;
         }
         &.climb-up {
             width: 80px;          
             transition: transform 2s linear;
-            background: url(../images/bot/folder/bot_up_line.png) no-repeat;     
+            background: url(../images/bot/bot_up_line.png) no-repeat;     
             animation: play .7s steps(20) infinite;  
         }
       
