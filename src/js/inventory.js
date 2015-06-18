@@ -6,7 +6,7 @@ define(function() {
 			
 			$(itemName).addClass('addAnimation').removeClass('noItem');
 			timeout = setTimeout(function() {
-				$(module).trigger('first:itemAdded', {name: itemName});
+				$(module).trigger('inventory:itemAdded', {name: itemName});
 				clearTimeout(timeout);
 			}, 2600);			
 		};

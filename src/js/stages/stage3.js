@@ -10,7 +10,7 @@ define(function(require) {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
       $('#inventory').show();
       $('#stage3').on('click', moveToRiver);
-			$(mainSection).on('first:itemAdded', function(event, item) {
+			$(mainSection).on('inventory:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-6') !== -1) {
 	        if(!stage3.isStageFinished)  finishStage();
 	    	}

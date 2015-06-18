@@ -17,7 +17,7 @@ define(function (require) {
 
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  565}});
         /* This event is needed to finish stage after finishing tic tac toe game.*/        
-        $(mainSection).on('first:itemAdded', function(event, item) {
+        $(mainSection).on('inventory:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
                 if(!stage2.isStageFinished)  finishStage();
             }

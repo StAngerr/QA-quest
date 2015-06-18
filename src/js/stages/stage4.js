@@ -4,13 +4,14 @@ define(function(require) {
     var $ = require('jquery');
     require('jqueryUi');
     var isDotGameOpened = false;
+    var hero = $('#hero');
 
     stage4.initEvents = function() {
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
     	$('.ladder').on('click', moveToLadder);
-    	$(mainSection).on('first:itemAdded', function(event, item) {
+    	$(mainSection).on('inventory:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-7') !== -1) {
 	       	$('.ladder').addClass('show-ladder');
 	       	$('.ladder').on('click',climbUpToShip);   		
@@ -19,8 +20,8 @@ define(function(require) {
     };
 
     function climbUpToShip() {
-    	$('#hero').trigger('hero:climbUp');
-    	$('#hero').on('hero:heroHasCome', insideCabin);
+    	$(hero).trigger('hero:climbUp');
+    	$(hero).on('hero:heroHasCome', insideCabin);
     };
 
     function stageFinished() {
@@ -28,7 +29,7 @@ define(function(require) {
     };
 
     function insideCabin() {
-    $('.man').addClass('hideHero');
+    $(hero).addClass('hideHero');
 		stage4.getTmpl('popupFrameTmpl.html').then(function() {
 			stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
 		});

@@ -1,15 +1,16 @@
 define(function (require) {
+	var $ = require('jquery');
 	var Quest = require('src/js/Qaquest.js');
 	var quest = new Quest();
-	var $ = require('jquery');
+	var hero = $('#hero');
 	var timer;
 
 	if(checkLS()) {
-		$('#hero').removeClass('hideHero'); 
+		$(hero).removeClass('hideHero'); 
 		quest.startQuest()
 	} else {
 		$('.startBtn').on('click', function () {
-			$('#hero').removeClass('hideHero'); 
+			$(hero).removeClass('hideHero'); 
 			clearTimeout(timer);
 			quest.startQuest()
 		});
@@ -20,6 +21,7 @@ define(function (require) {
 			return true;
 		} else {
 			timer = setTimeout(function(){
+				$(hero).removeClass('hideHero');
 				quest.startQuest();
 			}, 7000);
 			return false;

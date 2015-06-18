@@ -8,7 +8,7 @@ define(function (require) {
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
 			clearClasses();
-			$('#hero').addClass('move-right');
+			$(hero).addClass('move-right');
 			moveAnimation(distance);
 		};	
 
