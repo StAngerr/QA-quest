@@ -29,10 +29,13 @@ define(function(require) {
     };
 
     function insideCabin() {
-    $(hero).addClass('hideHero');
-		stage4.getTmpl('popupFrameTmpl.html').then(function() {
-			stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
-		});
+		$('#inventory').trigger('inventory:addAllItems');				
+    	setTimeout(function() {
+		    $(hero).addClass('hideHero');
+				stage4.getTmpl('popupFrameTmpl.html').then(function() {
+					stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
+				});	
+			}, 3000);
 	};
 		
 	function start404Task() {
@@ -137,10 +140,7 @@ define(function(require) {
 			clearInterval(gameTime);
 			resetTimerAndPoints();
 			stage4.closePopup();
-			$('#inventory').trigger('inventory:addItem',{name:'.detail-7'}); 			
-			setTimeout(function() {
-				$('#inventory').trigger('inventory:addAllItems');				
-			}, 3000);
+			$('#inventory').trigger('inventory:addItem', {name:'.detail-7'});
 		};
 
 		function resetTimerAndPoints() {
