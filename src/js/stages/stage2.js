@@ -10,7 +10,9 @@ define(function (require) {
             src : ['_brown.png', '_white.png']           
     }; 
     var hero = $('#hero');
-    var isTicTacToeOpened = false;
+   /* var isPictureGameFinised = false;*/
+    var isPictureGameOpened = false;
+    var isTicTacToeGameOpened = false;
 
     stage2.initEvents = function () {
         var mainSection = $('#mainSection'); 
@@ -35,16 +37,10 @@ define(function (require) {
     };
 
     function openPictureGame() {
-        if (isTicTacToeOpened) return;
+        if(isPictureGameOpened /*|| isPictureGameFinised*/) return;
+        isPictureGameOpened = true;
         $(hero).trigger('hero:moveForward', {distance: 450}); 
-        $(hero).on('hero:heroHasCome', function() {
-            if(!canPlay) {
-                canPlay = true;
-                findRightPicture();
-            } else {
-                return false;
-            }        
-        });         
+        $(hero).on('hero:heroHasCome', findRightPicture);         
     };
 
     function findRightPicture () {    
@@ -112,8 +108,8 @@ define(function (require) {
     };
 
     function startTicTacToe() {
-        if(isTicTacToeOpened) return;
-        isTicTacToeOpened = true; 
+        if(isTicTacToeGameOpened) return;
+        isTicTacToeGameOpened = true; 
         $(hero).trigger('hero:moveForward', {distance: 865});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', startTicTacToeGame);       
@@ -132,10 +128,6 @@ define(function (require) {
                 '-webkit-clip-path': 'circle(130px at ' + (e.pageX -300) + 'px ' + e.pageY + 'px)',
                 'cursor': 'url("../images/flashlight.ico")'
             });
-            $('.flashLightShadow').css({/* DELETE*/
-                'top': (e.pageY - 100) + 'px',
-                'left': (e.pageX + 102) + 'px'
-            });
         });
     };
 
@@ -148,9 +140,9 @@ define(function (require) {
     }; 
 
     function startTicTacToeGame() {
+
         $('#ticTacToe').show(); /* calss*/
-        $('.field').on('click', function (event) {
-            if(!canPlay) return false;          
+        $('.field').on('click', function (event) {       
             ticAppear($(this).attr('id'));
         }); 
         $('.newGameB').on('click', playAgain);     
