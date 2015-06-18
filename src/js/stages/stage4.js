@@ -29,11 +29,11 @@ define(function(require) {
     };
 
     function insideCabin() {
-		$('#inventory').trigger('inventory:addAllItems');				
-    	setTimeout(function() {
-		    $(hero).addClass('hideHero');
+    	$(hero).addClass('hideHero');
+			$('#inventory').trigger('inventory:addAllItems');				
+    	setTimeout(function() {		    
 				stage4.getTmpl('popupFrameTmpl.html').then(function() {
-					stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
+				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
 				});	
 			}, 3000);
 	};
@@ -53,15 +53,15 @@ define(function(require) {
 	};
 
     function moveToLadder() {
-		if(isDotGameOpened) return;
-		isDotGameOpened = true;
-		$(hero).trigger('hero:moveForward', {distance: 625});
-		$(hero).on('hero:heroHasCome', loadDotGame);	
+			if(isDotGameOpened) return;
+			isDotGameOpened = true;
+			$(hero).trigger('hero:moveForward', {distance: 625});
+			$(hero).on('hero:heroHasCome', loadDotGame);	
     };
 
     function loadDotGame() {
     	$(hero).trigger('hero:clearHasComeEvent');
-		stage4.getTmpl('popupFrameTmpl.html').then(function() {
+			stage4.getTmpl('popupFrameTmpl.html').then(function() {
 			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
 		});
     };
@@ -74,33 +74,33 @@ define(function(require) {
 
     function ClickOnDotGame() {
     	var singleGameTime = 5;
-		var points = 0;
-		var seconds = singleGameTime;
-		var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
-		var maxLeftCoordinate = 567;
-		var maxTopCoordinate = 275;
-		var minTop = 70; /*correction because there are stat-blocks on the top of game field*/
-		/*intervals*/
-		var gameTime;
-		var attempts = 3;
+			var points = 0;
+			var seconds = singleGameTime;
+			var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
+			var maxLeftCoordinate = 567;
+			var maxTopCoordinate = 275;
+			var minTop = 70; /*correction because there are stat-blocks on the top of game field*/
+			/*intervals*/
+			var gameTime;
+			var attempts = 3;
 
-		this.startClickGame = function() {
-			onGameInterface();
-			createNewDot();
-			showVisualization();
-			attempts--;
-			gameTime = setInterval(function() {
-				seconds -= 0.1;
-				if( seconds <= 0) { 
-					clearInterval(gameTime);
-					if((points >= 30) || (attempts == 0)) {
-						finishGame();
-					} else {
-						onInfoInterface();
-						resetTimerAndPoints();
+			this.startClickGame = function() {
+				onGameInterface();
+				createNewDot();
+				showVisualization();
+				attempts--;
+				gameTime = setInterval(function() {
+					seconds -= 0.1;
+					if( seconds <= 0) { 
+						clearInterval(gameTime);
+						if((points >= 30) || (attempts == 0)) {
+							finishGame();
+						} else {
+							onInfoInterface();
+							resetTimerAndPoints();
+						}
 					}
-				}
-			}, 100);
+				}, 100);
 		};
 
 		function clearVisualTimer() {

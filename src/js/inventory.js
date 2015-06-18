@@ -19,7 +19,7 @@ define(function() {
 			setTimeout(function() {
 				$(allItems).remove()
 				closeInventory();
-			}, 1300);
+			}, 1500);
 		};		
 		
 		function closeInventory() {
