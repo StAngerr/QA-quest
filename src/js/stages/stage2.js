@@ -117,14 +117,14 @@ define(function (require) {
     function turnOffTheLight() {
          $('#mainContent').addClass('lightOff');
          $('#stage2').addClass('flashLight');
-         $('#stage2').append('<div class="flashLightShadow"></div>');
     };
 
      /*    Move events to flash light*/
     function addFlashLightEvents() {
         $(document).mousemove(function(e) {
+            var marginCorrection = parseInt($('#mainSection').css('margin-left'));
             $('#stage2').css({
-                '-webkit-clip-path': 'circle(130px at ' + (e.pageX - 300) + 'px ' + e.pageY + 'px)',
+                '-webkit-clip-path': 'circle(130px at ' + (e.pageX - marginCorrection) + 'px ' + e.pageY + 'px)',
                 'cursor': 'url("../images/flashlight.ico")'
             });
         });
