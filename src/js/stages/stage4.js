@@ -7,6 +7,7 @@ define(function(require) {
     var hero = $('#hero');
 
     stage4.initEvents = function() {
+    	insideCabin();
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
@@ -18,8 +19,6 @@ define(function(require) {
 		       	$('.ladder').addClass('show-ladder');
 	       		$('.ladder').on('click', climbUpToShip);   
 	    	});
-	    	//inventory:allItemsAdded
-		
 	      }
 		}); 
     };
@@ -41,8 +40,11 @@ define(function(require) {
 	};
 		
 	function start404Task() {
-		$('.panelButton').on('click', function() {
+		$('.startButton').on('click', function() {
 			load404Page();
+		});
+		$('.panelButton').on('click', function() {
+			$(this).toggleClass('pressed');
 		});
 		$('.popup-btn').on('click', function(){
 			stage4.closePopup();
