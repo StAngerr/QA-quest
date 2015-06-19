@@ -35,7 +35,7 @@
     }
     &.climb-up {
         width: 80px;          
-        transition: transform 2s linear;
+        transition: transform 3.5s linear;
         background: url(../images/bot/bot_up_line.png) no-repeat;     
         animation: play .7s steps(20) infinite;  
     }

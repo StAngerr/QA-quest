@@ -13,8 +13,13 @@ define(function(require) {
     	$('.ladder').on('click', moveToLadder);
     	$(mainSection).on('inventory:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-7') !== -1) {
-	       	$('.ladder').addClass('show-ladder');
-	       	$('.ladder').on('click',climbUpToShip);   		
+	    	$('#inventory').trigger('inventory:addAllItems'); 
+	    	$('#mainSection').on('inventory:allItemsAdded', function() {
+		       	$('.ladder').addClass('show-ladder');
+	       		$('.ladder').on('click', climbUpToShip);   
+	    	});
+	    	//inventory:allItemsAdded
+		
 	      }
 		}); 
     };
@@ -29,13 +34,10 @@ define(function(require) {
     };
 
     function insideCabin() {
-    	$(hero).addClass('hideHero');
-			$('#inventory').trigger('inventory:addAllItems');				
-    	setTimeout(function() {		    
-				stage4.getTmpl('popupFrameTmpl.html').then(function() {
-				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
-				});	
-			}, 3000);
+    	$(hero).addClass('hideHero');					    
+		stage4.getTmpl('popupFrameTmpl.html').then(function() {
+			stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
+		});	
 	};
 		
 	function start404Task() {
@@ -44,7 +46,7 @@ define(function(require) {
 		});
 		$('.popup-btn').on('click', function(){
 			stage4.closePopup();
-		})
+		});
 	};
 
 	function load404Page() {
@@ -73,7 +75,7 @@ define(function(require) {
     };
 
     function ClickOnDotGame() {
-    	var singleGameTime = 5;
+    	var singleGameTime = 1;
 			var points = 0;
 			var seconds = singleGameTime;
 			var totalTime = 1; /*this for reduce total second that adding when click on green dot*/
@@ -82,7 +84,7 @@ define(function(require) {
 			var minTop = 70; /*correction because there are stat-blocks on the top of game field*/
 			/*intervals*/
 			var gameTime;
-			var attempts = 3;
+			var attempts = 1;
 
 			this.startClickGame = function() {
 				onGameInterface();

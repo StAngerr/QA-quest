@@ -19,6 +19,7 @@ define(function() {
 			setTimeout(function() {
 				$(allItems).remove()
 				closeInventory();
+				$('#mainSection').trigger('inventory:allItemsAdded');
 			}, 1500);
 		};		
 		

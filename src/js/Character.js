@@ -3,7 +3,6 @@ define(function (require) {
 		var positionX = 0;
 		var positionY = 426;
 		var hero = $('#hero');
-		var animationTime = 1; /* seconds */
 
 		this.moveForward = function(distance) {
 			if(checkPosition(distance)) return;
@@ -57,7 +56,7 @@ define(function (require) {
 			var timer = setTimeout(function() {
 				hasСome();
 				clearTimeout(timer);
-			}, (animationTime * 1000) + 10);						
+			}, (2600) + 10);						
 		};
 
 		this.setStartPosition = function(coordinates) { 
