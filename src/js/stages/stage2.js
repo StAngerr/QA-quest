@@ -124,7 +124,7 @@ define(function (require) {
     function addFlashLightEvents() {
         $(document).mousemove(function(e) {
             $('#stage2').css({
-                '-webkit-clip-path': 'circle(130px at ' + (e.pageX -300) + 'px ' + e.pageY + 'px)',
+                '-webkit-clip-path': 'circle(130px at ' + (e.pageX - 300) + 'px ' + e.pageY + 'px)',
                 'cursor': 'url("../images/flashlight.ico")'
             });
         });

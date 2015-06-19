@@ -85,24 +85,14 @@
 .lightOff {
     background-color: #000;
     overflow: hidden;
+    opacity: 0.8;
 }
 
 .flashLight {
     position:relative;
-    background-color: #fff;
-    -webkit-clip-path: circle(00px at 50% 50%);     
+    //background-color: #fff;
+    -webkit-clip-path: circle(0px at 50% 50%);     
 }
-
-.flashLightShadow {
-    position: absolute;    
-    top: 0;
-    left: 0;
-    width: 150px;
-    height: 150px;
-    background: transperent;
-    border-radius: 135px;   
-}
-
 #stage2Popup1.popup-common {
      transform: rotateY(-5deg);    
 
