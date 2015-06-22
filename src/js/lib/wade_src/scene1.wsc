@@ -3,8 +3,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 0,
-				"y": 0
+				"x": 11.199999999999996,
+				"y": -4.610000000000002
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -19,7 +19,7 @@
 					},
 					"layer": 5,
 					"size": {
-						"x": 1243.3745694619668,
+						"x": 1207.206755348441,
 						"y": 800
 					},
 					"autoResize": false,
@@ -55,8 +55,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 250.755,
-				"y": -284.03499999999994
+				"x": 421.29499999999996,
+				"y": -456.71499999999986
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -71,8 +71,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 273.7545400184968,
-						"y": 8.130013582784983
+						"x": 721.7083964731457,
+						"y": 18.130013582784983
 					},
 					"autoResize": false,
 					"visible": false,
@@ -102,14 +102,14 @@
 				"isStar": true
 			},
 			"functions": {
-				
+				"onClick": "function (data)\n{\n\n}"
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 290.13500000000005,
-				"y": 254.6649999999999
+				"x": 417.9650000000001,
+				"y": 203.74499999999978
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -124,8 +124,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 581.8445300471897,
-						"y": 35.16205445008824
+						"x": 681.3173392370372,
+						"y": 50.706442933649846
 					},
 					"autoResize": false,
 					"visible": false,
@@ -153,14 +153,14 @@
 			},
 			"properties": {
 				"isPlatform": true,
-				"isBridge": true
+				"isBridge": "false\n"
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -408.2250000000003,
-				"y": 203.22500000000002
+				"x": -482.2150000000003,
+				"y": 164.26500000000004
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -210,8 +210,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -139.27500000000003,
-				"y": 220.70000000000005
+				"x": -138.96500000000003,
+				"y": 191.80000000000004
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -227,7 +227,7 @@
 					"layer": 1,
 					"size": {
 						"x": 337,
-						"y": 50
+						"y": 78.12371414226446
 					},
 					"autoResize": false,
 					"visible": true,
@@ -261,8 +261,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -186.8599999999999,
-				"y": -2.9400000000000546
+				"x": -460.23999999999995,
+				"y": 48.3899999999999
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -362,12 +362,12 @@
 							"type": "Animation",
 							"name": "jumpLeft",
 							"startFrame": 0,
-							"endFrame": 0,
+							"endFrame": 19,
 							"numCells": {
-								"x": 1,
+								"x": 20,
 								"y": 1
 							},
-							"image": "bot_left.png",
+							"image": "bot_jump_reverse_line.png",
 							"speed": 20,
 							"looping": false,
 							"blending": false,
@@ -384,12 +384,12 @@
 							"type": "Animation",
 							"name": "jumpRight",
 							"startFrame": 0,
-							"endFrame": 0,
+							"endFrame": 19,
 							"numCells": {
-								"x": 1,
+								"x": 20,
 								"y": 1
 							},
-							"image": "bot_right.png",
+							"image": "bot_jump_direct_line.png",
 							"speed": 20,
 							"looping": false,
 							"blending": false,
@@ -410,8 +410,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 151.0035025910726,
-						"y": 201.33800345476345
+						"x": 190.53045274753333,
+						"y": 254.04060366337777
 					},
 					"autoResize": false,
 					"visible": true,
@@ -444,8 +444,8 @@
 			},
 			"functions": {
 				"onMoveComplete": "function (data)\n{if(this.direction === \"left\") {\n    this.getSprite().playAnimation('idleLeft');\n} else {\n     this.getSprite().playAnimation('idleRight');\n}\n\n}",
-				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  \n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        wade.app.finish();\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n      \n        var depth = this.getSprite().getSize().y/4 + overlapping[i].getSprite().getSize().y/4 - (overlapping[i].getPosition().y - this.getPosition().y);\n        if (depth > 2) {\n            continue;\n        }\n        \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth -19);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n\n\n\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
-				"jump": "function (data)\n{// var x = Math.round(this.getPosition().x);\n// if(( x >= 410 &&this.direction == 'right') || (x <= 213 && this.direction == 'left')) {\n//     return false;\n\n// }\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -520};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
+				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  var depth;\n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        wade.app.finish();\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        if(overlapping[i].isBridge) {\n      \n            depth = this.getSprite().getSize().y/4 + overlapping[i].getSprite().getSize().y/4 - (overlapping[i].getPosition().y - this.getPosition().y)-10;\n            if (depth >2) {\n                continue;\n            }\n        } else {\n           depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y )-50;\n          \n            if (depth > 20) {\n                continue;\n            }\n        } \n     \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
+				"jump": "function (data)\n{// var x = Math.round(this.getPosition().x);\n// if(( x >= 410 &&this.direction == 'right') || (x <= 213 && this.direction == 'left')) {\n//     return false;\n\n// }\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -570};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
 				"onFocus": "function (data)\n{\n}",
 				"onRemoveFromScene": "function (data)\n{\n}"
 			}
@@ -453,8 +453,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 430.5749999999992,
-				"y": -118.6550000000002
+				"x": 403.70499999999913,
+				"y": 97.3549999999997
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -469,8 +469,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 61.86410532880355,
-						"y": 50.680447232794926
+						"x": 30.575589602802808,
+						"y": 31.91629630414521
 					},
 					"autoResize": false,
 					"visible": true,
@@ -508,8 +508,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 488.31499999999926,
-				"y": 211.93499999999986
+				"x": 477.77499999999895,
+				"y": -36.00500000000031
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -524,8 +524,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 52.92227548754476,
-						"y": 43.35510189682106
+						"x": 33.606929301362946,
+						"y": 27.531541886228307
 					},
 					"autoResize": false,
 					"visible": true,
@@ -564,8 +564,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 509.07499999999936,
-				"y": -20.13500000000019
+				"x": 570.6349999999992,
+				"y": 50.36499999999975
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -580,8 +580,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 75.14118006044704,
-						"y": 61.55732133881454
+						"x": 18.29062290419798,
+						"y": 14.98408396960299
 					},
 					"autoResize": false,
 					"visible": true,
@@ -620,8 +620,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 375.01499999999925,
-				"y": 25.16499999999982
+				"x": 356.164999999999,
+				"y": -26.64500000000025
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -636,8 +636,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 44.03471365838385,
-						"y": 36.074214120023676
+						"x": 42.45801852383625,
+						"y": 35.12450020575789
 					},
 					"autoResize": false,
 					"visible": true,
@@ -676,8 +676,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -7.8750000000000036,
-				"y": 368.585
+				"x": -66.31499999999977,
+				"y": 371.6649999999999
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -692,7 +692,7 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 1218.6501819278114,
+						"x": 421.9584855744877,
 						"y": 17.835208051702736
 					},
 					"autoResize": false,
@@ -727,8 +727,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 467.5349999999993,
-				"y": 105.66499999999985
+				"x": 371.82499999999925,
+				"y": -166.4350000000002
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -743,8 +743,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 35.22183710560903,
-						"y": 28.854510178163117
+						"x": 28.083538523429105,
+						"y": 23.006657651996125
 					},
 					"autoResize": false,
 					"visible": true,
@@ -783,8 +783,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 68.7749999999994,
-				"y": 88.16499999999984
+				"x": 195.95499999999913,
+				"y": -89.35500000000016
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -799,8 +799,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 75.14118006044704,
-						"y": 61.55732133881454
+						"x": 45.750049084630525,
+						"y": 36.90305861307712
 					},
 					"autoResize": false,
 					"visible": true,
@@ -822,7 +822,6 @@
 				"y": "center"
 			},
 			"name": "platform6",
-			"isTemplate": false,
 			"addToScene": {
 				"autoListen": true,
 				"params": null
@@ -833,7 +832,7 @@
 			"functions": {
 				"onMouseIn": "function (data)\n{\n}",
 				"onAddToScene": "function (data)\n{\n}",
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 300);\n}"
 			}
 		}
 	],

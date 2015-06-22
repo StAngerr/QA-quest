@@ -160,8 +160,8 @@ div.popup.fixForFlowGame {
 
 		    canvas#wade_layer_5 {
 			    position: absolute;    
-			    max-width: 35%;
-			    max-height: 340px;
+			    max-width: 30%;
+			    max-height: 320px;
 			    width: 320px;
 			    height: 320px;
 			    border: 2px solid rgb(113, 104, 89);
@@ -184,6 +184,20 @@ div.popup.fixForFlowGame {
 			canvas#wade_layer_5 {		        
 		    	max-width: 40%;
 		    	max-height: 360px;		    
+    		}
+    		canvas#wade_layer_1 {	    
+	      		max-width: 80%;	      		  	
+			}
+		}
+	}
+}
+@media screen and (max-width: 1079px) and (min-width: 579px) {
+	div.popup.fixForFlowGame {		
+		#wade_main_div {			
+			left: 0;
+			canvas#wade_layer_5 {		        
+		    	max-width: 60%;
+		    	max-height: 400px;		    
     		}
     		canvas#wade_layer_1 {	    
 	      		max-width: 80%;	      		  	
