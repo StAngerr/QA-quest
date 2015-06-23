@@ -49,11 +49,17 @@ define(function(require) {
 		$('.popup-btn').on('click', function(){
 			stage4.closePopup();
 		});
+		$('.close404Btn').on('click', function() {
+			$('.error-page-frame').remove();
+			$('.popup > .cabin > *').toggleClass('closeBlock');
+			$('.cabin').toggleClass('hideCabin');
+		});
 	};
 
 	function load404Page() {
-		$('.popup > *').remove();
-		stage4.getTmpl('iframeWith404.html','.popup');
+		$('.popup > .cabin > *').toggleClass('closeBlock');
+		$('.cabin').toggleClass('hideCabin');
+		stage4.getTmpl('iframeWith404.html', '.popup');
 	};
 
     function moveToLadder() {

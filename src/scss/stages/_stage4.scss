@@ -27,9 +27,12 @@
 .cabin {
     height: 100%;
     width: 100%;  
-    
     background: url('../images/cabin2.png') no-repeat 0 0; 
     background-size: cover;
+    
+    &.hideCabin {
+        width: 0;
+    }
 }
 
 @-webkit-keyframes showLadder {
@@ -293,8 +296,26 @@
     }
 }
 
+.close404Btn {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    top: 0;
+    right: 0;
+    border: none;
+    outline: none;
+    background: Transparent;
+    &:before {
+        content: "X";
+        color: #4B4A52;
+        font-size: 2em;
+        font-weight: bold;
+    }
+}
 
-
+.timer {
+    
+}
 .error-page-frame {
     width: 100%;
     height: 100%;
