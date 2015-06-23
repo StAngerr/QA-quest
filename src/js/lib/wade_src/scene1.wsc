@@ -3,8 +3,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 11.199999999999996,
-				"y": -4.610000000000002
+				"x": -1.4500000000000004,
+				"y": 0
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -108,8 +108,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 417.9650000000001,
-				"y": 203.74499999999978
+				"x": 145.66500000000005,
+				"y": 237.08000000000004
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -124,8 +124,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 681.3173392370372,
-						"y": 50.706442933649846
+						"x": 1243.5798047627657,
+						"y": 50.58584385707472
 					},
 					"autoResize": false,
 					"visible": false,
@@ -159,8 +159,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -482.2150000000003,
-				"y": 164.26500000000004
+				"x": -141.58500000000004,
+				"y": 232.92
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -175,59 +175,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 250.73824004744623,
-						"y": 17.361277767463577
-					},
-					"autoResize": false,
-					"visible": false,
-					"image": "bubble.png",
-					"name": "",
-					"drawModifiers": [],
-					"properties": {}
-				}
-			],
-			"spriteOffsets": [
-				{
-					"x": 0,
-					"y": 0,
-					"angle": 0
-				}
-			],
-			"alignment": {
-				"x": "center",
-				"y": "center"
-			},
-			"name": "ground_back",
-			"addToScene": {
-				"autoListen": true,
-				"params": null
-			},
-			"properties": {
-				"isPlatform": true,
-				"isBridge": true
-			}
-		},
-		{
-			"type": "SceneObject",
-			"position": {
-				"x": -138.96500000000003,
-				"y": 191.80000000000004
-			},
-			"rotation": 0,
-			"behaviors": [],
-			"sprites": [
-				{
-					"type": "Sprite",
-					"animations": {},
-					"currentAnimation": "default",
-					"sortPoint": {
-						"x": 0,
-						"y": 0
-					},
-					"layer": 1,
-					"size": {
-						"x": 337,
-						"y": 78.12371414226446
+						"x": 339,
+						"y": 37
 					},
 					"autoResize": false,
 					"visible": true,
@@ -254,15 +203,15 @@
 				"params": null
 			},
 			"properties": {
-				"isPlatform": true,
-				"isBridge": true
+				"isPlatform": false,
+				"isBridge": false
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": -460.23999999999995,
-				"y": 48.3899999999999
+				"x": -449.6600000000001,
+				"y": 111.49999999999994
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -410,8 +359,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 190.53045274753333,
-						"y": 254.04060366337777
+						"x": 163.30129696282123,
+						"y": 217.73506261709494
 					},
 					"autoResize": false,
 					"visible": true,
@@ -444,7 +393,7 @@
 			},
 			"functions": {
 				"onMoveComplete": "function (data)\n{if(this.direction === \"left\") {\n    this.getSprite().playAnimation('idleLeft');\n} else {\n     this.getSprite().playAnimation('idleRight');\n}\n\n}",
-				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  var depth;\n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        wade.app.finish();\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        if(overlapping[i].isBridge) {\n      \n            depth = this.getSprite().getSize().y/4 + overlapping[i].getSprite().getSize().y/4 - (overlapping[i].getPosition().y - this.getPosition().y)-10;\n            if (depth >2) {\n                continue;\n            }\n        } else {\n           depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y )-50;\n          \n            if (depth > 20) {\n                continue;\n            }\n        } \n     \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
+				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  var depth;\n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        wade.app.finish();\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        if(overlapping[i].isBridge) {\n      \n            depth = this.getSprite().getSize().y/4 + overlapping[i].getSprite().getSize().y/4 - (overlapping[i].getPosition().y - this.getPosition().y);\n            if (depth >2) {\n                continue;\n            }\n        } else {\n           depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y +40 );\n          \n            if (depth > 20) {\n                continue;\n            }\n        } \n     \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
 				"jump": "function (data)\n{// var x = Math.round(this.getPosition().x);\n// if(( x >= 410 &&this.direction == 'right') || (x <= 213 && this.direction == 'left')) {\n//     return false;\n\n// }\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -570};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}",
 				"onFocus": "function (data)\n{\n}",
 				"onRemoveFromScene": "function (data)\n{\n}"
@@ -453,8 +402,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 403.70499999999913,
-				"y": 97.3549999999997
+				"x": 215.5049999999991,
+				"y": 66.9049999999997
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -508,8 +457,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 477.77499999999895,
-				"y": -36.00500000000031
+				"x": 335.97499999999894,
+				"y": 16.194999999999705
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -564,8 +513,8 @@
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 570.6349999999992,
-				"y": 50.36499999999975
+				"x": 430.2849999999992,
+				"y": 127.21499999999978
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -580,8 +529,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 18.29062290419798,
-						"y": 14.98408396960299
+						"x": 30.704528462688778,
+						"y": 25.153830743861565
 					},
 					"autoResize": false,
 					"visible": true,
@@ -603,7 +552,6 @@
 				"y": "center"
 			},
 			"name": "platform3",
-			"isTemplate": false,
 			"addToScene": {
 				"autoListen": true,
 				"params": null
@@ -614,14 +562,14 @@
 			"functions": {
 				"onMouseIn": "function (data)\n{\n}",
 				"onAddToScene": "function (data)\n{\n}",
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 400);\n}"
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 356.164999999999,
-				"y": -26.64500000000025
+				"x": 424.61499999999904,
+				"y": 32.804999999999765
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -766,7 +714,6 @@
 				"y": "center"
 			},
 			"name": "platform5",
-			"isTemplate": false,
 			"addToScene": {
 				"autoListen": true,
 				"params": null
@@ -777,13 +724,13 @@
 			"functions": {
 				"onMouseIn": "function (data)\n{\n}",
 				"onAddToScene": "function (data)\n{\n}",
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 300);\n}"
 			}
 		},
 		{
 			"type": "SceneObject",
 			"position": {
-				"x": 195.95499999999913,
+				"x": 277.45499999999913,
 				"y": -89.35500000000016
 			},
 			"rotation": 0,
