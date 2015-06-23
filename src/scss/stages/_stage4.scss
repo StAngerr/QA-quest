@@ -314,8 +314,14 @@
 }
 
 .timer {
-    
+   position: relative;
+   margin: 0 auto;
+   width: 122px; 
+   height: 35px;
+   background: #626866;
+   border: 4px solid #444645;
 }
+
 .error-page-frame {
     width: 100%;
     height: 100%;
