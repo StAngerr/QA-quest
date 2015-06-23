@@ -5,6 +5,8 @@ define(function(require) {
     require('jqueryUi');
     var isDotGameOpened = false;
     var hero = $('#hero');
+    var cabinTimer;
+
 
     stage4.initEvents = function() {
     	insideCabin();
@@ -40,6 +42,7 @@ define(function(require) {
 	};
 		
 	function start404Task() {
+		startTimer();
 		$('.startButton').on('click', function() {
 			load404Page();
 		});
@@ -54,6 +57,27 @@ define(function(require) {
 			$('.popup > .cabin > *').toggleClass('closeBlock');
 			$('.cabin').toggleClass('hideCabin');
 		});
+	};
+
+	function startTimer() {
+		var generalTimeMinutes = 0.3;
+		var generalTimeMS = generalTimeMinutes * 60 * 1000;
+		var minutes = $('.timer > .minutes');
+		var seconds = $('.timer > .seconds');
+		var minutesLeftvar;
+		var secondsLeft;
+
+		cabinTimer = setInterval(function() {
+			if(generalTimeMS == 0) {
+				clearInterval(cabinTimer);
+				stage4.closePopup();
+			}
+			minutesLeft = (generalTimeMS / 60000).toString()[0];
+			secondsLeft = (generalTimeMS - (minutesLeft * 60000)) / 1000;
+			$(minutes).text(minutesLeft);
+			$(seconds).text(secondsLeft);
+			generalTimeMS -= 1000;
+		}, 1000);
 	};
 
 	function load404Page() {

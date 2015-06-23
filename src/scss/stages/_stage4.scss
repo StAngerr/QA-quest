@@ -317,9 +317,18 @@
    position: relative;
    margin: 0 auto;
    width: 122px; 
-   height: 35px;
+   height: 37px;
    background: #626866;
    border: 4px solid #444645;
+   text-align: center;
+   font-size: 1.4em;
+   color: #C5C7C6;
+   font-style: italic;
+   .minutes {
+       &:after {
+           content: ' : ';
+       }
+   }
 }
 
 .error-page-frame {
