@@ -5,9 +5,13 @@ define(function(require) {
     require('jqueryUi');
     var isDotGameOpened = false;
     var hero = $('#hero');
+    var cabinTimer;
+    var is404Opened = false;
+    var combination = [];
+
 
     stage4.initEvents = function() {
-    	//insideCabin();
+    	insideCabin();
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
@@ -40,20 +44,73 @@ define(function(require) {
 	};
 		
 	function start404Task() {
+		startTimer();
 		$('.startButton').on('click', function() {
-			load404Page();
+			if(!is404Opened) {
+				load404Page();
+			} else { 
+				(checkCombination()) ? alert('Right combination') : alert('Wrong combination');
+				stage4.closePopup();
+			}
 		});
 		$('.panelButton').on('click', function() {
+			if($('.pressed').length == 4 && !$(this).hasClass('pressed')) return;
+			($(this).hasClass('pressed')) ? removeForomCombination(this.id) : combination.push(this.id);
 			$(this).toggleClass('pressed');
 		});
-		$('.popup-btn').on('click', function(){
+		$('.popup-btn').on('click', function() {
 			stage4.closePopup();
+		});
+		$('.close404Btn').on('click', function() {
+			$('.error-page-frame').remove();
+			$('.popup > .cabin > *').toggleClass('closeBlock');
+			$('.cabin').toggleClass('hideCabin');
 		});
 	};
 
+	function removeForomCombination(id) {
+		var tempArray = [];
+
+		for (var i = 0; i < combination.length; i++) {
+			if(combination[i] != id) tempArray.push(combination[i]);
+		}
+		combination = tempArray.map(function(num) {
+			return num;
+		});
+	};
+
+	function checkCombination() {
+		var someCombination = '0123';
+		if(combination.join('') == someCombination) return true;
+		return false;
+	};
+
+	function startTimer() {
+		var generalTimeMinutes = 3;
+		var generalTimeMS = generalTimeMinutes * 60 * 1000;
+		var minutes = $('.timer > .minutes');
+		var seconds = $('.timer > .seconds');
+		var minutesLeftvar;
+		var secondsLeft;
+
+		cabinTimer = setInterval(function() {
+			if(generalTimeMS == 0) {
+				clearInterval(cabinTimer);
+				stage4.closePopup();
+			}
+			minutesLeft = (generalTimeMS / 60000).toString()[0];
+			secondsLeft = (generalTimeMS - (minutesLeft * 60000)) / 1000;
+			$(minutes).text(minutesLeft);
+			$(seconds).text(secondsLeft);
+			generalTimeMS -= 1000;
+		}, 1000);
+	};
+
 	function load404Page() {
-		$('.popup > *').remove();
-		stage4.getTmpl('iframeWith404.html','.popup');
+		is404Opened = true;
+		$('.popup > .cabin > *').toggleClass('closeBlock');
+		$('.cabin').toggleClass('hideCabin');
+		stage4.getTmpl('iframeWith404.html', '.popup');
 	};
 
     function moveToLadder() {

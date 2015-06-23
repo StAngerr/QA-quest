@@ -27,9 +27,12 @@
 .cabin {
     height: 100%;
     width: 100%;  
-    
     background: url('../images/cabin2.png') no-repeat 0 0; 
     background-size: cover;
+    
+    &.hideCabin {
+        width: 0;
+    }
 }
 
 @-webkit-keyframes showLadder {
@@ -224,44 +227,109 @@
 
 .panelButton {
     position: absolute;  
-    width: 46px;
-    height: 40px;
+    width: 35px;
+    height: 25px;
     border: none;
     &.btn-1 {
         background: url('../images/cabin_buttons/blueBtn.png') no-repeat 0 0;
-        bottom: 110px;
-        right: 365px;
+        bottom: 116px;
+        right: 366px;
         &.pressed {
-            background: url('../images/cabin_buttons/blueBtnpressed.png') no-repeat 0 10px;
+            background: url('../images/cabin_buttons/blueBtnpressed.png') no-repeat 0 5px;
         }
     }
     &.btn-2 {
         background: url('../images/cabin_buttons/greenBtn.png') no-repeat 0 0;
-        bottom: 65px;
-        right: 340px;
+        bottom: 116px;
+        right: 322px;
         &.pressed {
-            background: url('../images/cabin_buttons/greenBtnPressed.png') no-repeat 0 10px;
+            background: url('../images/cabin_buttons/greenBtnPressed.png') no-repeat 0 5px;
         }
     }
     &.btn-3 {
         background: url('../images/cabin_buttons/orangeBtn.png') no-repeat 0 0;
-        bottom: 110px;
-        right: 268px;
+        bottom: 116px;
+        right: 277px;
         &.pressed {
-            background: url('../images/cabin_buttons/orangeBtnPressed.png') no-repeat 0 10px;
+            background: url('../images/cabin_buttons/orangeBtnPressed.png') no-repeat 0 5px;
         }
     }
     &.btn-4 {
         background: url('../images/cabin_buttons/yellowBtn.png') no-repeat 0 0;
-        bottom: 65px;
-        right: 233px;
+        bottom: 116px;
+        right: 232px;
         &.pressed {
-            background: url('../images/cabin_buttons/yellowBtnPressed.png') no-repeat 0 10px;
+            background: url('../images/cabin_buttons/yellowBtnPressed.png') no-repeat 0 5px;
+        }
+    }
+    &.btn-5 {
+        background: url('../images/cabin_buttons/greyBtn.png') no-repeat 0 0;
+        bottom: 82px;
+        right: 366px;
+        &.pressed {
+            background: url('../images/cabin_buttons/greyBtnPressed.png') no-repeat 0 5px;
+        }
+    } 
+    &.btn-6 {
+        background: url('../images/cabin_buttons/pinkBtn.png') no-repeat 0 0;
+        bottom: 82px;
+        right: 320px;
+        &.pressed {
+            background: url('../images/cabin_buttons/pinkBtnPressed.png') no-repeat 0 5px;
+        }
+    }
+    &.btn-7 {
+        background: url('../images/cabin_buttons/violetBtn.png') no-repeat 0 0;
+        bottom: 82px;
+        right: 276px;
+        &.pressed {
+            background: url('../images/cabin_buttons/violetBtnPressed.png') no-repeat 0 5px;
+        }
+    }
+    &.btn-8 {
+        background: url('../images/cabin_buttons/lightGreenBtn.png') no-repeat 0 0;
+        bottom: 82px;
+        right: 232px;
+        &.pressed {
+            background: url('../images/cabin_buttons/lightGreenBtnPressed.png') no-repeat 0 5px;
         }
     }
 }
 
+.close404Btn {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    top: 0;
+    right: 0;
+    border: none;
+    outline: none;
+    background: Transparent;
+    &:before {
+        content: "X";
+        color: #4B4A52;
+        font-size: 2em;
+        font-weight: bold;
+    }
+}
 
+.timer {
+   position: relative;
+   margin: 0 auto;
+   width: 122px; 
+   height: 37px;
+   background: #626866;
+   border: 4px solid #444645;
+   text-align: center;
+   font-size: 1.4em;
+   color: #C5C7C6;
+   font-style: italic;
+   .minutes {
+       &:after {
+           content: ' : ';
+       }
+   }
+}
 
 .error-page-frame {
     width: 100%;
