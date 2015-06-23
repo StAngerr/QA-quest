@@ -8,6 +8,7 @@ define(function(require) {
 
     stage3.initEvents = function() {
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
+    	$(hero).css ({height:'70%'});
       $('#inventory').show();
       $('#stage3').on('click', moveToRiver);
 			$(mainSection).on('inventory:itemAdded', function(event, item) {
