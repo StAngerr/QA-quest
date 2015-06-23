@@ -11,7 +11,6 @@ define(function(require) {
 
 
     stage4.initEvents = function() {
-    	insideCabin();
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
