@@ -335,3 +335,12 @@
     background: url("../images/404_page.jpg") no-repeat 0 0 ;
     border: none;
 }
+.final-stage{
+    .results {
+        position: fixed;
+        top: 25%;
+        left: 30%;
+        color: #fff;
+        font-size: 2em;
+    }
+}

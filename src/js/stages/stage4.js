@@ -51,7 +51,7 @@ define(function(require) {
 				load404Page();
 			} else { 
 				(checkCombination()) ? alert('Right combination') : alert('Wrong combination');
-				stage4.closePopup();
+				loadFinalStage();
 			}
 		});
 		$('.panelButton').on('click', function() {
@@ -68,6 +68,11 @@ define(function(require) {
 			$('.cabin').toggleClass('hideCabin');
 		});
 	};
+	function loadFinalStage() {
+	  stage4.closePopup();
+	  $('#stage4').remove();
+	  stage4.getTmpl('finalStageTmpl.html','#mainContent', null);
+ }
 
 	function removeForomCombination(id) {
 		var tempArray = [];
