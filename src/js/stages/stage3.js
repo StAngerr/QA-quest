@@ -34,20 +34,20 @@ define(function(require) {
         $(hero).on('hero:heroHasCome', openDotGame);    	
     }; 
 
-    function openDotGame() {
-    $('.man').addClass('hideHero');
+    function openDotGame() {    
 		stage3.getTmpl('popupFrameTmpl.html').then(function() {
-			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);	
+			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);
 		});
     };
 
 	function bubbleStart() {
-
-	   $('.popupWrap').remove();/*!!!*/ 
-	    stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, SOME);  
+	  stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, initBubblesGame);
     };
 
-    function SOME() {wade.init('src/js/lib/wade_src/bubbles.js'); };
+    function initBubblesGame() {
+    	$('.bubbles-popup').hide();
+    	wade.init('src/js/lib/wade_src/bubbles.js');
+   	};
 
     function newStickGame() {
     	var newGame = new StickGame();
@@ -85,13 +85,15 @@ define(function(require) {
 
 		currentGame.finishGame = function() {
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
-
-			printWhoWon(winner);
-	        $('.popupWrap').remove();
-	        $('#inventory').trigger('inventory:addItem',{name:'.detail-5'});      
-			setTimeout(function(){
-				bubbleStart();
-			}, 1500);
+			printWhoWon(winner);	    
+	    $('#inventory').trigger('inventory:addItem',{name:'.detail-5'});
+	    bubbleStart();
+	    $(hero).addClass('hideHero');
+			setTimeout(function() {
+				$('.popupWrap').remove();
+				$('.bubbles-popup').show();
+			}, 2000);
+			
 		};
 
 		currentGame.playerPicks = function(event) {
