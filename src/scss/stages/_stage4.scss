@@ -230,9 +230,14 @@
     width: 35px;
     height: 25px;
     border: none;
+    &.btn-1, &.btn-2, &.btn-3, &.btn-4 {
+        bottom: 95px;
+    }
+    &.btn-5, &.btn-6, &.btn-7, &.btn-8 {
+        bottom: 60px;
+    }
     &.btn-1 {
         background: url('../images/cabin_buttons/blueBtn.png') no-repeat 0 0;
-        bottom: 116px;
         right: 366px;
         &.pressed {
             background: url('../images/cabin_buttons/blueBtnpressed.png') no-repeat 0 5px;
@@ -240,7 +245,6 @@
     }
     &.btn-2 {
         background: url('../images/cabin_buttons/greenBtn.png') no-repeat 0 0;
-        bottom: 116px;
         right: 322px;
         &.pressed {
             background: url('../images/cabin_buttons/greenBtnPressed.png') no-repeat 0 5px;
@@ -248,7 +252,6 @@
     }
     &.btn-3 {
         background: url('../images/cabin_buttons/orangeBtn.png') no-repeat 0 0;
-        bottom: 116px;
         right: 277px;
         &.pressed {
             background: url('../images/cabin_buttons/orangeBtnPressed.png') no-repeat 0 5px;
@@ -256,7 +259,6 @@
     }
     &.btn-4 {
         background: url('../images/cabin_buttons/yellowBtn.png') no-repeat 0 0;
-        bottom: 116px;
         right: 232px;
         &.pressed {
             background: url('../images/cabin_buttons/yellowBtnPressed.png') no-repeat 0 5px;
@@ -264,7 +266,6 @@
     }
     &.btn-5 {
         background: url('../images/cabin_buttons/greyBtn.png') no-repeat 0 0;
-        bottom: 82px;
         right: 366px;
         &.pressed {
             background: url('../images/cabin_buttons/greyBtnPressed.png') no-repeat 0 5px;
@@ -272,7 +273,6 @@
     } 
     &.btn-6 {
         background: url('../images/cabin_buttons/pinkBtn.png') no-repeat 0 0;
-        bottom: 82px;
         right: 320px;
         &.pressed {
             background: url('../images/cabin_buttons/pinkBtnPressed.png') no-repeat 0 5px;
@@ -280,7 +280,6 @@
     }
     &.btn-7 {
         background: url('../images/cabin_buttons/violetBtn.png') no-repeat 0 0;
-        bottom: 82px;
         right: 276px;
         &.pressed {
             background: url('../images/cabin_buttons/violetBtnPressed.png') no-repeat 0 5px;
@@ -288,7 +287,6 @@
     }
     &.btn-8 {
         background: url('../images/cabin_buttons/lightGreenBtn.png') no-repeat 0 0;
-        bottom: 82px;
         right: 232px;
         &.pressed {
             background: url('../images/cabin_buttons/lightGreenBtnPressed.png') no-repeat 0 5px;
