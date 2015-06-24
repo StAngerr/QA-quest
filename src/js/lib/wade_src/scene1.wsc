@@ -48,7 +48,7 @@
 			},
 			"properties": {},
 			"functions": {
-				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n\r\n            \r\nvar platformsMove = [];\r\n\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n     if(player.getPosition().x <=-470) {\r\n        return false;\r\n    }\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (player.getPosition().x-170,  player.getPosition().y, 150);\r\n    \r\n} else if (code === 39) {\r\n     if(player.getPosition().x >= 500) {\r\n        return false;\r\n    }\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo (player.getPosition().x+170, player.getPosition().y, 150);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\n\r\nelse {\r\n    return false;\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n}",
+				"onKeyDown": "function (data)\n{\r\n\r\n\r\nvar player = wade.getSceneObject('hero');\r\n\r\n            \r\nvar platformsMove = [];\r\n\r\n\r\nif (player.action === 'jumping') {\r\n    return true;\r\n}\r\n// hero move according to keyPress\r\n\r\nvar code = data.keyCode || data.which;\r\n\r\nif (code === 37) {\r\n     if(player.getPosition().x <=-470) {\r\n        return false;\r\n    }\r\n    player.direction = \"left\";  \r\n    player.getSprite().playAnimation('walkLeft');\r\n    player.moveTo (player.getPosition().x-170,  player.getPosition().y, 150);\r\n    \r\n} else if (code === 39) {\r\n     if(player.getPosition().x >= 200) {\r\n        return false;\r\n    }\r\n    player.direction = \"right\";\r\n    player.getSprite().playAnimation('walkRight');\r\n    player.moveTo (player.getPosition().x+170, player.getPosition().y, 150);\r\n} else \tif (code === 38) {\r\n    player.jump();\r\n}\r\n\r\nelse {\r\n    return false;\r\n    \r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n}",
 				"onKeyUp": "function (data)\n{var temp = wade.getObjectsInArea(1);\r\n\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() !='ground' &&  temp[index].getName() !='ground_back'&& !(temp[index].isBridge)) {\r\n       clearInterval(temp[index].moveInterval);\r\n        temp[index].move();\r\n    }\r\n    \r\n});\n}",
 				"onClick": "function (data)\n{var temp = wade.getObjectsInArea(1);\r\n\r\n\r\n$.each(temp, function(index){\r\n  if (temp[index].isPlatform && temp[index].getName() !='ground' &&  temp[index].getName() !='ground_back'&& !(temp[index].isBridge)) {\r\n       clearInterval(temp[index].moveInterval);\r\n        temp[index].move();\r\n    }\r\n    \r\n});\n}"
 			}
@@ -394,8 +394,8 @@
 			},
 			"functions": {
 				"onMoveComplete": "function (data)\n{if(this.direction === \"left\") {\n    this.getSprite().playAnimation('idleLeft');\n} else {\n     this.getSprite().playAnimation('idleRight');\n}\n\n}",
-				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  var depth;\n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        wade.app.finish();\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        if(overlapping[i].isBridge) {\n      \n            depth = this.getSprite().getSize().y/4 + overlapping[i].getSprite().getSize().y/4 - (overlapping[i].getPosition().y - this.getPosition().y);\n            if (depth >2) {\n                continue;\n            }\n        } else {\n           depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y +40 );\n          \n            if (depth > 20) {\n                continue;\n            }\n        } \n     \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
-				"jump": "function (data)\n{\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -570};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}"
+				"onUpdate": "function (data)\n{// keep hero on the screen\n\n//this.getSprite().setSize(34, 120);\n\nif (this.getPosition().x < -wade.getScreenWidth().x/2) {\n    this.setPosition(-wade.getScreenWidth().x/2, this.getPosition().y);\n} else if (this.getPosition().x > wade.getScreenWidth().x/2) {\n    this.setPosition(wade.getScreenWidth().x/2, this.getPosition().y);\n}\n\n\n\n\n//get overlapping objects\n\nvar overlapping = this.getOverlappingObjects();\nvar collisions = false;\n\nfor (var i=0; i<overlapping.length; i++) {\n  var depth;\n\n    if (overlapping[i].isStar) {\n        wade.clearScene(); //game complete\n        wade.app.finish();\n        break;\n        \n    } else if (overlapping[i].isPlatform) {\n        \n        if(this.getVelocity().y < 0) {\n            continue;\n        }\n        if(overlapping[i].isBridge) {\n      \n            depth = this.getSprite().getSize().y/4 + overlapping[i].getSprite().getSize().y/4 - (overlapping[i].getPosition().y - this.getPosition().y);\n            if (depth >2) {\n                continue;\n            }\n        } else {\n           depth = this.getSprite().getSize().y/2 + overlapping[i].getSprite().getSize().y/2 - (overlapping[i].getPosition().y - this.getPosition().y +45 );\n          \n            if (depth > 20) {\n                continue;\n            }\n        } \n     \n        // have a collision\n        collisions = true;\n       \n        if (this.platform === overlapping[i].getName()){\n            continue;\n        }\n        this.platform = overlapping[i].getName();\n        this.action = 'standing';\n        this.setVelocity ({x:0, y:0});\n        \n        this.setPosition(Math.max(Math.min(this.getPosition().x, 500), -1118), this.getPosition().y - depth);\n        if(this.direction === \"left\") {\n            this.getSprite().playAnimation('idleLeft');\n        } else { \n             this.getSprite().playAnimation('idleRight');\n        }\n    }\n}\n\nif (overlapping.length === 0) {\n    this.platform = null;\n}\n\nif(!collisions) {\n    this.action = 'jumping';\n    this.setVelocity({x:this.getVelocity().x, y:this.getVelocity().y + 15});\n    \n}\n}",
+				"jump": "function (data)\n{\nif(this.action === 'jumping') {\n    return true;\n} \nthis.action = 'jumping';\nthis.platform = null;\nthis.stopMoving();\n\nvar impulse ={ x: (100*(this.direction =='right' ? 1 : -1)), y: -450};\n\n\nthis.setVelocity(impulse);\n\n\nif(this.direction == \"left\") {\n    this.getSprite().playAnimation('jumpLeft');\n}else {\n     this.getSprite().playAnimation('jumpRight');\n}\n\n\n\n}"
 			}
 		},
 		{
@@ -417,8 +417,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 30.575589602802808,
-						"y": 31.91629630414521
+						"x": 60,
+						"y": 60
 					},
 					"autoResize": false,
 					"visible": true,
@@ -448,7 +448,7 @@
 				"isPlatform": true
 			},
 			"functions": {
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 180);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y + 40, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
 			}
 		},
 		{
@@ -470,8 +470,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 33.606929301362946,
-						"y": 27.531541886228307
+						"x": 60,
+						"y": 60
 					},
 					"autoResize": false,
 					"visible": true,
@@ -502,7 +502,7 @@
 				"isPlatform": true
 			},
 			"functions": {
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y+50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
 			}
 		},
 		{
@@ -524,8 +524,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 46.45398546251685,
-						"y": 38.05613524147995
+						"x": 70,
+						"y": 70
 					},
 					"autoResize": false,
 					"visible": true,
@@ -555,7 +555,7 @@
 				"isPlatform": true
 			},
 			"functions": {
-			"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 400);\n}"
+			"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y+50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 400);\n}"
 			}
 		},
 		{
@@ -577,8 +577,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 42.45801852383625,
-						"y": 35.12450020575789
+						"x": 70,
+						"y": 70
 					},
 					"autoResize": false,
 					"visible": true,
@@ -609,7 +609,7 @@
 				"isPlatform": true
 			},
 			"functions": {
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y+30, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 500);\n}"
 			}
 		},
 		{
@@ -682,8 +682,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 28.083538523429105,
-						"y": 23.006657651996125
+						"x": 70,
+						"y": 70
 					},
 					"autoResize": false,
 					"visible": true,
@@ -713,7 +713,7 @@
 				"isPlatform": true
 			},
 			"functions": {
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 300);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y+40, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 300);\n}"
 			}
 		},
 		{
@@ -735,8 +735,8 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 45.750049084630525,
-						"y": 36.90305861307712
+						"x": 70,
+						"y": 70
 					},
 					"autoResize": false,
 					"visible": true,
@@ -766,7 +766,7 @@
 				"isPlatform": true
 			},
 			"functions": {
-				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y-50, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 300);\n}"
+				"move": "function (data)\n{var pos = this.getPosition();\r\nthis.moveInterval;\r\nvar that = this;\r\nvar direction = (Math.random()<0.5)? 5: -5\r\n        \r\n\r\n  this.moveInterval = setInterval(function() {\r\n    that.moveTo(that.getPosition().x + direction , that.getPosition().y-10, 300);\r\n      \r\n        if(that.getPosition().y <= -125) {\r\n         that.setPosition(363, 220);\r\n        clearInterval(this.moveInterval);\r\n           that.moveTo(that.getPosition().x+ ((Math.random()>0.5)? Math.random()*50:-80), that.getPosition().y+20, 300);\r\n         return;\r\n        }\r\n    \r\n           \r\n  }, 300);\n}"
 			}
 		}
 	],

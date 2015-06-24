@@ -37,9 +37,10 @@ define(function(require) {
     };
 
     function insideCabin() {
-    	$(hero).addClass('hideHero');					    
-		stage4.getTmpl('popupFrameTmpl.html').then(function() {
-			stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
+    	$(hero).addClass('hideHero');
+			stage4.getTmpl('popupFrameTmpl.html').then(function() {
+				$('.popupWrap').addClass('dark-bg')
+				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
 		});	
 	};
 		
