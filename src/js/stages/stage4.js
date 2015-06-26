@@ -11,7 +11,7 @@ define(function(require) {
 
 
     stage4.initEvents = function() {
-    	//insideCabin();
+    	insideCabin();
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
@@ -58,6 +58,7 @@ define(function(require) {
 			if($('.pressed').length == 4 && !$(this).hasClass('pressed')) return;
 			($(this).hasClass('pressed')) ? removeForomCombination(this.id) : combination.push(this.id);
 			$(this).toggleClass('pressed');
+				switchOnLamp();
 		});
 		$('.popup-btn').on('click', function() {
 			stage4.closePopup();
@@ -68,11 +69,32 @@ define(function(require) {
 			$('.cabin').toggleClass('hideCabin');
 		});
 	};
+
 	function loadFinalStage() {
 	  stage4.closePopup();
 	  $('#stage4').remove();
 	  stage4.getTmpl('finalStageTmpl.html','#mainContent', null);
  }
+ 
+	function switchOnLamp () {
+		var allLamps = $('.lamp');
+		var len = $('.pressed').length
+		for (var i=0; i<len; i++) {
+			if(!$(allLamps[i]).hasClass('switch-on')) {
+				$(allLamps[i]).toggleClass('switch-on')
+			}
+		}
+	}
+
+	function switchOffLamp () {
+		var allLamps = $('.lamp');
+		var len = $('.pressed').length
+		for (var i=0; i<len; i++) { 	
+			if($(allLamps[i]).hasClass('switch-on')) {
+				$(allLamps[i]).toggleClass('switch-on')
+			}
+		}
+	}
 
 	function removeForomCombination(id) {
 		var tempArray = [];
@@ -83,6 +105,7 @@ define(function(require) {
 		combination = tempArray.map(function(num) {
 			return num;
 		});
+			switchOffLamp();
 	};
 
 	function checkCombination() {

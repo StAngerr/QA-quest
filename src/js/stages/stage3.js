@@ -26,7 +26,7 @@ define(function(require) {
     function moveToRiver() {
     	if(isStickGameOpened) return;
     	isStickGameOpened = true;
-        if(x <= 611 ) return false;
+        if (x <= 611 ) return false;
     	var x = event.pageX;
         var y = event.pageY;
 

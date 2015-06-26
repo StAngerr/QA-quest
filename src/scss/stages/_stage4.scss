@@ -216,7 +216,7 @@
 
 .startButton {
     position: absolute;
-    top: 424px;
+    top: 480px;
     left: 559px;
     width: 65px;
     height: 50px;
@@ -236,60 +236,116 @@
     &.btn-5, &.btn-6, &.btn-7, &.btn-8 {
         bottom: 60px;
     }
+     &.btn-9, &.btn-10, &.btn-11, &.btn-12 {
+        bottom: 25px;
+    }
     &.btn-1 {
-        background: url('../images/cabin_buttons/blueBtn.png') no-repeat 0 0;
+        background: url('../images/cabin_buttons/greenCircle.png') no-repeat 0 0;
         right: 366px;
         &.pressed {
-            background: url('../images/cabin_buttons/blueBtnpressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/greenCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-2 {
-        background: url('../images/cabin_buttons/greenBtn.png') no-repeat 0 0;
+        background: url('../images/cabin_buttons/orangeCircle.png') no-repeat 0 0;
         right: 322px;
         &.pressed {
-            background: url('../images/cabin_buttons/greenBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/orangeCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-3 {
-        background: url('../images/cabin_buttons/orangeBtn.png') no-repeat 0 0;
+        background: url('../images/cabin_buttons/blueCircle.png') no-repeat 0 0;
         right: 277px;
         &.pressed {
-            background: url('../images/cabin_buttons/orangeBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/blueCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-4 {
-        background: url('../images/cabin_buttons/yellowBtn.png') no-repeat 0 0;
+        background: url('../images/cabin_buttons/yellowCircle.png') no-repeat 0 0;
         right: 232px;
         &.pressed {
-            background: url('../images/cabin_buttons/yellowBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/yellowCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-5 {
-        background: url('../images/cabin_buttons/greyBtn.png') no-repeat 0 0;
-        right: 366px;
+        background: url('../images/cabin_buttons/greenTriangle.png') no-repeat 0 0;
+        right: 370px;
         &.pressed {
-            background: url('../images/cabin_buttons/greyBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/greenTrianglePressed.png') no-repeat 0 5px;
         }
     } 
     &.btn-6 {
-        background: url('../images/cabin_buttons/pinkBtn.png') no-repeat 0 0;
-        right: 320px;
+        background: url('../images/cabin_buttons/orangeTriangle.png') no-repeat 0 0;
+        right: 322px;
         &.pressed {
-            background: url('../images/cabin_buttons/pinkBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/orangeTrianglePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-7 {
-        background: url('../images/cabin_buttons/violetBtn.png') no-repeat 0 0;
-        right: 276px;
+        background: url('../images/cabin_buttons/blueTriangle.png') no-repeat 0 0;
+        right: 277px;
         &.pressed {
-            background: url('../images/cabin_buttons/violetBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/blueTrianglePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-8 {
-        background: url('../images/cabin_buttons/lightGreenBtn.png') no-repeat 0 0;
-        right: 232px;
+        background: url('../images/cabin_buttons/yellowTriangle.png') no-repeat 0 0;
+        right: 230px;
         &.pressed {
-            background: url('../images/cabin_buttons/lightGreenBtnPressed.png') no-repeat 0 5px;
+            background: url('../images/cabin_buttons/yellowTrianglePressed.png') no-repeat 0 5px;
+        }
+    }
+     &.btn-9 {
+        background: url('../images/cabin_buttons/greenSquare.png') no-repeat 0 0;
+        right: 375px;
+        &.pressed {
+            background: url('../images/cabin_buttons/greenSquarePressed.png') no-repeat 0 5px;
+        }
+    } 
+    &.btn-10 {
+        background: url('../images/cabin_buttons/orangeSquare.png') no-repeat 0 0;
+        right: 324px;
+        &.pressed {
+            background: url('../images/cabin_buttons/orangeSquarePressed.png') no-repeat 0 5px;
+        }
+    }
+    &.btn-11 {
+        background: url('../images/cabin_buttons/blueSquare.png') no-repeat 0 0;
+        right: 277px;
+        &.pressed {
+            background: url('../images/cabin_buttons/blueSquarePressed.png') no-repeat 0 5px;
+        }
+    }
+    &.btn-12 {
+        background: url('../images/cabin_buttons/yellowSquare.png') no-repeat 0 0;
+        right: 228px;
+        &.pressed {
+            background: url('../images/cabin_buttons/yellowSquarePressed.png') no-repeat 0 5px;
+        }
+    }
+}
+
+.lamps {
+    position: absolute;
+    top: 435px;
+    left: 545px;
+    width: 90px;
+    height: 20px;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+    -webkit-transform: perspective(250px) rotateX(45deg);
+    transform: perspective(250px) rotateX(45deg);
+    .lamp {
+        display: inline-block;
+        width: 12px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+        &.switch-off {
+            background-color: #aaa;
+        }
+        &.switch-on {
+            background-color: rgb(141,175, 81);
         }
     }
 }
