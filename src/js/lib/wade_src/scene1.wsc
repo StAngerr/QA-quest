@@ -402,7 +402,7 @@
 			"type": "SceneObject",
 			"position": {
 				"x": 138.1249999999991,
-				"y": -67.73500000000034
+				"y": 67.73500000000034
 			},
 			"rotation": 0,
 			"behaviors": [],
@@ -417,7 +417,7 @@
 					},
 					"layer": 1,
 					"size": {
-						"x": 60,
+						"x": 160,
 						"y": 60
 					},
 					"autoResize": false,
