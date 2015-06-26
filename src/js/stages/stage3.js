@@ -5,8 +5,13 @@ define(function(require) {
     var wade = require('wade');
     var hero = $('#hero');
     var isStickGameOpened = false;
+    var tempTime;
+    stage3.starttime;
 
     stage3.initEvents = function() {
+    	stage3.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4']);
+    	// get time now!!!!!!!!!!!!!!
+        tempTime = stage3.dateTime()
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
     	$(hero).css ({height:'70%'});
       $('#inventory').show();
