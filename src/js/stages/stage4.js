@@ -129,6 +129,7 @@ define(function(require) {
 			}
 			minutesLeft = (generalTimeMS / 60000).toString()[0];
 			secondsLeft = (generalTimeMS - (minutesLeft * 60000)) / 1000;
+			secondsLeft = (secondsLeft<10)?'0'+secondsLeft: secondsLeft;
 			$(minutes).text(minutesLeft);
 			$(seconds).text(secondsLeft);
 			generalTimeMS -= 1000;
