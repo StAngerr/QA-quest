@@ -70,6 +70,7 @@ define(function(require) {
 			$('.error-page-frame').remove();
 			$('.popup > .cabin > *').toggleClass('closeBlock');
 			$('.cabin').toggleClass('hideCabin');
+			$('.panelButton').removeClass('pressed');
 		});
 	};
 

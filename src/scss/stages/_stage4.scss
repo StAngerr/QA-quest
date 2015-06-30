@@ -21,7 +21,7 @@
         &.show-ladder {
             animation: showLadder 1s;
             height: 459px;
-        }		
+        }
 	}
 }
 .cabin {
@@ -32,6 +32,24 @@
     
     &.hideCabin {
         width: 0;
+    }
+
+    .timer {
+       position: relative;
+       margin: 0 auto;
+       width: 122px; 
+       height: 37px;
+       background: #626866;
+       border: 4px solid #444645;
+       text-align: center;
+       font-size: 1.4em;
+       color: #C5C7C6;
+       font-style: italic;
+       .minutes {
+           &:after {
+               content: ' : ';
+           }
+       }
     }
 }
 
@@ -216,10 +234,10 @@
 
 .startButton {
     position: absolute;
-    top: 480px;
-    left: 559px;
-    width: 65px;
-    height: 50px;
+    top: 434px;
+    left: 562px;
+    width: 80px;
+    height: 61px;
     background: url('../images/cabin_buttons/startBtn.png') no-repeat 0 0;
     margin: 0 auto;
     border: none;
@@ -227,63 +245,63 @@
 
 .panelButton {
     position: absolute;  
-    width: 35px;
-    height: 25px;
+    width: 45px;
+    height: 30px;
     border: none;
     &.btn-1, &.btn-2, &.btn-3, &.btn-4 {
-        bottom: 95px;
+        bottom: 119px;
     }
     &.btn-5, &.btn-6, &.btn-7, &.btn-8 {
-        bottom: 60px;
+        bottom: 80px;
     }
      &.btn-9, &.btn-10, &.btn-11, &.btn-12 {
-        bottom: 25px;
+        bottom: 40px;
     }
     &.btn-1 {
         background: url('../images/cabin_buttons/greenCircle.png') no-repeat 0 0;
-        right: 366px;
+        right: 393px;
         &.pressed {
             background: url('../images/cabin_buttons/greenCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-2 {
         background: url('../images/cabin_buttons/orangeCircle.png') no-repeat 0 0;
-        right: 322px;
+        right: 342px;
         &.pressed {
             background: url('../images/cabin_buttons/orangeCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-3 {
         background: url('../images/cabin_buttons/blueCircle.png') no-repeat 0 0;
-        right: 277px;
+        right: 288px;
         &.pressed {
             background: url('../images/cabin_buttons/blueCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-4 {
         background: url('../images/cabin_buttons/yellowCircle.png') no-repeat 0 0;
-        right: 232px;
+        right: 234px;
         &.pressed {
             background: url('../images/cabin_buttons/yellowCirclePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-5 {
         background: url('../images/cabin_buttons/greenTriangle.png') no-repeat 0 0;
-        right: 370px;
+        right: 398px;
         &.pressed {
             background: url('../images/cabin_buttons/greenTrianglePressed.png') no-repeat 0 5px;
         }
     } 
     &.btn-6 {
         background: url('../images/cabin_buttons/orangeTriangle.png') no-repeat 0 0;
-        right: 322px;
+        right: 341px;
         &.pressed {
             background: url('../images/cabin_buttons/orangeTrianglePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-7 {
         background: url('../images/cabin_buttons/blueTriangle.png') no-repeat 0 0;
-        right: 277px;
+        right: 284px;
         &.pressed {
             background: url('../images/cabin_buttons/blueTrianglePressed.png') no-repeat 0 5px;
         }
@@ -297,28 +315,28 @@
     }
      &.btn-9 {
         background: url('../images/cabin_buttons/greenSquare.png') no-repeat 0 0;
-        right: 375px;
+        right: 404px;
         &.pressed {
             background: url('../images/cabin_buttons/greenSquarePressed.png') no-repeat 0 5px;
         }
     } 
     &.btn-10 {
         background: url('../images/cabin_buttons/orangeSquare.png') no-repeat 0 0;
-        right: 324px;
+        right: 344px;
         &.pressed {
             background: url('../images/cabin_buttons/orangeSquarePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-11 {
         background: url('../images/cabin_buttons/blueSquare.png') no-repeat 0 0;
-        right: 277px;
+        right: 284px;
         &.pressed {
             background: url('../images/cabin_buttons/blueSquarePressed.png') no-repeat 0 5px;
         }
     }
     &.btn-12 {
         background: url('../images/cabin_buttons/yellowSquare.png') no-repeat 0 0;
-        right: 228px;
+        right: 226px;
         &.pressed {
             background: url('../images/cabin_buttons/yellowSquarePressed.png') no-repeat 0 5px;
         }
@@ -334,22 +352,35 @@
         left: 25px;
         top: 48px;
         background: url('../images/cabin_buttons/lamp_closure_Left_off.png') no-repeat 0 0;
+        &.switch-on{
+            background: url('../images/cabin_buttons/lamp_closure_Left_on.png') no-repeat 0 0;
+        }
     }
      &.lamp2 {
         left: 83px;
         top: 76px;
         background: url('../images/cabin_buttons/lamp_far_left_off.png') no-repeat 0 0;
+        &.switch-on{
+            background: url('../images/cabin_buttons/lamp_far_Left_on.png') no-repeat 0 0;
+        }
     }
     &.lamp3 {
         left: 697px;
         top: 48px;
         background: url('../images/cabin_buttons/lamp_closure_right_off.png') no-repeat 0 0;
+        &.switch-on{
+            background: url('../images/cabin_buttons/lamp_closure_right_on.png') no-repeat 0 0;
+        }
     }
     &.lamp4 {
         left: 647px;
         top: 76px;
         background: url('../images/cabin_buttons/lamp_far_right_off.png') no-repeat 0 0;
+        &.switch-on{
+            background: url('../images/cabin_buttons/lamp_far_right_on.png') no-repeat 0 0;
+        }
     }
+
 }
 
 .close404Btn {
