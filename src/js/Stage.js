@@ -5,7 +5,7 @@ define(function(require) {
 
         var stageLoad = true;
         this.templateUrl = templ;
-        this.starttime = Math.round($.now() / 1000);
+        //this.starttime = Math.round($.now() / 1000);
         this.initEvents;
         this.finishStage;
         this.isStageFinished = false;
@@ -38,10 +38,10 @@ define(function(require) {
                 $((items)[index]).removeClass('noItem');
             })          
         }
-        this.dateTime = function() {
-            var seconds = Math.round($.now() / 1000);
-            return seconds
-        }
+        // this.dateTime = function() {
+        //     var seconds = Math.round($.now() / 1000);
+        //     return seconds
+        // }
         this.closePopup = function() {
             $('.popupWrap').remove();
         };    

@@ -6,11 +6,14 @@ define(function(require) {
 
     var Quest = function() {          
         var quest = this;
+        var spentTime = 0;
+        var startTime = 0;
         quest.currentStage = 0;
         quest.inventory = new Invetory();
         quest.character = new Character();
        
-        quest.startQuest = function() {         
+        quest.startQuest = function() {
+            startTimer();         
             initMainModuleEvents();
             initInventoryModuleEvents();
             initCharacterModuleEvents();   
@@ -25,6 +28,39 @@ define(function(require) {
             clearMainContent();           
             stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array has zero index*/         
             stageObj.openStage(stageObj); 
+        };
+
+        function writeTime() {
+
+        };
+
+        function startTimer() {
+            $.ajax({
+                url: '/time',
+                method: 'GET'
+            })
+            .done( function(data) {
+                spentTime = data.seconds || 0;
+                $(document).ready(function() {
+                    startTime = new Date().getTime();
+
+                    $(window).unload(function() {
+                        end = new Date().getTime();
+                        spentTime += end - startTime;
+                        saveTimeOnServer();
+                    });
+                });
+            });
+        };
+
+        function saveTimeOnServer() {
+            spentTime += new Date().getTime() - startTime;
+            $.ajax({
+                url: '/time',
+                method: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify({seconds : spentTime})
+            });
         };
 
         function writeStageToLS(stage) {

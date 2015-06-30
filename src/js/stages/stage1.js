@@ -126,5 +126,5 @@ define(function(require) {
         });    
         stage1.closePopup();       
     };
-   return stage1;
+    return stage1;
 });
