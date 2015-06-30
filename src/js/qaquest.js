@@ -30,10 +30,6 @@ define(function(require) {
             stageObj.openStage(stageObj); 
         };
 
-        function writeTime() {
-
-        };
-
         function startTimer() {
             $.ajax({
                 url: '/time',
@@ -45,8 +41,7 @@ define(function(require) {
                     startTime = new Date().getTime();
 
                     $(window).unload(function() {
-                        end = new Date().getTime();
-                        spentTime += end - startTime;
+                        spentTime = (new Date().getTime() - startTime);
                         saveTimeOnServer();
                     });
                 });
@@ -54,7 +49,7 @@ define(function(require) {
         };
 
         function saveTimeOnServer() {
-            spentTime += new Date().getTime() - startTime;
+            spentTime = new Date().getTime() - startTime;
             $.ajax({
                 url: '/time',
                 method: 'POST',
