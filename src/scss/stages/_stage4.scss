@@ -27,7 +27,7 @@
 .cabin {
     height: 100%;
     width: 100%;  
-    background: url('../images/cabin2.png') no-repeat 0 0; 
+    background: url('../images/inside_cabin.png') no-repeat 0 0; 
     background-size: cover;
     
     &.hideCabin {
@@ -325,26 +325,30 @@
     }
 }
 
-.lamps {
+.lamp {
     position: absolute;
-    top: 435px;
-    left: 545px;
-    width: 90px;
-    height: 20px;
-    -webkit-transform-origin: 50% 100%;
-    transform-origin: 50% 100%;
-    -webkit-transform: perspective(250px) rotateX(45deg);
-    transform: perspective(250px) rotateX(45deg);
-    .lamp {
-        display: inline-block;
-        width: 12px;
-        height: 10px;
-        border-radius: 50%;
-        margin-right: 5px;
-        background-color: #aaa;
-        &.switch-on {
-            background-color: rgb(141,175, 81);
-        }
+    width: 28px;
+    height: 35px;
+
+    &.lamp1 {
+        left: 25px;
+        top: 48px;
+        background: url('../images/cabin_buttons/lamp_closure_Left_off.png') no-repeat 0 0;
+    }
+     &.lamp2 {
+        left: 83px;
+        top: 76px;
+        background: url('../images/cabin_buttons/lamp_far_left_off.png') no-repeat 0 0;
+    }
+    &.lamp3 {
+        left: 697px;
+        top: 48px;
+        background: url('../images/cabin_buttons/lamp_closure_right_off.png') no-repeat 0 0;
+    }
+    &.lamp4 {
+        left: 647px;
+        top: 76px;
+        background: url('../images/cabin_buttons/lamp_far_right_off.png') no-repeat 0 0;
     }
 }
 
@@ -377,6 +381,7 @@
    color: #C5C7C6;
    font-style: italic;
    .minutes {
+        margin-top: 5px;
        &:after {
            content: ' : ';
        }
