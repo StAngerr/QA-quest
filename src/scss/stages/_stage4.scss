@@ -426,11 +426,16 @@
     border: none;
 }
 .final-stage{
+    text-align: center;
     .results {
         position: fixed;
         top: 25%;
-        left: 30%;
+        left: 35%;
         color: #fff;
         font-size: 2em;
+    }
+    .badge {
+        width: 190px;
+        margin: 1em auto;
     }
 }

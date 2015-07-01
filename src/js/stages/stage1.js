@@ -11,10 +11,10 @@ define(function(require) {
     var dragNdrop = new DragNDrop();
     var hero = $('#hero');
     var tempTime;
-    stage1.starttime;
+    
 
     stage1.initEvents = function() {
-        tempTime = stage1.dateTime();
+        //tempTime = stage1.dateTime();
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
@@ -23,7 +23,7 @@ define(function(require) {
      function finishStage() {
         stage1.isStageFinished = true;
         $(hero).trigger('hero:clearHasComeEvent');
-        tempTime = stage1.dateTime() - stage1.starttime;
+        // tempTime = stage1.dateTime() - stage1.starttime;
         $('#mainSection').trigger('main:stageFinished');
     };
 

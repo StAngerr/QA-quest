@@ -13,19 +13,19 @@ define(function (require) {
     var isPictureGameOpened = false;
     var isTicTacToeGameOpened = false;
     var tempTime;
-    stage2.starttime;
+   // stage2.starttime;
     
     stage2.initEvents = function () {
         stage2.activeInventary(['.detail-1', '.detail-2']);
         // get time now!!!!!!!!!!!!!!
-        tempTime = stage2.dateTime()
+       // tempTime = stage2.dateTime()
         var mainSection = $('#mainSection'); 
 
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  565}});
         /* This event is needed to finish stage after finishing tic tac toe game.*/        
         $(mainSection).on('inventory:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
-                 tempTime = stage2.dateTime() - stage2.starttime;
+                 //tempTime = stage2.dateTime() - stage2.starttime;
                 if(!stage2.isStageFinished)  finishStage();
             }
         });      
