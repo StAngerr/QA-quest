@@ -1,3 +1,7 @@
+/*
+     STYLES FOR STAGE 3
+     
+*/
 #stage3 {
 	background: url('../images/stage3Bg.jpg') no-repeat 0 0;
 
@@ -7,7 +11,11 @@
 		left: 380px;
 		width: 800px;
 		height: 850px;
-		
+/*
+			WADE styles
+			They must be unchangable for good view
+			@media  used only here to prevent game crash!
+*/
 		div#wade_main_div {
 			margin: 0 !important;
 			position: relative;
@@ -29,7 +37,9 @@
 		}	
 	}
 }
-
+	/* 
+		Styles for BASHE (stick game)
+	*/
 #stickGameWrapp {
 	width: 100%; 
 	height: 100%; 

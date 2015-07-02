@@ -1,3 +1,7 @@
+/*
+     STYLES FOR STAGE 1
+     
+*/
 #stage1 {
 	background: url('../images/stage1Bg.jpg') no-repeat 0 0;
 
@@ -63,6 +67,7 @@
 	}
 }
 
+// Custom styles for popups
 .popupWrap {
 	.popup {
 		&.fixForFlowGame {
@@ -74,11 +79,11 @@
 			min-height: 570px;
 		}	
 
-		.rules {			
-			padding: 10px 0 0 0;		
+		.rules {
+			padding: 10px 0 0 0;
 		}
 		
-		.popup-common {					
+		.popup-common {
 			.letters {
 				position: relative;
 				display: inline-block;
@@ -111,14 +116,18 @@
 	}
 }
 
-	
+/*
+			WADE styles
+			They must be unchangable for good view
+			@media  used only here to prevent game crash!
+*/
 div.popup.fixForFlowGame {
 	#wade_main_div {
-	    position: absolute;    
+	    position: absolute;
 	    max-width: 1270px;
 	    max-height: 730px; 
 	    width: 330px;
-	    height: 330px;   
+	    height: 330px;
 	    z-index: 13;
 	    margin: 0 auto;
 	    padding: 0;
@@ -127,7 +136,7 @@ div.popup.fixForFlowGame {
 	    outline: none;
 
 	    canvas#wade_layer_5 {
-		    position: absolute;    
+		    position: absolute;
 		    max-width: 320px;
 		    max-height: 320px;
 		    width: 320px;
@@ -178,29 +187,29 @@ div.popup.fixForFlowGame {
 }
 
 @media screen and (max-width: 1400px) and (min-width: 1080px) {
-	div.popup.fixForFlowGame {		
-		#wade_main_div {			
+	div.popup.fixForFlowGame {
+		#wade_main_div {
 			left: 0;
-			canvas#wade_layer_5 {		        
+			canvas#wade_layer_5 {
 		    	max-width: 40%;
-		    	max-height: 360px;		    
+		    	max-height: 360px;
     		}
-    		canvas#wade_layer_1 {	    
-	      		max-width: 80%;	      		  	
+    		canvas#wade_layer_1 {
+	      		max-width: 80%;
 			}
 		}
 	}
 }
 @media screen and (max-width: 1079px) and (min-width: 579px) {
-	div.popup.fixForFlowGame {		
-		#wade_main_div {			
+	div.popup.fixForFlowGame {
+		#wade_main_div {
 			left: 0;
-			canvas#wade_layer_5 {		        
+			canvas#wade_layer_5 {
 		    	max-width: 60%;
-		    	max-height: 400px;		    
+		    	max-height: 400px;
     		}
-    		canvas#wade_layer_1 {	    
-	      		max-width: 80%;	      		  	
+    		canvas#wade_layer_1 {
+	      		max-width: 80%;
 			}
 		}
 	}

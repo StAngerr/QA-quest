@@ -1,3 +1,7 @@
+/*
+     STYLES FOR STAGE 2
+     
+*/
 #stage2 {
     cursor: url('../images/flashlight1.ico'), default;
     background: url('../images/stage2Bg.jpg') no-repeat 0 0;
@@ -21,7 +25,7 @@
         cursor: pointer!important;
     
     }
-// styles for tictactoe game
+        // Styles for tictactoe game
     #ticTacToe {        
         position: absolute;
         right: 59px;
@@ -81,7 +85,7 @@
         background: url('../images/Game_2_Refresh_btn.png') no-repeat 0 0;
     }
 }
-//sytles to turn off the light
+        //Styles to turn off the light
 .lightOff {
     background: url('../images/stage2_1Bg.jpg') no-repeat 0 0;
     overflow: hidden;
@@ -89,9 +93,9 @@
 
 .flashLight {
     position:relative;
-    //background-color: #fff;
     -webkit-clip-path: circle(130px at 50% 50%);     
 }
+    // Custom styles for popup 
 #stage2Popup1.popup-common {
      transform: rotateY(-5deg);    
 

@@ -1,3 +1,7 @@
+/*
+     BASE STYLES FOR ALL POPUPS
+     
+*/
 .popupWrap {
     position: fixed;
     top: 0;
@@ -28,10 +32,6 @@
     text-align: center;
     font-size: 20px;
     
-    .task-description {
-        text-align: center;
-    }
-
     .popup-btn {
         display: block;
         width: 30%;
@@ -51,7 +51,7 @@
     content: "";
     clear: both;
 }
-
+// task description for all levels should be wrapped into these classes
 .rules {
     height: 20%;
     font-size: 20px;

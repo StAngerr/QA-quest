@@ -1,3 +1,8 @@
+/*
+     BASE STYLES FOR Section
+    with different content
+     
+*/
 #mainSection {
     position: relative;
     max-width: 1200px;
@@ -10,15 +15,12 @@
     }
     
 }
+// every stage has this class
 .stage {
 	position: relative;
-	max-width: 1207px;
+	max-width: 1200px;
 	height: 863px;
 	margin: 0 auto;
 	background-repeat: no-repeat;
 	background-position: 0 0 ;
 }
-
-
-
-

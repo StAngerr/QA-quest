@@ -1,3 +1,7 @@
+/*
+     STYLES FOR STAGE 3
+     
+*/
 #stage4 {
 	background: url('../images/stage4Bg.jpg') no-repeat 0 0;
 
@@ -17,12 +21,20 @@
 		width: 42px;
 		height: 143px;
 		background: url('../images/Screen_4_ladder.png') no-repeat 0 0;
-
+        // class to animate ladder
         &.show-ladder {
             animation: showLadder 1s;
             height: 459px;
         }
 	}
+    @-webkit-keyframes showLadder {
+    from {
+        height: 143px
+    }
+    to {
+        height: 459px;
+    }
+}
 }
 .cabin {
     height: 100%;
@@ -53,14 +65,10 @@
     }
 }
 
-@-webkit-keyframes showLadder {
-    from {
-        height: 143px
-    }
-    to {
-        height: 459px;
-    }
-}
+/*
+        DOT game  styles
+
+*/
 
 #gameField {
 	width: 100%;
@@ -231,7 +239,9 @@
 .closeBlock {
 	display: none;
 }
-
+/*
+       INSIDE CABIN STYLES
+*/
 .startButton {
     position: absolute;
     top: 434px;
@@ -242,7 +252,7 @@
     margin: 0 auto;
     border: none;
 }
-
+        // all pannel's buttons pressed and none
 .panelButton {
     position: absolute;  
     width: 45px;
@@ -342,7 +352,7 @@
         }
     }
 }
-
+        // lamps and their switch -on class
 .lamp {
     position: absolute;
     width: 28px;
@@ -382,7 +392,7 @@
     }
 
 }
-
+        // button to close frame
 .close404Btn {
     position: absolute;
     width: 70px;
@@ -418,24 +428,11 @@
        }
    }
 }
-
+        /*FRAME ERROR  STYLES*/
 .error-page-frame {
     width: 100%;
     height: 100%;
     background: url("../images/404_page.jpg") no-repeat 0 0 ;
     border: none;
 }
-.final-stage{
-    text-align: center;
-    .results {
-        position: fixed;
-        top: 25%;
-        left: 35%;
-        color: #fff;
-        font-size: 2em;
-    }
-    .badge {
-        width: 190px;
-        margin: 1em auto;
-    }
-}
+
