@@ -5,13 +5,9 @@ define(function(require) {
     var wade = require('wade');
     var hero = $('#hero');
     var isStickGameOpened = false;
-    var tempTime;
-    //stage3.starttime;
 
     stage3.initEvents = function() {
     	stage3.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4']);
-    	// get time now!!!!!!!!!!!!!!
-        //tempTime = stage3.dateTime()
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
     	$(hero).css ({height:'70%'});
       $('#inventory').show();
@@ -31,28 +27,29 @@ define(function(require) {
     function moveToRiver() {
     	if(isStickGameOpened) return;
     	isStickGameOpened = true;
-        if (x <= 611 ) return false;
+      if (x <= 611 ) return false;
     	var x = event.pageX;
-        var y = event.pageY;
+      var y = event.pageY;
 
-        $(hero).trigger('hero:moveForward', {distance: 285});
-        $(hero).on('hero:heroHasCome', openDotGame);    	
+      $(hero).trigger('hero:moveForward', {distance: 285});
+      $(hero).on('hero:heroHasCome', openStickGame);    	
     }; 
+/* start BUBBLES GAME*/
+    function bubbleStart() {
+      stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, initBubblesGame);
+    };
 
-    function openDotGame() {    
+    function initBubblesGame() {
+      $('.bubbles-popup').hide();
+      wade.init('src/js/lib/wade_src/bubbles.js');
+    };
+    
+/* start STICK GAME*/
+    function openStickGame() {
 		stage3.getTmpl('popupFrameTmpl.html').then(function() {
 			stage3.getTmpl('stage3SticksGameTmpl.html','.popup', null, newStickGame);
 		});
     };
-
-	function bubbleStart() {
-	  stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, initBubblesGame);
-    };
-
-    function initBubblesGame() {
-    	$('.bubbles-popup').hide();
-    	wade.init('src/js/lib/wade_src/bubbles.js');
-   	};
 
     function newStickGame() {
     	var newGame = new StickGame();
@@ -87,7 +84,7 @@ define(function(require) {
 				currentGame.computerPicks();
 			}
 		};
-
+    // finish stick game and start bubbles
 		currentGame.finishGame = function() {
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
 			printWhoWon(winner);	    

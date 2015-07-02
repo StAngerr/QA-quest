@@ -36,8 +36,8 @@ define(function(require) {
     function stageFinished() {
 
     };
-
-    function insideCabin() {
+/*INSIDE CABIN*/
+  function insideCabin() {
     	$(hero).addClass('hideHero');
 			stage4.getTmpl('popupFrameTmpl.html').then(function() {
 				$('.popupWrap').addClass('dark-bg')
@@ -73,14 +73,14 @@ define(function(require) {
 			$('.panelButton').removeClass('pressed');
 		});
 	};
-var badge
-	function loadFinalStage() {
-	  stage4.closePopup();
-	  $('#stage4').remove();
-	  badge = {
-	  	src:"sherlock_180x180.png"
-	  }
-	  stage4.getTmpl('finalStageTmpl.html','#mainContent', badge);
+		var badge
+		function loadFinalStage() {
+		  stage4.closePopup();
+		  $('#stage4').remove();
+		  badge = {
+		  	src:"sherlock_180x180.png"
+		  }
+		  stage4.getTmpl('finalStageTmpl.html','#mainContent', badge);
  }
  
 	function switchOnLamp () {
@@ -120,7 +120,7 @@ var badge
 		if(combination.join('') == someCombination) return true;
 		return false;
 	};
-
+// Cabin timer
 	function startTimer() {
 		var generalTimeMinutes = 3;
 		var generalTimeMS = generalTimeMinutes * 60 * 1000;
@@ -142,7 +142,7 @@ var badge
 			generalTimeMS -= 1000;
 		}, 1000);
 	};
-
+// load Frame
 	function load404Page() {
 		is404Opened = true;
 		$('.popup > .cabin > *').toggleClass('closeBlock');
@@ -157,6 +157,7 @@ var badge
 			$(hero).on('hero:heroHasCome', loadDotGame);	
     };
 
+/*DOT Game start*/
     function loadDotGame() {
     	$(hero).trigger('hero:clearHasComeEvent');
 			stage4.getTmpl('popupFrameTmpl.html').then(function() {

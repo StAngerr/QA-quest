@@ -13,26 +13,22 @@ define(function (require) {
     var isPictureGameOpened = false;
     var isTicTacToeGameOpened = false;
     var tempTime;
-   // stage2.starttime;
-    
+
     stage2.initEvents = function () {
         stage2.activeInventary(['.detail-1', '.detail-2']);
-        // get time now!!!!!!!!!!!!!!
-       // tempTime = stage2.dateTime()
         var mainSection = $('#mainSection'); 
 
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  565}});
-        /* This event is needed to finish stage after finishing tic tac toe game.*/        
+        /* This event is needed to finish stage after finishing tic tac toe game.*/
         $(mainSection).on('inventory:itemAdded', function(event, item) {
             if(item.name.indexOf('detail-4') !== -1) {
-                 //tempTime = stage2.dateTime() - stage2.starttime;
                 if(!stage2.isStageFinished)  finishStage();
             }
         });      
         $('#inventory').show();
         turnOffTheLight();
         addFlashLightEvents();
-        $('.choosePic').on('click', openPictureGame);        
+        $('.choosePic').on('click', openPictureGame);
     };
 
     function finishStage() {
@@ -40,7 +36,31 @@ define(function (require) {
         removeFlashLightEvents();
         $('#mainSection').trigger('main:stageFinished');
     };
+/* TURN OFF THE LIGHT*/
+    function turnOffTheLight() {
+         $('#mainContent').addClass('lightOff');
+         $('#stage2').addClass('flashLight');
+    };
 
+     /*    Move events to flash light*/
+    function addFlashLightEvents() {
+        $(document).mousemove(function(e) {
+            var marginCorrection = parseInt($('#mainSection').css('margin-left'));
+            $('#stage2').css({
+                '-webkit-clip-path': 'circle(130px at ' + (e.pageX - marginCorrection) + 'px ' + e.pageY + 'px)',
+                'cursor': 'url("../images/flashlight.ico")'
+            });
+        });
+    };
+
+    function removeFlashLightEvents() {
+        $(document).off('mousemove');
+        $('#mainContent').removeClass('lightOff');
+        $('#stage2').removeClass('flashLight');
+        $('.flashLightShadow').remove();
+        $('#stage2').css({'-webkit-clip-path': 'none'});
+    }; 
+/*PICTURE GAME*/
     function openPictureGame() {
         if(isPictureGameOpened) return;
         isPictureGameOpened = true;
@@ -62,17 +82,16 @@ define(function (require) {
         dragNdrop.makeDragabble($('.pic-to-drag'));
         dragNdrop.makeDroppable([fieldToDrop], dropPicture);
         dragNdrop.makeDroppable([fieldToReturn], returnPictureBack);
-        $('#sendPicture').on('click',finishPictureGame);
+        $('#sendPicture').on('click', finishPictureGame);
     };
-
-       
+    // callback to drop choosen picture to empty field
     function dropPicture () {
         data = dragNdrop.data;        
         if ($(event.target)[0].nodeName !== 'DIV') {
             var target = $(event.target).closest('div');
 
-            if (target.html() !== '') {                   
-                return false;                                            
+            if (target.html() !== '') {
+                return false;
             } else {
                 $(event.target).closest('div').html(data);
             }          
@@ -80,7 +99,7 @@ define(function (require) {
             return false;          
         }  
     };
-
+    // callback to drop choosen picture back
     function returnPictureBack (event, data) {      
        $('.pictures-to-choose').append(data); 
     };
@@ -117,41 +136,20 @@ define(function (require) {
         isTicTacToeGameOpened = true; 
         $(hero).trigger('hero:moveForward', {distance: 865});
         $(hero).trigger('hero:clearHasComeEvent');
-        $(hero).on('hero:heroHasCome', startTicTacToeGame);       
+        $(hero).on('hero:heroHasCome', initTicTacToeGame);       
     };
 
-    function turnOffTheLight() {
-         $('#mainContent').addClass('lightOff');
-         $('#stage2').addClass('flashLight');
-    };
-
-     /*    Move events to flash light*/
-    function addFlashLightEvents() {
-        $(document).mousemove(function(e) {
-            var marginCorrection = parseInt($('#mainSection').css('margin-left'));
-            $('#stage2').css({
-                '-webkit-clip-path': 'circle(130px at ' + (e.pageX - marginCorrection) + 'px ' + e.pageY + 'px)',
-                'cursor': 'url("../images/flashlight.ico")'
-            });
-        });
-    };
-
-    function removeFlashLightEvents() {
-        $(document).off('mousemove');
-        $('#mainContent').removeClass('lightOff');
-        $('#stage2').removeClass('flashLight');
-        $('.flashLightShadow').remove();
-        $('#stage2').css({'-webkit-clip-path': 'none'});
-    }; 
-                                        /* TIC TAC TOE GAME*/
-    function startTicTacToeGame() {
+/* TIC TAC TOE GAME*/
+    function initTicTacToeGame() {
 
         $('#ticTacToe').addClass('show-Game');
         $('.field').on('click', function (event) {
             ticAppear($(this).attr('id'));
         }); 
         $('.newGameB').on('click', playAgain);
-         /*functions and variables to play tictictoe game*/
+         /*
+                functions and variables to play tictactoe game
+         */
         var x = "src/images/x.png";
         var oz = "src/images/o.png";
         var pause = 0;
@@ -484,8 +482,8 @@ define(function (require) {
             } 
             reset();
         };
-
-        function reset() {            
+            // clean game field
+        function reset() {
             var fields = $('.field');
             fields.each( function(index) {
                 $(this).removeClass('toe');

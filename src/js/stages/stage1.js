@@ -4,17 +4,16 @@ define(function(require) {
     var $ = require('jquery'); 
     var DragNDrop = require('src/js/dragndrop.js');
     var wade = require('wade');
+    var dragNdrop = new DragNDrop();
+    var hero = $('#hero');
+    // these variables help us to control game appearance
     var isWordGameFinished = false;
     var isWordGameOpened = false;
     var isFlowGameOpened = false;
     var isFlowGameFinished = false;
-    var dragNdrop = new DragNDrop();
-    var hero = $('#hero');
-    var tempTime;
-    
+
 
     stage1.initEvents = function() {
-        //tempTime = stage1.dateTime();
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
@@ -23,7 +22,6 @@ define(function(require) {
      function finishStage() {
         stage1.isStageFinished = true;
         $(hero).trigger('hero:clearHasComeEvent');
-        // tempTime = stage1.dateTime() - stage1.starttime;
         $('#mainSection').trigger('main:stageFinished');
     };
 
@@ -45,7 +43,7 @@ define(function(require) {
         if(coordinateX == posX) return true;
         return false; 
     };
-
+/* start FLOW GAME*/
     function openFlowGame() {
         if(!isFlowGameFinished) {
             stage1.getTmpl('popupFrameTmpl.html').then(function() {
@@ -60,6 +58,7 @@ define(function(require) {
         }
     };
 
+/* start WORD GAME*/
     function  startWordGame() {        
         var wordSpot = $('.makeWord')[0];
         var fieldToDrop = $('.all-letters')[0];
@@ -105,7 +104,7 @@ define(function(require) {
             });
         });        
     };
-
+        /* init FLOW GAME*/
     function addFlowGame() {
         isFlowGameOpened = true;
         $(hero).off('hero:heroHasCome');
