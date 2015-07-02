@@ -143,14 +143,14 @@ define(function (require) {
         $('.flashLightShadow').remove();
         $('#stage2').css({'-webkit-clip-path': 'none'});
     }; 
-
+                                        /* TIC TAC TOE GAME*/
     function startTicTacToeGame() {
 
-        $('#ticTacToe').show(); /* calss*/
-        $('.field').on('click', function (event) {       
+        $('#ticTacToe').addClass('show-Game');
+        $('.field').on('click', function (event) {
             ticAppear($(this).attr('id'));
         }); 
-        $('.newGameB').on('click', playAgain);     
+        $('.newGameB').on('click', playAgain);
          /*functions and variables to play tictictoe game*/
         var x = "src/images/x.png";
         var oz = "src/images/o.png";
@@ -184,7 +184,7 @@ define(function (require) {
         var ts = 0;
         var counter = 0;
          // logic to know who is winner
-         // 1 - X; 2 - 0; 3 - noone
+         // 1 - X; 2 - 0; 3 - draw
         function logicOne() {
             if ((a == 1) && (b == 1) && (c == 1) && (d == 1)) all = 1;
             if ((a == 1) && (f == 1) && (k == 1) && (p == 1)) all = 1;
@@ -458,41 +458,40 @@ define(function (require) {
         };
 
         function process() {
-            // CHANGE IT THEN! we need some conditions from custome
-             logicOne();
+            logicOne();
             if (all == 2) {
                 // 0 won
-              
-                finishTicTacToe();            
-            } else if (all == 1 || all == 3) {          
+                counter = 0
+                $('.newGameB').addClass('show-item');
+            } else if (all == 1 ) {
+                // X won
                 finishTicTacToe();
+            } else if(all == 3) {
+                // draw
+                 $('.newGameB').addClass('show-item');
             }
-        };
 
+        };
+            // play again function (3 atempts)
         function playAgain() {
-            if (all == 2) {
-                reset();
-            } else if (all == 3) {
-                counter++;
-                 // CHANGE IT THEN!
-                if (counter >= 1) { 
-                    $('.newGameB').css('visibility', 'hidden');
-                    $('#ticTacToe').remove();
-                    return false;
-                } 
-                reset();
-            } else reset();
+            $('.newGameB').removeClass('show-item');
+            counter++;
+            if (counter == 3) { 
+                
+                $('#ticTacToe').removeClass('show-item');
+                finishTicTacToe()
+                return false;
+            } 
+            reset();
         };
 
-        function reset() {        
+        function reset() {            
             var fields = $('.field');
-
             fields.each( function(index) {
                 $(this).removeClass('toe');
                 $(this).removeClass('tic');
             });
-
-            $('.newGameB').css('visibility', 'hidden');
+            
             all = 0;
             a = 0;
             b = 0;
@@ -525,9 +524,9 @@ define(function (require) {
     };        
      // end of game tictactoe
     function finishTicTacToe() {
-        $('.newGameB').css('visibility', 'hidden');  /* CLASS*/   
+        $('.newGameB').removeClass('show-item')
         $('#inventory').trigger('inventory:addItem', {name:'.detail-4'}); 
-        $('#ticTacToe').remove();       
+        $('#ticTacToe').removeClass('show-item');       
     };
     return stage2;
 });
