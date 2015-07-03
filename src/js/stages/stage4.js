@@ -11,7 +11,7 @@ define(function(require) {
 
 
     stage4.initEvents = function() {
-    insideCabin();
+    //insideCabin();
     	stage4.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4', '.detail-5', '.detail-6']);
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
@@ -73,12 +73,14 @@ define(function(require) {
 			$('.panelButton').removeClass('pressed');
 		});
 	};
+
+ /* here shoul be GEt from server and badge == some object with name and src*/
 		var badge
 		function loadFinalStage() {
 		  stage4.closePopup();
 		  $('#stage4').remove();
 		  badge = {
-		  	src:"sherlock_180x180.png"
+		  	src:"finder_180x180.png",
 		  }
 		  stage4.getTmpl('finalStageTmpl.html','#mainContent', badge);
  }
@@ -132,7 +134,7 @@ define(function(require) {
 		cabinTimer = setInterval(function() {
 			if(generalTimeMS == 0) {
 				clearInterval(cabinTimer);
-				stage4.closePopup();
+				loadFinalStage();
 			}
 			minutesLeft = (generalTimeMS / 60000).toString()[0];
 			secondsLeft = (generalTimeMS - (minutesLeft * 60000)) / 1000;

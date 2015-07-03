@@ -1,4 +1,7 @@
-
+itemsInsidecabin.png
+botAnimationSprite.png
+sprite_bot_movement.scss
+sprite_inside_cabin.scss
 .grunt
 .sass-cache
 node_modules

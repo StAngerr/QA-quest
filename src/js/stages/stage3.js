@@ -9,7 +9,7 @@ define(function(require) {
     stage3.initEvents = function() {
     	stage3.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4']);
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
-    	$(hero).css ({height:'70%'});
+    	$(hero).css ({height:'202px'});
       $('#inventory').show();
       $('#stage3').on('click', moveToRiver);
 			$(mainSection).on('inventory:itemAdded', function(event, item) {

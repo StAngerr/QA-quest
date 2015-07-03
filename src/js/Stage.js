@@ -5,7 +5,6 @@ define(function(require) {
 
         var stageLoad = true;
         this.templateUrl = templ;
-        //this.starttime = Math.round($.now() / 1000);
         this.initEvents;
         this.finishStage;
         this.isStageFinished = false;
@@ -20,7 +19,7 @@ define(function(require) {
                 url: 'src/templates/' + tmplName,
                 method: 'GET',
                 success: function(data) {
-                    var target = direction || '#mainContent';                   
+                    var target = direction || '#mainContent';
                     var content = dataToTempl ? _.template(data)(dataToTempl): data;
 
                     $(target).prepend(content);
@@ -36,12 +35,8 @@ define(function(require) {
         this.activeInventary = function(items) {
             $.each(items, function(index, value) {
                 $((items)[index]).removeClass('noItem');
-            })          
-        }
-        // this.dateTime = function() {
-        //     var seconds = Math.round($.now() / 1000);
-        //     return seconds
-        // }
+            })   
+        }       
         this.closePopup = function() {
             $('.popupWrap').remove();
         };    
