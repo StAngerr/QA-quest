@@ -248,16 +248,23 @@
     left: 562px;
     width: 80px;
     height: 61px;
-    background: url('../images/cabin_buttons/startBtn.png') no-repeat 0 0;
+    background: url('../images/itemsInsidecabin.png') no-repeat $start-btn-x $start-btn-y;
     margin: 0 auto;
     border: none;
 }
         // all pannel's buttons pressed and none
 .panelButton {
     position: absolute;  
-    width: 45px;
-    height: 30px;
+    width: $blue-circle-width;
+    height: $blue-circle-height;
     border: none;
+    background-color: none;
+    background-image: url('../images/itemsInsidecabin.png');
+    background-repeat: no-repeat;
+    &.pressed {
+        height: $blue-circle-height - 6px;
+    }
+
     &.btn-1, &.btn-2, &.btn-3, &.btn-4 {
         bottom: 119px;
     }
@@ -268,87 +275,111 @@
         bottom: 40px;
     }
     &.btn-1 {
-        background: url('../images/cabin_buttons/greenCircle.png') no-repeat 0 0;
+        background-position-x: - $green-circle-x;
+        background-position-y:  - $green-circle-y;
         right: 393px;
         &.pressed {
-            background: url('../images/cabin_buttons/greenCirclePressed.png') no-repeat 0 5px;
+            background-position-x: - $green-circle-pressed-x;
+            background-position-y: - $green-circle-pressed-y;
         }
     }
     &.btn-2 {
-        background: url('../images/cabin_buttons/orangeCircle.png') no-repeat 0 0;
+        background-position-x: - $orange-circle-x;
+        background-position-y:  - $orange-circle-y;
         right: 342px;
         &.pressed {
-            background: url('../images/cabin_buttons/orangeCirclePressed.png') no-repeat 0 5px;
+            background-position-x: - $orange-circle-pressed-x;
+            background-position-y: - $orange-circle-pressed-y;
         }
     }
     &.btn-3 {
-        background: url('../images/cabin_buttons/blueCircle.png') no-repeat 0 0;
+        background-position-x: - $blue-circle-x;
+        background-position-y:  - $blue-circle-y;
         right: 288px;
         &.pressed {
-            background: url('../images/cabin_buttons/blueCirclePressed.png') no-repeat 0 5px;
+            background-position-x: - $blue-circle-pressed-x;
+            background-position-y: - $blue-circle-pressed-y 
         }
     }
     &.btn-4 {
-        background: url('../images/cabin_buttons/yellowCircle.png') no-repeat 0 0;
+        background-position-x: - $yellow-circle-x;
+        background-position-y:  - $yellow-circle-y;
         right: 234px;
         &.pressed {
-            background: url('../images/cabin_buttons/yellowCirclePressed.png') no-repeat 0 5px;
+            background-position-x: - $yellow-circle-pressed-x;
+            background-position-y: - $yellow-circle-pressed-y;
         }
     }
     &.btn-5 {
-        background: url('../images/cabin_buttons/greenTriangle.png') no-repeat 0 0;
+        background-position-x: - $green-triangle-x;
+        background-position-y:  - $green-triangle-y;
         right: 398px;
         &.pressed {
-            background: url('../images/cabin_buttons/greenTrianglePressed.png') no-repeat 0 5px;
+            background-position-x: - $green-triangle-pressed-x;
+            background-position-y: - $green-triangle-pressed-y;
         }
     } 
     &.btn-6 {
-        background: url('../images/cabin_buttons/orangeTriangle.png') no-repeat 0 0;
+        background-position-x: - $orange-triangle-x;
+        background-position-y:  - $orange-triangle-y;
         right: 341px;
         &.pressed {
-            background: url('../images/cabin_buttons/orangeTrianglePressed.png') no-repeat 0 5px;
+            background-position-x: - $orange-triangle-pressed-x;
+            background-position-y: - $orange-triangle-pressed-y;
         }
     }
     &.btn-7 {
-        background: url('../images/cabin_buttons/blueTriangle.png') no-repeat 0 0;
+        background-position-x: - $blue-triangle-x;
+        background-position-y:  - $blue-triangle-y;
         right: 284px;
         &.pressed {
-            background: url('../images/cabin_buttons/blueTrianglePressed.png') no-repeat 0 5px;
+            background-position-x: - $blue-triangle-pressed-x;
+            background-position-y: - $blue-triangle-pressed-y;
         }
     }
     &.btn-8 {
-        background: url('../images/cabin_buttons/yellowTriangle.png') no-repeat 0 0;
+        background-position-x: - $yellow-triangle-x;
+        background-position-y:  - $yellow-triangle-y;
         right: 230px;
         &.pressed {
-            background: url('../images/cabin_buttons/yellowTrianglePressed.png') no-repeat 0 5px;
+            background-position-x: - $yellow-triangle-pressed-x;
+            background-position-y: - $yellow-triangle-pressed-y;
         }
     }
      &.btn-9 {
-        background: url('../images/cabin_buttons/greenSquare.png') no-repeat 0 0;
+        background-position-x: - $green-square-x;
+        background-position-y:  - $green-square-y;
         right: 404px;
         &.pressed {
-            background: url('../images/cabin_buttons/greenSquarePressed.png') no-repeat 0 5px;
+            background-position-x: - $green-square-pressed-x;
+            background-position-y:  - $green-square-pressed-y;
         }
     } 
     &.btn-10 {
-        background: url('../images/cabin_buttons/orangeSquare.png') no-repeat 0 0;
+        background-position-x: - $orange-square-x;
+        background-position-y:  - $orange-square-y;
         right: 344px;
         &.pressed {
-            background: url('../images/cabin_buttons/orangeSquarePressed.png') no-repeat 0 5px;
+            background-position-x: - $orange-square-pressed-x;
+            background-position-y:  - $orange-square-pressed-y;
         }
     }
     &.btn-11 {
-        background: url('../images/cabin_buttons/blueSquare.png') no-repeat 0 0;
-        right: 284px;
+        background-position-x: - $blue-square-x;
+        background-position-y:  - $blue-square-y;
+        right: 285px;
         &.pressed {
-            background: url('../images/cabin_buttons/blueSquarePressed.png') no-repeat 0 5px;
+            background-position-x: - $blue-square-pressed-x;
+            background-position-y:  - $blue-square-pressed-y;
         }
     }
     &.btn-12 {
-        background: url('../images/cabin_buttons/yellowSquare.png') no-repeat 0 0;
+        background-position-x: - $yellow-square-x;
+        background-position-y:  - $yellow-square-y;
         right: 226px;
         &.pressed {
-            background: url('../images/cabin_buttons/yellowSquarePressed.png') no-repeat 0 5px;
+            background-position-x: - $yellow-square-pressed-x;
+            background-position-y:  - $yellow-square-pressed-y;
         }
     }
 }
@@ -357,37 +388,52 @@
     position: absolute;
     width: 28px;
     height: 35px;
+    background-color: none;
+    background-image: url('../images/itemsInsidecabin.png');
+    background-repeat: no-repeat;
 
     &.lamp1 {
         left: 25px;
         top: 48px;
-        background: url('../images/cabin_buttons/lamp_closure_Left_off.png') no-repeat 0 0;
+        background-position-x: - $lamp-closure-left-off-x;
+        background-position-y:  - $lamp-closure-left-off-y;
         &.switch-on{
-            background: url('../images/cabin_buttons/lamp_closure_Left_on.png') no-repeat 0 0;
+            background-position-x: - $lamp-closure-left-on-x;
+            background-position-y:  - $lamp-closure-left-on-y;
         }
     }
      &.lamp2 {
         left: 83px;
         top: 76px;
-        background: url('../images/cabin_buttons/lamp_far_left_off.png') no-repeat 0 0;
+        background-position-x: - $lamp-far-left-off-x;
+        background-position-y:  - $lamp-far-left-off-y;
+        width: $lamp-far-left-off-width;
+        height:$lamp-far-left-off-height;
         &.switch-on{
-            background: url('../images/cabin_buttons/lamp_far_Left_on.png') no-repeat 0 0;
+            background-position-x: - $lamp-far-left-on-x;
+            background-position-y:  - $lamp-far-left-on-y;
         }
     }
     &.lamp3 {
         left: 697px;
         top: 48px;
-        background: url('../images/cabin_buttons/lamp_closure_right_off.png') no-repeat 0 0;
+        background-position-x: - $lamp-closure-right-off-x;
+        background-position-y:  - $lamp-closure-right-off-y;
         &.switch-on{
-            background: url('../images/cabin_buttons/lamp_closure_right_on.png') no-repeat 0 0;
+            background-position-x: - $lamp-closure-right-on-x;
+            background-position-y:  - $lamp-closure-right-on-y;
         }
     }
     &.lamp4 {
         left: 647px;
         top: 76px;
-        background: url('../images/cabin_buttons/lamp_far_right_off.png') no-repeat 0 0;
+        background-position-x: - $lamp-far-right-off-x;
+        background-position-y:  - $lamp-far-right-off-y;
+        width: $lamp-far-right-off-width;
+        height:$lamp-far-right-off-height;
         &.switch-on{
-            background: url('../images/cabin_buttons/lamp_far_right_on.png') no-repeat 0 0;
+            background-position-x: - $lamp-far-right-on-x;
+            background-position-y:  - $lamp-far-right-on-y;
         }
     }
 

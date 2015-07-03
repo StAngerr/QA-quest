@@ -1,8 +1,9 @@
 module.exports = function(grunt) { 
     
-    grunt.loadNpmTasks('grunt-contrib-sass');  
+    grunt.loadNpmTasks('grunt-contrib-sass'); 
+    grunt.loadNpmTasks('grunt-spritesmith'); 
     grunt.loadNpmTasks('grunt-contrib-watch');
-     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-connect');
     
 
     grunt.initConfig({
@@ -17,6 +18,18 @@ module.exports = function(grunt) {
                 }
             }
         },
+        sprite:{
+            bot: {
+                src: 'src/images/bot/*.png',
+                dest: 'src/images/botAnimationSprite.png',
+                destCss: 'src/scss/sprite_bot_movement.scss'
+            },
+            buttons: {
+                src: 'src/images/cabin_buttons/*.png',
+                dest: 'src/images/itemsInsidecabin.png',
+                destCss: 'src/scss/sprite_inside_cabin.scss'
+            }
+        }, 
          watch: {
             css: {
                 options:{
@@ -24,7 +37,7 @@ module.exports = function(grunt) {
                 },
                 files: ['**/*.css','**/*.html']
             },
-            sass: {
+        sass: {
                 files: ['**/*.scss'],
                 tasks: ['sass']
             },
@@ -46,7 +59,7 @@ module.exports = function(grunt) {
     });
     grunt.registerTask('default', [ 'sass', 'watch']);
     
-    grunt.registerTask('runServ', ['connect:server','watch']);
+    grunt.registerTask('runServ', ['connect:server', 'sprite','watch']);
 };
 
 

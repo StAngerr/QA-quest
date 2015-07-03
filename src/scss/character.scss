@@ -2,6 +2,8 @@
      BASE STYLES FOR CHARACTER
      
 */
+
+
 .man {
     display: block;
     z-index: 6;
@@ -11,9 +13,9 @@
     left: 0px;
     width: 55px;
     height: 202px;
-    background: #cf0;
-    background-size: cover;
     font-size: 2.5em;
+    background-image: url(../images/botAnimationSprite.png);
+    background-repeat: no-repeat;
     // all moving animations 
     &.animFix {
         transition: none;
@@ -22,30 +24,30 @@
         display: none;
     }
     &.stand-right {
-        background: url(../images/bot/bot_static_direct_line.png) no-repeat;         
+        background-position-y: $bot-static-direct-line-y - 50px;
         animation: play 2s steps(20) infinite; 
     }
     &.stand-left {
-        background: url(../images/bot/bot_static_reverse_line.png) no-repeat;         
+        background-position-y: - $bot-static-reverse-line-y - 50px;
         animation: play 2s steps(20) infinite; 
     }
     &.move-right {
-        background: url(../images/bot/bot_walk_direct_line.png) no-repeat;        
+        background-position-y: - $bot-walk-direct-line-y - 50px;
         animation: play .3s steps(20) infinite; 
     }
     &.move-left {
-        background: url(../images/bot/bot_walk_reverse_line.png) no-repeat;     
+        background-position-y: - $bot-walk-reverse-line-y - 50px;
         animation: play .2s steps(20) infinite;
     }
     &.climb-up {
         width: 80px;          
         transition: transform 3.5s linear;
-        background: url(../images/bot/bot_up_line.png) no-repeat;     
+        background-position-y: - $bot-up-line-y - 50px;
         animation: play .7s steps(20) infinite;  
     }
   
     @keyframes play {
-        0%{ background-position:  -90px -51px;}
-        100% {  background-position:  -4890px -51px;}
+        0% { background-position-x: - $bot-static-direct-line-x - 90px;}
+        100% { background-position-x: - $bot-static-direct-line-width - 90px;}
     }
 } 

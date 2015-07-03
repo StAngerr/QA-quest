@@ -470,12 +470,11 @@ define(function (require) {
             }
 
         };
-            // play again function (3 atempts)
+            // play again function (2 draws and level will finish)
         function playAgain() {
             $('.newGameB').removeClass('show-item');
             counter++;
-            if (counter == 3) { 
-                
+            if (counter == 2) { 
                 $('#ticTacToe').removeClass('show-item');
                 finishTicTacToe()
                 return false;

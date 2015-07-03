@@ -1,0 +1,444 @@
+/*
+SCSS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: $icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+$icon-home: x y offset_x offset_y width height total_width total_height image_path;
+
+At the bottom of this section, we provide information about the spritesheet itself
+$spritesheet: width height image $spritesheet-sprites;
+*/
+$blue-circle-name: 'blueCircle';
+$blue-circle-x: 158px;
+$blue-circle-y: 30px;
+$blue-circle-offset-x: -158px;
+$blue-circle-offset-y: -30px;
+$blue-circle-width: 42px;
+$blue-circle-height: 30px;
+$blue-circle-total-width: 243px;
+$blue-circle-total-height: 231px;
+$blue-circle-image: '../images/itemsInsidecabin.png';
+$blue-circle: (158px, 30px, -158px, -30px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'blueCircle', );
+$blue-circle-pressed-name: 'blueCirclePressed';
+$blue-circle-pressed-x: 128px;
+$blue-circle-pressed-y: 176px;
+$blue-circle-pressed-offset-x: -128px;
+$blue-circle-pressed-offset-y: -176px;
+$blue-circle-pressed-width: 43px;
+$blue-circle-pressed-height: 23px;
+$blue-circle-pressed-total-width: 243px;
+$blue-circle-pressed-total-height: 231px;
+$blue-circle-pressed-image: '../images/itemsInsidecabin.png';
+$blue-circle-pressed: (128px, 176px, -128px, -176px, 43px, 23px, 243px, 231px, '../images/itemsInsidecabin.png', 'blueCirclePressed', );
+$blue-square-name: 'blueSquare';
+$blue-square-x: 43px;
+$blue-square-y: 61px;
+$blue-square-offset-x: -43px;
+$blue-square-offset-y: -61px;
+$blue-square-width: 43px;
+$blue-square-height: 31px;
+$blue-square-total-width: 243px;
+$blue-square-total-height: 231px;
+$blue-square-image: '../images/itemsInsidecabin.png';
+$blue-square: (43px, 61px, -43px, -61px, 43px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'blueSquare', );
+$blue-square-pressed-name: 'blueSquarePressed';
+$blue-square-pressed-x: 0px;
+$blue-square-pressed-y: 176px;
+$blue-square-pressed-offset-x: 0px;
+$blue-square-pressed-offset-y: -176px;
+$blue-square-pressed-width: 43px;
+$blue-square-pressed-height: 24px;
+$blue-square-pressed-total-width: 243px;
+$blue-square-pressed-total-height: 231px;
+$blue-square-pressed-image: '../images/itemsInsidecabin.png';
+$blue-square-pressed: (0px, 176px, 0px, -176px, 43px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'blueSquarePressed', );
+$blue-triangle-name: 'blueTriangle';
+$blue-triangle-x: 84px;
+$blue-triangle-y: 92px;
+$blue-triangle-offset-x: -84px;
+$blue-triangle-offset-y: -92px;
+$blue-triangle-width: 42px;
+$blue-triangle-height: 30px;
+$blue-triangle-total-width: 243px;
+$blue-triangle-total-height: 231px;
+$blue-triangle-image: '../images/itemsInsidecabin.png';
+$blue-triangle: (84px, 92px, -84px, -92px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'blueTriangle', );
+$blue-triangle-pressed-name: 'blueTrianglePressed';
+$blue-triangle-pressed-x: 129px;
+$blue-triangle-pressed-y: 152px;
+$blue-triangle-pressed-offset-x: -129px;
+$blue-triangle-pressed-offset-y: -152px;
+$blue-triangle-pressed-width: 43px;
+$blue-triangle-pressed-height: 24px;
+$blue-triangle-pressed-total-width: 243px;
+$blue-triangle-pressed-total-height: 231px;
+$blue-triangle-pressed-image: '../images/itemsInsidecabin.png';
+$blue-triangle-pressed: (129px, 152px, -129px, -152px, 43px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'blueTrianglePressed', );
+$green-circle-name: 'greenCircle';
+$green-circle-x: 42px;
+$green-circle-y: 122px;
+$green-circle-offset-x: -42px;
+$green-circle-offset-y: -122px;
+$green-circle-width: 42px;
+$green-circle-height: 30px;
+$green-circle-total-width: 243px;
+$green-circle-total-height: 231px;
+$green-circle-image: '../images/itemsInsidecabin.png';
+$green-circle: (42px, 122px, -42px, -122px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'greenCircle', );
+$green-circle-pressed-name: 'greenCirclePressed';
+$green-circle-pressed-x: 85px;
+$green-circle-pressed-y: 176px;
+$green-circle-pressed-offset-x: -85px;
+$green-circle-pressed-offset-y: -176px;
+$green-circle-pressed-width: 43px;
+$green-circle-pressed-height: 23px;
+$green-circle-pressed-total-width: 243px;
+$green-circle-pressed-total-height: 231px;
+$green-circle-pressed-image: '../images/itemsInsidecabin.png';
+$green-circle-pressed: (85px, 176px, -85px, -176px, 43px, 23px, 243px, 231px, '../images/itemsInsidecabin.png', 'greenCirclePressed', );
+$green-square-name: 'greenSquare';
+$green-square-x: 0px;
+$green-square-y: 61px;
+$green-square-offset-x: 0px;
+$green-square-offset-y: -61px;
+$green-square-width: 43px;
+$green-square-height: 31px;
+$green-square-total-width: 243px;
+$green-square-total-height: 231px;
+$green-square-image: '../images/itemsInsidecabin.png';
+$green-square: (0px, 61px, 0px, -61px, 43px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'greenSquare', );
+$green-square-pressed-name: 'greenSquarePressed';
+$green-square-pressed-x: 200px;
+$green-square-pressed-y: 163px;
+$green-square-pressed-offset-x: -200px;
+$green-square-pressed-offset-y: -163px;
+$green-square-pressed-width: 42px;
+$green-square-pressed-height: 23px;
+$green-square-pressed-total-width: 243px;
+$green-square-pressed-total-height: 231px;
+$green-square-pressed-image: '../images/itemsInsidecabin.png';
+$green-square-pressed: (200px, 163px, -200px, -163px, 42px, 23px, 243px, 231px, '../images/itemsInsidecabin.png', 'greenSquarePressed', );
+$green-triangle-name: 'greenTriangle';
+$green-triangle-x: 0px;
+$green-triangle-y: 92px;
+$green-triangle-offset-x: 0px;
+$green-triangle-offset-y: -92px;
+$green-triangle-width: 42px;
+$green-triangle-height: 30px;
+$green-triangle-total-width: 243px;
+$green-triangle-total-height: 231px;
+$green-triangle-image: '../images/itemsInsidecabin.png';
+$green-triangle: (0px, 92px, 0px, -92px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'greenTriangle', );
+$green-triangle-pressed-name: 'greenTrianglePressed';
+$green-triangle-pressed-x: 86px;
+$green-triangle-pressed-y: 152px;
+$green-triangle-pressed-offset-x: -86px;
+$green-triangle-pressed-offset-y: -152px;
+$green-triangle-pressed-width: 43px;
+$green-triangle-pressed-height: 24px;
+$green-triangle-pressed-total-width: 243px;
+$green-triangle-pressed-total-height: 231px;
+$green-triangle-pressed-image: '../images/itemsInsidecabin.png';
+$green-triangle-pressed: (86px, 152px, -86px, -152px, 43px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'greenTrianglePressed', );
+$lamp-closure-left-off-name: 'lamp_closure_left_off';
+$lamp-closure-left-off-x: 200px;
+$lamp-closure-left-off-y: 58px;
+$lamp-closure-left-off-offset-x: -200px;
+$lamp-closure-left-off-offset-y: -58px;
+$lamp-closure-left-off-width: 28px;
+$lamp-closure-left-off-height: 35px;
+$lamp-closure-left-off-total-width: 243px;
+$lamp-closure-left-off-total-height: 231px;
+$lamp-closure-left-off-image: '../images/itemsInsidecabin.png';
+$lamp-closure-left-off: (200px, 58px, -200px, -58px, 28px, 35px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_closure_left_off', );
+$lamp-closure-left-on-name: 'lamp_closure_left_on';
+$lamp-closure-left-on-x: 200px;
+$lamp-closure-left-on-y: 128px;
+$lamp-closure-left-on-offset-x: -200px;
+$lamp-closure-left-on-offset-y: -128px;
+$lamp-closure-left-on-width: 28px;
+$lamp-closure-left-on-height: 35px;
+$lamp-closure-left-on-total-width: 243px;
+$lamp-closure-left-on-total-height: 231px;
+$lamp-closure-left-on-image: '../images/itemsInsidecabin.png';
+$lamp-closure-left-on: (200px, 128px, -200px, -128px, 28px, 35px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_closure_left_on', );
+$lamp-closure-right-off-name: 'lamp_closure_right_off';
+$lamp-closure-right-off-x: 200px;
+$lamp-closure-right-off-y: 93px;
+$lamp-closure-right-off-offset-x: -200px;
+$lamp-closure-right-off-offset-y: -93px;
+$lamp-closure-right-off-width: 28px;
+$lamp-closure-right-off-height: 35px;
+$lamp-closure-right-off-total-width: 243px;
+$lamp-closure-right-off-total-height: 231px;
+$lamp-closure-right-off-image: '../images/itemsInsidecabin.png';
+$lamp-closure-right-off: (200px, 93px, -200px, -93px, 28px, 35px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_closure_right_off', );
+$lamp-closure-right-on-name: 'lamp_closure_right_on';
+$lamp-closure-right-on-x: 200px;
+$lamp-closure-right-on-y: 23px;
+$lamp-closure-right-on-offset-x: -200px;
+$lamp-closure-right-on-offset-y: -23px;
+$lamp-closure-right-on-width: 28px;
+$lamp-closure-right-on-height: 35px;
+$lamp-closure-right-on-total-width: 243px;
+$lamp-closure-right-on-total-height: 231px;
+$lamp-closure-right-on-image: '../images/itemsInsidecabin.png';
+$lamp-closure-right-on: (200px, 23px, -200px, -23px, 28px, 35px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_closure_right_on', );
+$lamp-far-left-off-name: 'lamp_far_left_off';
+$lamp-far-left-off-x: 22px;
+$lamp-far-left-off-y: 200px;
+$lamp-far-left-off-offset-x: -22px;
+$lamp-far-left-off-offset-y: -200px;
+$lamp-far-left-off-width: 22px;
+$lamp-far-left-off-height: 31px;
+$lamp-far-left-off-total-width: 243px;
+$lamp-far-left-off-total-height: 231px;
+$lamp-far-left-off-image: '../images/itemsInsidecabin.png';
+$lamp-far-left-off: (22px, 200px, -22px, -200px, 22px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_far_left_off', );
+$lamp-far-left-on-name: 'lamp_far_left_on';
+$lamp-far-left-on-x: 44px;
+$lamp-far-left-on-y: 200px;
+$lamp-far-left-on-offset-x: -44px;
+$lamp-far-left-on-offset-y: -200px;
+$lamp-far-left-on-width: 22px;
+$lamp-far-left-on-height: 31px;
+$lamp-far-left-on-total-width: 243px;
+$lamp-far-left-on-total-height: 231px;
+$lamp-far-left-on-image: '../images/itemsInsidecabin.png';
+$lamp-far-left-on: (44px, 200px, -44px, -200px, 22px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_far_left_on', );
+$lamp-far-right-off-name: 'lamp_far_right_off';
+$lamp-far-right-off-x: 129px;
+$lamp-far-right-off-y: 61px;
+$lamp-far-right-off-offset-x: -129px;
+$lamp-far-right-off-offset-y: -61px;
+$lamp-far-right-off-width: 23px;
+$lamp-far-right-off-height: 31px;
+$lamp-far-right-off-total-width: 243px;
+$lamp-far-right-off-total-height: 231px;
+$lamp-far-right-off-image: '../images/itemsInsidecabin.png';
+$lamp-far-right-off: (129px, 61px, -129px, -61px, 23px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_far_right_off', );
+$lamp-far-right-on-name: 'lamp_far_right_on';
+$lamp-far-right-on-x: 0px;
+$lamp-far-right-on-y: 200px;
+$lamp-far-right-on-offset-x: 0px;
+$lamp-far-right-on-offset-y: -200px;
+$lamp-far-right-on-width: 22px;
+$lamp-far-right-on-height: 31px;
+$lamp-far-right-on-total-width: 243px;
+$lamp-far-right-on-total-height: 231px;
+$lamp-far-right-on-image: '../images/itemsInsidecabin.png';
+$lamp-far-right-on: (0px, 200px, 0px, -200px, 22px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'lamp_far_right_on', );
+$orange-circle-name: 'orangeCircle';
+$orange-circle-x: 158px;
+$orange-circle-y: 60px;
+$orange-circle-offset-x: -158px;
+$orange-circle-offset-y: -60px;
+$orange-circle-width: 42px;
+$orange-circle-height: 30px;
+$orange-circle-total-width: 243px;
+$orange-circle-total-height: 231px;
+$orange-circle-image: '../images/itemsInsidecabin.png';
+$orange-circle: (158px, 60px, -158px, -60px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'orangeCircle', );
+$orange-circle-pressed-name: 'orangeCirclePressed';
+$orange-circle-pressed-x: 200px;
+$orange-circle-pressed-y: 0px;
+$orange-circle-pressed-offset-x: -200px;
+$orange-circle-pressed-offset-y: 0px;
+$orange-circle-pressed-width: 43px;
+$orange-circle-pressed-height: 23px;
+$orange-circle-pressed-total-width: 243px;
+$orange-circle-pressed-total-height: 231px;
+$orange-circle-pressed-image: '../images/itemsInsidecabin.png';
+$orange-circle-pressed: (200px, 0px, -200px, 0px, 43px, 23px, 243px, 231px, '../images/itemsInsidecabin.png', 'orangeCirclePressed', );
+$orange-square-name: 'orangeSquare';
+$orange-square-x: 86px;
+$orange-square-y: 61px;
+$orange-square-offset-x: -86px;
+$orange-square-offset-y: -61px;
+$orange-square-width: 43px;
+$orange-square-height: 31px;
+$orange-square-total-width: 243px;
+$orange-square-total-height: 231px;
+$orange-square-image: '../images/itemsInsidecabin.png';
+$orange-square: (86px, 61px, -86px, -61px, 43px, 31px, 243px, 231px, '../images/itemsInsidecabin.png', 'orangeSquare', );
+$orange-square-pressed-name: 'orangeSquarePressed';
+$orange-square-pressed-x: 158px;
+$orange-square-pressed-y: 90px;
+$orange-square-pressed-offset-x: -158px;
+$orange-square-pressed-offset-y: -90px;
+$orange-square-pressed-width: 42px;
+$orange-square-pressed-height: 24px;
+$orange-square-pressed-total-width: 243px;
+$orange-square-pressed-total-height: 231px;
+$orange-square-pressed-image: '../images/itemsInsidecabin.png';
+$orange-square-pressed: (158px, 90px, -158px, -90px, 42px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'orangeSquarePressed', );
+$orange-triangle-name: 'orangeTriangle';
+$orange-triangle-x: 158px;
+$orange-triangle-y: 0px;
+$orange-triangle-offset-x: -158px;
+$orange-triangle-offset-y: 0px;
+$orange-triangle-width: 42px;
+$orange-triangle-height: 30px;
+$orange-triangle-total-width: 243px;
+$orange-triangle-total-height: 231px;
+$orange-triangle-image: '../images/itemsInsidecabin.png';
+$orange-triangle: (158px, 0px, -158px, 0px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'orangeTriangle', );
+$orange-triangle-pressed-name: 'orangeTrianglePressed';
+$orange-triangle-pressed-x: 43px;
+$orange-triangle-pressed-y: 152px;
+$orange-triangle-pressed-offset-x: -43px;
+$orange-triangle-pressed-offset-y: -152px;
+$orange-triangle-pressed-width: 43px;
+$orange-triangle-pressed-height: 24px;
+$orange-triangle-pressed-total-width: 243px;
+$orange-triangle-pressed-total-height: 231px;
+$orange-triangle-pressed-image: '../images/itemsInsidecabin.png';
+$orange-triangle-pressed: (43px, 152px, -43px, -152px, 43px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'orangeTrianglePressed', );
+$start-btn-name: 'startBtn';
+$start-btn-x: 0px;
+$start-btn-y: 0px;
+$start-btn-offset-x: 0px;
+$start-btn-offset-y: 0px;
+$start-btn-width: 79px;
+$start-btn-height: 61px;
+$start-btn-total-width: 243px;
+$start-btn-total-height: 231px;
+$start-btn-image: '../images/itemsInsidecabin.png';
+$start-btn: (0px, 0px, 0px, 0px, 79px, 61px, 243px, 231px, '../images/itemsInsidecabin.png', 'startBtn', );
+$start-btn-pressed-name: 'startBtnPressed';
+$start-btn-pressed-x: 79px;
+$start-btn-pressed-y: 0px;
+$start-btn-pressed-offset-x: -79px;
+$start-btn-pressed-offset-y: 0px;
+$start-btn-pressed-width: 79px;
+$start-btn-pressed-height: 50px;
+$start-btn-pressed-total-width: 243px;
+$start-btn-pressed-total-height: 231px;
+$start-btn-pressed-image: '../images/itemsInsidecabin.png';
+$start-btn-pressed: (79px, 0px, -79px, 0px, 79px, 50px, 243px, 231px, '../images/itemsInsidecabin.png', 'startBtnPressed', );
+$yellow-circle-name: 'yellowCircle';
+$yellow-circle-x: 0px;
+$yellow-circle-y: 122px;
+$yellow-circle-offset-x: 0px;
+$yellow-circle-offset-y: -122px;
+$yellow-circle-width: 42px;
+$yellow-circle-height: 30px;
+$yellow-circle-total-width: 243px;
+$yellow-circle-total-height: 231px;
+$yellow-circle-image: '../images/itemsInsidecabin.png';
+$yellow-circle: (0px, 122px, 0px, -122px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'yellowCircle', );
+$yellow-circle-pressed-name: 'yellowCirclePressed';
+$yellow-circle-pressed-x: 43px;
+$yellow-circle-pressed-y: 176px;
+$yellow-circle-pressed-offset-x: -43px;
+$yellow-circle-pressed-offset-y: -176px;
+$yellow-circle-pressed-width: 42px;
+$yellow-circle-pressed-height: 24px;
+$yellow-circle-pressed-total-width: 243px;
+$yellow-circle-pressed-total-height: 231px;
+$yellow-circle-pressed-image: '../images/itemsInsidecabin.png';
+$yellow-circle-pressed: (43px, 176px, -43px, -176px, 42px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'yellowCirclePressed', );
+$yellow-square-name: 'yellowSquare';
+$yellow-square-x: 42px;
+$yellow-square-y: 92px;
+$yellow-square-offset-x: -42px;
+$yellow-square-offset-y: -92px;
+$yellow-square-width: 42px;
+$yellow-square-height: 30px;
+$yellow-square-total-width: 243px;
+$yellow-square-total-height: 231px;
+$yellow-square-image: '../images/itemsInsidecabin.png';
+$yellow-square: (42px, 92px, -42px, -92px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'yellowSquare', );
+$yellow-square-pressed-name: 'yellowSquarePressed';
+$yellow-square-pressed-x: 158px;
+$yellow-square-pressed-y: 114px;
+$yellow-square-pressed-offset-x: -158px;
+$yellow-square-pressed-offset-y: -114px;
+$yellow-square-pressed-width: 42px;
+$yellow-square-pressed-height: 24px;
+$yellow-square-pressed-total-width: 243px;
+$yellow-square-pressed-total-height: 231px;
+$yellow-square-pressed-image: '../images/itemsInsidecabin.png';
+$yellow-square-pressed: (158px, 114px, -158px, -114px, 42px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'yellowSquarePressed', );
+$yellow-triangle-name: 'yellowTriangle';
+$yellow-triangle-x: 84px;
+$yellow-triangle-y: 122px;
+$yellow-triangle-offset-x: -84px;
+$yellow-triangle-offset-y: -122px;
+$yellow-triangle-width: 42px;
+$yellow-triangle-height: 30px;
+$yellow-triangle-total-width: 243px;
+$yellow-triangle-total-height: 231px;
+$yellow-triangle-image: '../images/itemsInsidecabin.png';
+$yellow-triangle: (84px, 122px, -84px, -122px, 42px, 30px, 243px, 231px, '../images/itemsInsidecabin.png', 'yellowTriangle', );
+$yellow-triangle-pressed-name: 'yellowTrianglePressed';
+$yellow-triangle-pressed-x: 0px;
+$yellow-triangle-pressed-y: 152px;
+$yellow-triangle-pressed-offset-x: 0px;
+$yellow-triangle-pressed-offset-y: -152px;
+$yellow-triangle-pressed-width: 43px;
+$yellow-triangle-pressed-height: 24px;
+$yellow-triangle-pressed-total-width: 243px;
+$yellow-triangle-pressed-total-height: 231px;
+$yellow-triangle-pressed-image: '../images/itemsInsidecabin.png';
+$yellow-triangle-pressed: (0px, 152px, 0px, -152px, 43px, 24px, 243px, 231px, '../images/itemsInsidecabin.png', 'yellowTrianglePressed', );
+$spritesheet-width: 243px;
+$spritesheet-height: 231px;
+$spritesheet-image: '../images/itemsInsidecabin.png';
+$spritesheet-sprites: ($blue-circle, $blue-circle-pressed, $blue-square, $blue-square-pressed, $blue-triangle, $blue-triangle-pressed, $green-circle, $green-circle-pressed, $green-square, $green-square-pressed, $green-triangle, $green-triangle-pressed, $lamp-closure-left-off, $lamp-closure-left-on, $lamp-closure-right-off, $lamp-closure-right-on, $lamp-far-left-off, $lamp-far-left-on, $lamp-far-right-off, $lamp-far-right-on, $orange-circle, $orange-circle-pressed, $orange-square, $orange-square-pressed, $orange-triangle, $orange-triangle-pressed, $start-btn, $start-btn-pressed, $yellow-circle, $yellow-circle-pressed, $yellow-square, $yellow-square-pressed, $yellow-triangle, $yellow-triangle-pressed, );
+$spritesheet: (243px, 231px, '../images/itemsInsidecabin.png', $spritesheet-sprites, );
+
+/*
+The provided mixins are intended to be used with the array-like variables
+
+.icon-home {
+  @include sprite-width($icon-home);
+}
+
+.icon-email {
+  @include sprite($icon-email);
+}
+*/
+@mixin sprite-width($sprite) {
+  width: nth($sprite, 5);
+}
+
+@mixin sprite-height($sprite) {
+  height: nth($sprite, 6);
+}
+
+@mixin sprite-position($sprite) {
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x  $sprite-offset-y;
+}
+
+@mixin sprite-image($sprite) {
+  $sprite-image: nth($sprite, 9);
+  background-image: url(#{$sprite-image});
+}
+
+@mixin sprite($sprite) {
+  @include sprite-image($sprite);
+  @include sprite-position($sprite);
+  @include sprite-width($sprite);
+  @include sprite-height($sprite);
+}
+
+/*
+The `sprites` mixin generates identical output to the CSS template
+  but can be overridden inside of SCSS
+
+@include sprites($spritesheet-sprites);
+*/
+@mixin sprites($sprites) {
+  @each $sprite in $sprites {
+    $sprite-name: nth($sprite, 10);
+    .#{$sprite-name} {
+      @include sprite($sprite);
+    }
+  }
+}
