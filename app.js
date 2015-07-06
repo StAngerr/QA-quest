@@ -20,7 +20,7 @@ app
 	});
 
 app.get('/getStage', function(req, res) {
-	var stage = 1;
+	var stage = 2;
 
 	res.json({ stage: stage })
 	//res.status(404).end();
@@ -58,6 +58,7 @@ app
 	});
 
 	app.post('/pictureID', function(req, res) {
+		console.log(req.body.picture);
 		res.status(200).end();
 	});
 

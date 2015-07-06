@@ -126,6 +126,14 @@ define(function (require) {
      };
 
     function finishPictureGame() {
+
+        $.ajax({
+            url: '/pictureID',
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify( {picture : 2333} )
+        });
+
         stage2.closePopup();
         $('#inventory').trigger('inventory:addItem', {name:'.detail-3'});      
         $('.stone').on('click', startTicTacToe);
