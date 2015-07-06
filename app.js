@@ -19,7 +19,7 @@ app
 	});
 
 app.get('/getStage', function(req, res) {
-	var stage = 1;
+	var stage = 0;
 
 	//serverTime = 0;
 	res.json({ stage: stage })

@@ -11,15 +11,20 @@ define(function (require) {
 			method: 'GET'
 		})
 		.done(function(data) {
-			if(data.stage != 0)  {
+			if(data.stage != 0) {
 				quest.startQuest(data.stage);
 				$(hero).removeClass('hideHero'); 
 			} else {
-				$('.startBtn').on('click', function () {
+				$('.startBtn').on('click', function() {
 					$(hero).removeClass('hideHero'); 
 					clearTimeout(timer);
 					quest.startQuest();
 				});
+				timer = setTimeout(function() {
+					$(hero).removeClass('hideHero');
+					quest.startQuest();
+				}, 7000);
+				return false;
 			}
 		})
 		.fail(function(jqXHR, textStatus) {
@@ -27,29 +32,6 @@ define(function (require) {
 		});
 	};		
 	getStage();
-
-	/*if(checkLS()) {
-		$(hero).removeClass('hideHero'); 
-		quest.startQuest()
-	} else {
-		$('.startBtn').on('click', function () {
-			$(hero).removeClass('hideHero'); 
-			clearTimeout(timer);
-			quest.startQuest()
-		});
-	}
-	
-	function checkLS() {
-		if(localStorage.getItem("currentStage")) {
-			return true;
-		} else {
-			timer = setTimeout(function(){
-				$(hero).removeClass('hideHero');
-				quest.startQuest();
-			}, 7000);
-			return false;
-		}
-	};*/
 });
 
 
