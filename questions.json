@@ -1,0 +1,90 @@
+[
+  {
+    "question":"The process of confirming that a component, system or person complies with its specified requirements, e.g., by passing an exam",
+    "answer": "Certification"
+  },
+  {
+    "question":"The degree to which a component or system has a design and/or internal structure that is difficult to understand, maintain and verify",
+    "answer": "Complexity"
+  },
+  {
+    "question":"The degree, expressed as a percentage, to which a specified coverage item has been exercised by a test suite",
+    "answer": "Coverage"
+  },
+  {
+    "question":"The process of finding, analyzing and removing the causes of failures in software",
+    "answer": "Debugging"
+  },
+  {
+    "question":"A flaw in a component or system that can cause the component or system to fail to perform its required function, e.g., an incorrect statement or data definition",
+    "answer": "Defect"
+  },
+  {
+    "question":"An informal test design technique where the tester actively controls the design of the tests as those tests are performed and uses information gained while testing to design new and better tests",
+    "answer": "Exploratory"
+  },
+  {
+    "question":"Deviation of the component or system from its expected delivery, service or result",
+    "answer": "Failure"
+  },
+  {
+    "question":"An attribute of a component or system specified or implied by requirements documentation (for example reliability, usability or design constraints)",
+    "answer": "Feature"
+  },
+  {
+    "question":"The process of combining components or systems into larger assemblies",
+    "answer": "Integration"
+  },
+  {
+    "question":"The level of (business) importance assigned to an item, e.g., defect",
+    "answer": "Priority"
+  },
+  {
+    "question":"A set of interrelated activities, which transform inputs into outputs",
+    "answer": "Process"
+  },
+  {
+    "question":"The degree to which a component, system or process meets specified requirements and/or user/customer needs and expectations",
+    "answer": "Quality"
+  },
+  {
+    "question":"The capability of the software product to enable modified software to be tested",
+    "answer": "Testability"
+  },
+  {
+    "question":"The ability to identify related items in documentation and software, such as requirements with associated tests",
+    "answer": "Traceability"
+  },
+  {
+    "question":"Confirmation by examination and through provision of objective evidence that the requirements for a specific intended use or application have been fulfilled",
+    "answer": "Validation"
+  },
+  {
+    "question":"Attributes of software products that bear on its ability to prevent unauthorized access, whether accidental or deliberate, to programs and data.",
+    "answer": "Security"
+  },
+  {
+    "question":"The degree of impact that a defect has on the development or operation of a component or system",
+    "answer": "Severity"
+  },
+   {
+    "question":"Testing of a previously tested program following modification to ensure that defects have not been introduced or uncovered in unchanged areas of the software, as a result of the changes made",
+    "answer": "Regression"
+  },
+   {
+    "question":"The capability of the software to be understood, learned, used and attractive to the user when used under specified conditions",
+    "answer": "Usability"
+  },
+   {
+    "question":"Formal testing with respect to user needs, requirements, and business processes conducted to determine whether or not a system satisfies the acceptance criteria and to enable the user, customers or other authorized entity to determine whether or not to accept the system",
+    "answer": "Acceptance"
+  },
+   {
+    "question":"Computer programs, procedures, and possibly associated documentation and data pertaining to the operation of a computer system",
+    "answer": "Software"
+  },
+   {
+    "question":"A skilled professional who is involved in the testing of a component or system",
+    "answer": "Tester"
+  }
+]
