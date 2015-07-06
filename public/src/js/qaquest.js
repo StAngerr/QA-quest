@@ -6,8 +6,8 @@ define(function(require) {
 
     var Quest = function() {          
         var quest = this;
-        var spentTime = 0;
-        var startTime = 0;
+        //var spentTime = 0;
+        //var startTime = 0;
         quest.currentStage = 0;
         quest.inventory = new Invetory();
         quest.character = new Character();
@@ -38,25 +38,26 @@ define(function(require) {
                 method: 'GET'
             })
             .done( function(data) {
-                spentTime = data.seconds || 0;
+                var spentTime = data.seconds || 0;
                 $(document).ready(function() {
-                    startTime = new Date().getTime();
+                    var startTime = new Date().getTime();
 
                     $(window).unload(function() {
-                        spentTime = (new Date().getTime() - startTime);
-                        saveTimeOnServer();
+                        console.log('SPEND TIME   ' + (new Date().getTime() - startTime));
+                        console.log('SPEND TIME   ' + spentTime);
+                        spentTime += (new Date().getTime() - startTime);
+                        saveTimeOnServer(spentTime);
                     });
                 });
             });
         };
 
-        function saveTimeOnServer() {
-            spentTime = new Date().getTime() - startTime;
+        function saveTimeOnServer(time) {
             $.ajax({
                 url: '/time',
                 method: 'POST',
                 contentType: "application/json",
-                data: JSON.stringify({seconds : spentTime})
+                data: JSON.stringify({seconds : time})
             });
         };
 
