@@ -20,7 +20,7 @@ app
 	});
 
 app.get('/getStage', function(req, res) {
-	var stage = 2;
+	var stage = 4;
 
 	res.json({ stage: stage })
 	//res.status(404).end();

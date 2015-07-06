@@ -39,7 +39,25 @@ define(function(require) {
         }       
         this.closePopup = function() {
             $('.popupWrap').remove();
-        };    
+        };
+        
+        this.sendTaskResults = function(result) {
+            $.ajax({
+                url: '/gameResult',
+                method: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify({taskDone : result})
+            })
+            .done(function() {
+                /*
+                success 
+                */
+            })
+            .fail(function() {
+                alert('Bad response');
+            })
+            ;
+        };   
          
     };
     return Stage;   
