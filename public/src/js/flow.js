@@ -12,7 +12,7 @@ define(function(require) {
 
     	this.init = function() {	
             var stage = Math.floor(Math.random() * (10 - 1) + 1); 
-    		this.loadLevel(stage);
+    		this.loadLevel(stage); /* STAGE 9,7,3 WARNING*/
     	}
 
         this.loadLevel = function(levelId) {
