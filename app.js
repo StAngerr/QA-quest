@@ -20,7 +20,7 @@ app
 	});
 
 app.get('/getStage', function(req, res) {
-	var stage = 0;
+	var stage = 1;
 
 	res.json({ stage: stage })
 	//res.status(404).end();
@@ -53,7 +53,7 @@ app
 	})  
 	.post('/wordGame', function(req, res) {
 		var word = req.body.word;
-
+		console.log(word);
 		res.status(200).end();
 	});
 

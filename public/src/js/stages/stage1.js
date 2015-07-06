@@ -87,14 +87,40 @@ define(function(require) {
         stage1.closePopup();
         isWordGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  
-        $('.door').addClass('transparentDoor');        
+        $('.door').addClass('transparentDoor');       
+        $('#mainSection').trigger('main:saveTime');
+        $.ajax({
+            url: '/wordGame',
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify( {word : 'D R A G O N'})
+        });
     };
 
     function moveToBox() {        
-        var stage_content = {
+        var stage_content = {};/*{
             letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
-        };       
-        $(hero).trigger('hero:moveBack', {distance: 450});
+        };  */     
+        $.ajax({
+            url: '/wordGame',
+            method: 'GET'
+        })
+        .done(function(data) {
+            stage_content = data.question;
+            $(hero).trigger('hero:moveBack', {distance: 450});
+            $(hero).trigger('hero:clearHasComeEvent');
+            $(hero).on('hero:heroHasCome', function() {
+            if (isWordGameFinished ) return;
+            stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
+                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame); 
+                $('.totalLevel').remove(); 
+            });
+        });
+        })
+        .fail(function(req, res) {
+
+        });
+       /* $(hero).trigger('hero:moveBack', {distance: 450});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', function() {
             if (isWordGameFinished ) return;
@@ -102,7 +128,7 @@ define(function(require) {
                 stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame); 
                 $('.totalLevel').remove(); 
             });
-        });        
+        });        */
     };
         /* init FLOW GAME*/
     function addFlowGame() {
