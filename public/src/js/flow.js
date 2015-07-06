@@ -10,8 +10,9 @@ define(function(require) {
     	var currentLineId;
     	var gridLines = [];
 
-    	this.init = function() {		
-    		this.loadLevel(2);
+    	this.init = function() {	
+            var stage = Math.floor(Math.random() * (10 - 1) + 1); 
+    		this.loadLevel(stage);
     	}
 
         this.loadLevel = function(levelId) {
