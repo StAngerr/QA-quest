@@ -27,12 +27,12 @@ define(function(require) {
     function moveToRiver() {
     	if(isStickGameOpened) return;
     	isStickGameOpened = true;
-      if (x <= 611 ) return false;
+        if (x <= 611 ) return false;
     	var x = event.pageX;
-      var y = event.pageY;
+        var y = event.pageY;
 
-      $(hero).trigger('hero:moveForward', {distance: 285});
-      $(hero).on('hero:heroHasCome', openStickGame);    	
+		$(hero).trigger('hero:moveForward', {distance: 285});
+		$(hero).on('hero:heroHasCome', openStickGame);    	
     }; 
 /* start BUBBLES GAME*/
     function bubbleStart() {
@@ -59,6 +59,7 @@ define(function(require) {
 
 	function StickGame() {
 		var currentGame = this;
+		var attempts = 2;		
 		currentGame.firstPlayer = {
 			name : 'player',
 			sticks : 0
@@ -84,24 +85,52 @@ define(function(require) {
 				currentGame.computerPicks();
 			}
 		};
-    // finish stick game and start bubbles
+
 		currentGame.finishGame = function() {
 			var winner = (currentGame.whoseTurn == 'player') ? 'computer' : 'player';
-			printWhoWon(winner);	    
-	    $('#inventory').trigger('inventory:addItem',{name:'.detail-5'});
-	    bubbleStart();
-	    $(hero).addClass('hideHero');
-			setTimeout(function() {
-				$('.popupWrap').remove();
-				$('.bubbles-popup').show();
-			}, 2000);
-			
+
+			if(winner == 'computer' && attempts != 0) {
+				printWhoWon(winner);
+				var timer = setTimeout(function() {
+					resetSticks();
+					currentGame.startGame();
+					attempts--;	
+				}, 1500);
+				
+			} else if(attempts == 0 || winner == 'player') {
+				printWhoWon(winner);	    
+		    	$('#inventory').trigger('inventory:addItem',{name:'.detail-5'});
+		    	bubbleStart();
+		    	$(hero).addClass('hideHero');
+				setTimeout(function() {
+					$('.popupWrap').remove();
+					$('.bubbles-popup').show();
+				}, 200);
+
+				(winner == 'player') ? stage3.sendTaskResults(true) : stage3.sendTaskResults(false);
+			}  
+		};
+
+		function resetSticks() {
+			var allSticks = $('.stick');
+
+			$('.stick').remove();
+			$('.sticksSection > *').remove();
+			$('.sticksSection').append(allSticks);
+			currentGame.firstPlayer = {
+				name : 'player',
+				sticks : 0
+			};
+			currentGame.secondPlayer = {
+				name : 'computer',
+				sticks : 0
+			};	
 		};
 
 		currentGame.playerPicks = function(event) {
 			var sticks = event.target.name;
 			if(canPick(sticks)) {
-				currentGame.firstPlayer.sticks += pickSticks(sticks);
+				currentGame.firstPlayer.sticks += parseInt(pickSticks(sticks));
 				changeTurn();
 				changeBtnState(); /*DELETE*/
 				currentGame.nextPick();
@@ -204,6 +233,8 @@ define(function(require) {
 			}
 		};
 
+	
+
 		function addStickBlock(player, stick) {
 			var where = (player == 'player') ? '.playerPlace' : '.cpuPlace';
 			$(where + ' > .pickedSticks').append(stick);
@@ -211,7 +242,7 @@ define(function(require) {
 
 		function printWhoWon(winner) {
 			$('.sticksSection > *').remove();
-			$('.sticksSection').append('<h1>' + winner  + ' won! </h1>')
+			$('.sticksSection').append('<h1>' + winner  + ' won! </h1>');
 		};
 	};
     return stage3;
