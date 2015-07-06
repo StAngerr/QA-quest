@@ -10,18 +10,18 @@ app.use(bodyParser.json());
 
 app
 	.post('/time', function(req, res) {
-		console.log(req.body.seconds);
+		console.log('POSTING     ' + req.body.seconds);
 		res.end();
 	})
 	.get('/time', function (req, res) {
 		var  seconds = 0;
-
 		res.json({seconds: seconds});
 	});
 
 app.get('/getStage', function(req, res) {
 	var stage = 0;
 
+	//serverTime = 0;
 	res.json({ stage: stage })
 	//res.status(404).end();
 });
@@ -53,12 +53,10 @@ app
 	})  
 	.post('/wordGame', function(req, res) {
 		var word = req.body.word;
-		console.log(word);
 		res.status(200).end();
 	});
 
 	app.post('/pictureID', function(req, res) {
-		console.log(req.body.picture);
 		res.status(200).end();
 	});
 
