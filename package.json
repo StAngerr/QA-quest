@@ -1,11 +1,16 @@
 {
-  "name": "inbox",
+  "name": "bookstore",
   "version": "0.0.1",
+  "description": "Book web store",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "me",
+  "license": "ISC",
   "devDependencies": {
-    "grunt": "latest",
-    "grunt-contrib-connect": "^0.9.0",
-    "grunt-contrib-sass": "^0.9.2",
-    "grunt-contrib-watch": "latest",
-    "grunt-spritesmith": "^4.7.1"
+    "body-parser": "^1.13.2",
+    "express": "^4.13.1",
+    "path": "^0.11.14"
   }
 }

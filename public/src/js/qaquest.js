@@ -12,18 +12,20 @@ define(function(require) {
         quest.inventory = new Invetory();
         quest.character = new Character();
        
-        quest.startQuest = function() {
-            startTimer();         
+        quest.startQuest = function(stage) {
+            startTimer();
+            quest.currentStage = stage || 0;         
             initMainModuleEvents();
             initInventoryModuleEvents();
             initCharacterModuleEvents();   
-            quest.nextStage(getStageFromLS());
+            //quest.nextStage(getStageFromLS());
+            quest.nextStage(quest.currentStage);
         };
 
-        quest.nextStage = function(stageFromLS) {  
+        quest.nextStage = function(passedStage) {  
             var stageObj = {};
             resetCharacter();
-            (parseInt(stageFromLS)) ? quest.currentStage = stageFromLS : quest.currentStage++;
+            (parseInt(passedStage)) ? quest.currentStage = passedStage : quest.currentStage++;
             writeStageToLS(quest.currentStage);
             clearMainContent();           
             stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array has zero index*/         

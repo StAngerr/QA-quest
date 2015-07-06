@@ -5,7 +5,30 @@ define(function (require) {
 	var hero = $('#hero');
 	var timer;
 
-	if(checkLS()) {
+	function getStage() {
+		$.ajax({
+			url: '/getStage',
+			method: 'GET'
+		})
+		.done(function(data) {
+			if(data.stage != 0)  {
+				quest.startQuest(data.stage);
+				$(hero).removeClass('hideHero'); 
+			} else {
+				$('.startBtn').on('click', function () {
+					$(hero).removeClass('hideHero'); 
+					clearTimeout(timer);
+					quest.startQuest();
+				});
+			}
+		})
+		.fail(function(jqXHR, textStatus) {
+			alert('Request failed:');
+		});
+	};		
+	getStage();
+
+	/*if(checkLS()) {
 		$(hero).removeClass('hideHero'); 
 		quest.startQuest()
 	} else {
@@ -26,7 +49,7 @@ define(function (require) {
 			}, 7000);
 			return false;
 		}
-	};
+	};*/
 });
 
 
