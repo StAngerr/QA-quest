@@ -58,6 +58,7 @@ module.exports = function(grunt) {
         }     
     });
     grunt.registerTask('default', [ 'sass', 'watch']);
+    grunt.registerTask('mkstyles', [ 'sprite','sass']);
     
     grunt.registerTask('runServ', ['connect:server', 'sprite','watch']);
 };

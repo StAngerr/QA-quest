@@ -17,7 +17,8 @@ define(function(require) {
             quest.currentStage = stage || 0;         
             initMainModuleEvents();
             initInventoryModuleEvents();
-            initCharacterModuleEvents();   
+            initCharacterModuleEvents(); 
+            activateStageInventory (stage);  
             //quest.nextStage(getStageFromLS());
             quest.nextStage(quest.currentStage);
         };
@@ -31,6 +32,24 @@ define(function(require) {
             stageObj = allStages[quest.currentStage - 1];  /* -1 because 1st stage in allStages array has zero index*/         
             stageObj.openStage(stageObj); 
         };
+         function activateStageInventory (stage) {
+            console.log(stage);
+            var inventory = $('.itemIcon');
+            var n = 0 ;
+            switch(stage) {
+                case 2: n=2;
+                break;
+                case 3: n=4;
+                break;
+                case 4:n=6
+                break;
+                default: break
+            }
+            for (var i=0; i<n; i++) {
+                $((inventory)[i]).removeClass('noItem');
+            }
+
+        }
 
         function startTimer() {
             $.ajax({
