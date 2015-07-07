@@ -54,11 +54,12 @@
 // task description for all levels should be wrapped into these classes
 .rules {
     height: 20%;
-    font-size: 20px;
-    text-align: center;
+    font-size: 18px;
+    text-align: justify;
     font-style: italic;
+    text-indent: 18px;
     
-    .mainRulesPart {    
+    .mainRulesPart {
         font-weight: bold;
     }
 

@@ -33,27 +33,48 @@ app.post('/gameResult', function(req, res) {
 	res.status(200).end();
 });
 
+/*temp place for global values */
+	var userQuestion = {};
 
+//-----------------
 app
 	.get('/wordGame', function(req, res) {
-		var questions = [
-				{
+				// read file and choose some object
+		userQuestion = {
     "question":"The process of confirming that a component, system or person complies with its specified requirements, e.g., by passing an exam",
     "answer": "Certification"
-  },
-				{ 
-					'question' : ' what is my color?',
-					'answer' : 'green'
-				}];
-		var questionToSend = { 
-					'question' : 'The process of confirming that a component, system or person complies with its specified requirements, e.g., by passing an exam',
-					'letters' : ["i","r", "t", "c", "c", "e", "i", "a", "t", "i", "f", "n","o"]
-				};
-		res.json({question: questionToSend});
+  	};
+
+  	function shuffle(array) {
+	    var counter = array.length, temp, index;
+	    // While there are elements in the array
+	    while (counter > 0) {
+	        // Pick a random index
+	        index = Math.floor(Math.random() * counter);
+	        // Decrease counter by 1
+	        counter--;
+	        // And swap the last element with it
+	        temp = array[counter];
+	        array[counter] = array[index];
+	        array[index] = temp;
+	    }
+	    return array;
+		}
+  	sendData = {
+  		question: userQuestion.question,
+  		letters: shuffle((userQuestion.answer).split(''))
+  	}
+		res.json({question: sendData});
 	})  
 	.post('/wordGame', function(req, res) {
 		var word = req.body.word;
-		console.log(word);
+		if(userQuestion.answer.toUpperCase() === word.toUpperCase()) {
+			console.log(word + ' ok');
+		} else {
+			// reduce 10%
+			console.log(word + ' no');
+		}
+		
 		res.status(200).end();
 	});
 

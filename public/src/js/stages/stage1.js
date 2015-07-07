@@ -59,7 +59,7 @@ define(function(require) {
     };
 
 /* start WORD GAME*/
-    function  startWordGame() {        
+    function  startWordGame() { 
         var wordSpot = $('.makeWord')[0];
         var fieldToDrop = $('.all-letters')[0];
 
@@ -73,8 +73,8 @@ define(function(require) {
         var data = dragNdrop.data; 
 
         if ($(target)[0].nodeName !== 'DIV') {
-            if ($(target).html() !== '') {                   
-                $(target).closest('div').append(data.context);                                                   
+            if ($(target).html() !== '') {
+                $(target).closest('div').append(data.context);
             } else {
                 return false;
             }          
@@ -84,6 +84,7 @@ define(function(require) {
     };
 
     function sendWord(event) {
+        var wordToSend = $('.makeWord').children().children('span').text();
         stage1.closePopup();
         isWordGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  
@@ -93,7 +94,7 @@ define(function(require) {
             url: '/wordGame',
             method: 'POST',
             contentType: "application/json",
-            data: JSON.stringify( {word : 'D R A G O N'})
+            data: JSON.stringify( {word :wordToSend })
         });
     };
 
