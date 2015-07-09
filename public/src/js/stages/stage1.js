@@ -17,6 +17,7 @@ define(function(require) {
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
+       
     };
     
      function finishStage() {

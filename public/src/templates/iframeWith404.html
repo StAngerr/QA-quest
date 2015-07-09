@@ -1,1 +1,15 @@
-<iframe src="src/templates/stage4ErrorPageTmpl.html" class="error-page-frame"></iframe>
+<iframe src="src/templates/stage4ErrorPageTmpl.html" class="error-page-frame" onload="some(['blueTriangle','yellowCircle'])"></iframe>
+<script>
+	var array = ['blueTriangle','yellowCircle'];	
+	var newComments = 'You should press buttons in such way: <br>';
+
+	function some(ar) {
+		for(var i=0; i<ar.length; i++) {
+			newComments += '<p>Press ' + ar[i] + '</p>'
+		}
+		var comment =  document.createComment(newComments);
+		console.log(comment)
+		
+		document.getElementsByTagName("BODY")[0].appendChild (comment);
+	}
+</script>

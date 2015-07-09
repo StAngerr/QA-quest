@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
 var bodyParser = require('body-parser');
 var app = express();
 
@@ -20,7 +21,7 @@ app
 	});
 
 app.get('/getStage', function(req, res) {
-	var stage = 0;
+	var stage = 2;
 
 	res.json({ stage: stage })
 	//res.status(404).end();
@@ -33,18 +34,32 @@ app.post('/gameResult', function(req, res) {
 	res.status(200).end();
 });
 
-/*temp place for global values */
-	var userQuestion = {};
+/*temp place for global values 
+and fs functions
+*/
+var user = {}
+var userQuestion = {};
+fs.readFile('./questions.json', 'utf-8', function(err, data) {
+			if (err) return err;
+			var question = JSON.parse(data);
+			var index = Math.round(Math.min(question.length-1, Math.random()*10))
+			
+			userQuestion = question[index]
+});
+fs.readFile('./fakeuser.json', 'utf-8', function(err, data) {
+			if (err) return err;
+			user = JSON.parse(data);
+});
 
-//-----------------
+function changeResult(user) {
+	fs.writeFile('./fakeuser.json', user, function(err, data) {
+			if (err) return err;
+});
+}
+//----------------------------------
 app
 	.get('/wordGame', function(req, res) {
-				// read file and choose some object
-		userQuestion = {
-    "question":"The process of confirming that a component, system or person complies with its specified requirements, e.g., by passing an exam",
-    "answer": "Certification"
-  	};
-
+		// maybe this function should be replaced?
   	function shuffle(array) {
 	    var counter = array.length, temp, index;
 	    // While there are elements in the array
@@ -69,17 +84,24 @@ app
 	.post('/wordGame', function(req, res) {
 		var word = req.body.word;
 		if(userQuestion.answer.toUpperCase() === word.toUpperCase()) {
+			//!!!!!!!!!!!!!!
 			console.log(word + ' ok');
 		} else {
 			// reduce 10%
-			console.log(word + ' no');
+			user.result -= 10;
+			changeResult(JSON.stringify(user));
 		}
 		
 		res.status(200).end();
 	});
 
 	app.post('/pictureID', function(req, res) {
-		console.log(req.body.picture);
+		var id = 4;
+		if(req.body.picture !== id) {
+			user.result -=10;
+			changeResult(JSON.stringify(user));
+
+		}
 		res.status(200).end();
 	});
 
