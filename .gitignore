@@ -2,6 +2,8 @@ itemsInsidecabin.png
 botAnimationSprite.png
 sprite_bot_movement.scss
 sprite_inside_cabin.scss
+pop_up_figures_static.png
+sprite_pop_up_figures.scss
 .grunt
 .sass-cache
 node_modules
