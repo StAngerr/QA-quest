@@ -21,23 +21,23 @@ app
 	});
 
 app.get('/getStage', function(req, res) {
-	var stage = 2;
+	if(user) {
+		changeResult(JSON.stringify(user));
+		res.json({ stage: user.stage })
+	}
 
-	res.json({ stage: stage })
-	//res.status(404).end();
 });
 
 app.post('/gameResult', function(req, res) {
 	var result = req.body.taskDone;
 	/* do something */
-	//console.log(result);
 	res.status(200).end();
 });
 
 /*temp place for global values 
 and fs functions
 */
-var user = {}
+var user;
 var userQuestion = {};
 fs.readFile('./questions.json', 'utf-8', function(err, data) {
 			if (err) return err;
@@ -59,6 +59,7 @@ function changeResult(user) {
 //----------------------------------
 app
 	.get('/wordGame', function(req, res) {
+		user.stage = 1;
 		// maybe this function should be replaced?
   	function shuffle(array) {
 	    var counter = array.length, temp, index;
@@ -84,26 +85,28 @@ app
 	.post('/wordGame', function(req, res) {
 		var word = req.body.word;
 		if(userQuestion.answer.toUpperCase() === word.toUpperCase()) {
-			//!!!!!!!!!!!!!!
-			console.log(word + ' ok');
+
 		} else {
 			// reduce 10%
 			user.result -= 10;
-			changeResult(JSON.stringify(user));
+
 		}
-		
+		user.stage = 2;
 		res.status(200).end();
 	});
 
 	app.post('/pictureID', function(req, res) {
-		var id = 4;
+		var id = 'picture4';
 		if(req.body.picture !== id) {
+			user.stage = 2;
 			user.result -=10;
-			changeResult(JSON.stringify(user));
+			
 
 		}
 		res.status(200).end();
 	});
+
+	app
 
 app.listen('9009');
 

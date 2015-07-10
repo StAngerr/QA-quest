@@ -78,7 +78,6 @@ define(function (require) {
         var fieldToDrop = $('.field-to-drop')[0];
         var fieldToReturn =  $('.pictures-to-choose')[0];
         
-        changeColorOnHover();
         dragNdrop.makeDragabble($('.pic-to-drag'));
         dragNdrop.makeDroppable([fieldToDrop], dropPicture);
         dragNdrop.makeDroppable([fieldToReturn], returnPictureBack);
@@ -104,34 +103,14 @@ define(function (require) {
        $('.pictures-to-choose').append(data); 
     };
 
-    function changeColorOnHover () {
-        var pictureDraggable = $('.pic-to-drag');
-
-        for (var i = 0; i < pictureDraggable.length; i++) { 
-            $(pictureDraggable[i]).on('mouseover', function() {
-                var old_src = $(this).children().attr('src');
-                var  new_src = old_src.slice(0,27) + stage_content.src[0]; 
-
-                $(this).children().attr('src', new_src);
-            });
-            $(pictureDraggable[i]).on('mouseleave', function() { 
-                if (!$(this).parent().hasClass('field-to-drop')) {
-                    var old_src = $(this).children().attr('src');
-                    var new_src = old_src.slice(0,27) + stage_content.src[1];  
-
-                    $(this).children().attr('src', new_src);
-                }
-            });    
-        }
-     };
-
     function finishPictureGame() {
+        var pictureID = $('.field-to-drop').children().children().attr('id');
 
         $.ajax({
             url: '/pictureID',
             method: 'POST',
             contentType: "application/json",
-            data: JSON.stringify( {picture : 2333} )
+            data: JSON.stringify( {picture : pictureID} )
         });
 
         stage2.closePopup();
@@ -210,7 +189,7 @@ define(function (require) {
             if ((c == 2) && (g == 2) && (k == 2) && (o == 2)) all = 2;
             if ((d == 2) && (h == 2) && (l == 2) && (p == 2)) all = 2;
             if ((e == 2) && (f == 2) && (g == 2) && (h == 2)) all = 2;
-            if ((g == 2) && (i == 2) && (k == 2) && (l == 2)) all = 2;
+            if ((j == 2) && (i == 2) && (k == 2) && (l == 2)) all = 2;
             if ((m == 2) && (n == 2) && (o == 2) && (p == 2)) all = 2;
             if ((m == 2) && (j == 2) && (g == 2) && (d == 2)) all = 2;
             if ((a != 0) && (b != 0) && (c != 0) && (d != 0) && (e != 0) && (f != 0) && (g != 0) && (h != 0) && (i != 0) && (j != 0) && (k != 0) && (l != 0) && (m != 0) && (n != 0) && (o != 0) && (p != 0) && (all == 0)) all = 3;

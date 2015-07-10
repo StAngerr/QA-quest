@@ -28,6 +28,11 @@ module.exports = function(grunt) {
                 src: 'src/images/cabin_buttons/*.png',
                 dest: 'src/images/itemsInsidecabin.png',
                 destCss: 'src/scss/sprite_inside_cabin.scss'
+            },
+            pictures: {
+                src: 'src/images/pop_up_figures/pictures_brown/*.png',
+                dest: 'src/images/pop_up_figures_static.png',
+                destCss: 'src/scss/sprite_pop_up_figures.scss'
             }
         }, 
          watch: {

@@ -109,19 +109,52 @@
 
     .field-with-pictures, .pictures-to-choose {
         display: inline-block;
-        height: 270px;
-        margin-right: 2.5em;
-        margin-top: 1em;        
+        height: 272px;
+        margin-right: 2em;
+        margin-top: 1em;
         background-color: rgb(208, 226, 168);
         text-align: left;
     }
 
     .field-with-pictures {
-        width: 270px;
+        width: 275px;
+
+        .picture {
+            background-image: url('../images/pop_up_figures_static.png');
+            background-repeat: no-repeat;
+            width: $brown1-width;
+            height: $brown1-height;
+            display: inline-block;
+
+            &.static1{
+                background-position: - $brown1-x - $brown1-y
+            }
+             &.static2{
+                background-position: - $brown2-x - $brown2-y
+            }
+             &.static3{
+                background-position: - $brown3-x - $brown3-y
+            }
+             &.static4{
+                background-position: - $brown4-x - $brown4-y
+            }
+             &.static5{
+                background-position: - $brown5-x - $brown5-y
+            }
+             &.static6{
+                background-position: - $brown6-x - $brown6-y
+            }
+             &.static7{
+                background-position: - $brown7-x - $brown7-y
+            }
+             &.static8{
+                background-position: - $brown8-x - $brown8-y
+            }
+        }
     }
 
     .pictures-to-choose {
-        width: 178px;
+        width: 180px;
     }    
     
     .pic-to-drag, .picture, .field-to-drop {
@@ -133,4 +166,15 @@
         border: 1px solid rgb(90, 74, 66);
         overflow: hidden;
     }
+    .pic-to-drag {
+        background-color: rgb(113,102,88);
+        
+        }
+    .pictures-to-choose .pic-to-drag {
+        background-color: #eee;
+        &:hover {
+            background-color: rgb(113,102,88)
+        }
+    }
+    
 }

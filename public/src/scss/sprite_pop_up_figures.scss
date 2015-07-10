@@ -1,0 +1,158 @@
+/*
+SCSS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: $icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+$icon-home: x y offset_x offset_y width height total_width total_height image_path;
+
+At the bottom of this section, we provide information about the spritesheet itself
+$spritesheet: width height image $spritesheet-sprites;
+*/
+$brown1-name: 'brown1';
+$brown1-x: 0px;
+$brown1-y: 0px;
+$brown1-offset-x: 0px;
+$brown1-offset-y: 0px;
+$brown1-width: 87px;
+$brown1-height: 86px;
+$brown1-total-width: 260px;
+$brown1-total-height: 259px;
+$brown1-image: '../images/pop_up_figures_static.png';
+$brown1: (0px, 0px, 0px, 0px, 87px, 86px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown1', );
+$brown2-name: 'brown2';
+$brown2-x: 173px;
+$brown2-y: 86px;
+$brown2-offset-x: -173px;
+$brown2-offset-y: -86px;
+$brown2-width: 86px;
+$brown2-height: 86px;
+$brown2-total-width: 260px;
+$brown2-total-height: 259px;
+$brown2-image: '../images/pop_up_figures_static.png';
+$brown2: (173px, 86px, -173px, -86px, 86px, 86px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown2', );
+$brown3-name: 'brown3';
+$brown3-x: 0px;
+$brown3-y: 86px;
+$brown3-offset-x: 0px;
+$brown3-offset-y: -86px;
+$brown3-width: 86px;
+$brown3-height: 87px;
+$brown3-total-width: 260px;
+$brown3-total-height: 259px;
+$brown3-image: '../images/pop_up_figures_static.png';
+$brown3: (0px, 86px, 0px, -86px, 86px, 87px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown3', );
+$brown4-name: 'brown4';
+$brown4-x: 87px;
+$brown4-y: 0px;
+$brown4-offset-x: -87px;
+$brown4-offset-y: 0px;
+$brown4-width: 86px;
+$brown4-height: 87px;
+$brown4-total-width: 260px;
+$brown4-total-height: 259px;
+$brown4-image: '../images/pop_up_figures_static.png';
+$brown4: (87px, 0px, -87px, 0px, 86px, 87px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown4', );
+$brown5-name: 'brown5';
+$brown5-x: 173px;
+$brown5-y: 0px;
+$brown5-offset-x: -173px;
+$brown5-offset-y: 0px;
+$brown5-width: 87px;
+$brown5-height: 86px;
+$brown5-total-width: 260px;
+$brown5-total-height: 259px;
+$brown5-image: '../images/pop_up_figures_static.png';
+$brown5: (173px, 0px, -173px, 0px, 87px, 86px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown5', );
+$brown6-name: 'brown6';
+$brown6-x: 87px;
+$brown6-y: 87px;
+$brown6-offset-x: -87px;
+$brown6-offset-y: -87px;
+$brown6-width: 86px;
+$brown6-height: 86px;
+$brown6-total-width: 260px;
+$brown6-total-height: 259px;
+$brown6-image: '../images/pop_up_figures_static.png';
+$brown6: (87px, 87px, -87px, -87px, 86px, 86px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown6', );
+$brown7-name: 'brown7';
+$brown7-x: 0px;
+$brown7-y: 173px;
+$brown7-offset-x: 0px;
+$brown7-offset-y: -173px;
+$brown7-width: 86px;
+$brown7-height: 86px;
+$brown7-total-width: 260px;
+$brown7-total-height: 259px;
+$brown7-image: '../images/pop_up_figures_static.png';
+$brown7: (0px, 173px, 0px, -173px, 86px, 86px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown7', );
+$brown8-name: 'brown8';
+$brown8-x: 86px;
+$brown8-y: 173px;
+$brown8-offset-x: -86px;
+$brown8-offset-y: -173px;
+$brown8-width: 86px;
+$brown8-height: 86px;
+$brown8-total-width: 260px;
+$brown8-total-height: 259px;
+$brown8-image: '../images/pop_up_figures_static.png';
+$brown8: (86px, 173px, -86px, -173px, 86px, 86px, 260px, 259px, '../images/pop_up_figures_static.png', 'brown8', );
+$spritesheet-width: 260px;
+$spritesheet-height: 259px;
+$spritesheet-image: '../images/pop_up_figures_static.png';
+$spritesheet-sprites: ($brown1, $brown2, $brown3, $brown4, $brown5, $brown6, $brown7, $brown8, );
+$spritesheet: (260px, 259px, '../images/pop_up_figures_static.png', $spritesheet-sprites, );
+
+/*
+The provided mixins are intended to be used with the array-like variables
+
+.icon-home {
+  @include sprite-width($icon-home);
+}
+
+.icon-email {
+  @include sprite($icon-email);
+}
+*/
+@mixin sprite-width($sprite) {
+  width: nth($sprite, 5);
+}
+
+@mixin sprite-height($sprite) {
+  height: nth($sprite, 6);
+}
+
+@mixin sprite-position($sprite) {
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x  $sprite-offset-y;
+}
+
+@mixin sprite-image($sprite) {
+  $sprite-image: nth($sprite, 9);
+  background-image: url(#{$sprite-image});
+}
+
+@mixin sprite($sprite) {
+  @include sprite-image($sprite);
+  @include sprite-position($sprite);
+  @include sprite-width($sprite);
+  @include sprite-height($sprite);
+}
+
+/*
+The `sprites` mixin generates identical output to the CSS template
+  but can be overridden inside of SCSS
+
+@include sprites($spritesheet-sprites);
+*/
+@mixin sprites($sprites) {
+  @each $sprite in $sprites {
+    $sprite-name: nth($sprite, 10);
+    .#{$sprite-name} {
+      @include sprite($sprite);
+    }
+  }
+}

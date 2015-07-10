@@ -11,7 +11,6 @@ define(function(require) {
 
 
     stage4.initEvents = function() {
-    insideCabin();
     	stage4.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4', '.detail-5', '.detail-6']);
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
