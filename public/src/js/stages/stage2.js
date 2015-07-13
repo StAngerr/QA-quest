@@ -32,6 +32,11 @@ define(function (require) {
     };
 
     function finishStage() {
+         /*
+        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
+            stage2.setStage(3)
+        */
+        stage2.setStage(3)
         stage2.isStageFinished = true;
         removeFlashLightEvents();
         $('#mainSection').trigger('main:stageFinished');

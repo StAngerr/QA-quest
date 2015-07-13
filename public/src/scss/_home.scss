@@ -14,7 +14,8 @@ final stage use the same style so it is also here
     .startBtn {
         position: absolute;
         z-index: 10;
-        left: 40%;
+        width: 10%;
+        left: 45%;
         top: 70px;
         padding: .1em 1em;
         background: #000;
@@ -26,18 +27,20 @@ final stage use the same style so it is also here
 // TEXT in perpective  styles
     article {
         position: absolute;
-        width: 1100px;
+        width: 1000px;
         height: 900px;
-        bottom: 10px;
+        bottom: 50px;
         left: 40%;
-        margin-left: -10em;
-        font-size: 260%;
+        margin-left: -8em;
+        font-size: 280%;
         overflow: hidden;
         -webkit-transform-origin: 50% 100%;
         transform-origin: 50% 100%;
         -webkit-transform: perspective(350px) rotateX(25deg);
         transform: perspective(350px) rotateX(25deg);
         color: #eee;
+        text-indent: 30px;
+        text-align: justify;
         
         div {
             position: absolute;
@@ -64,7 +67,7 @@ final stage use the same style so it is also here
         top: 100%;
     }
     100% {
-        top: -170%;
+        top: -200%;
     }
 }
 
@@ -73,7 +76,7 @@ final stage use the same style so it is also here
         top: 100%;
     }
     100% {
-        top: -170%;
+        top: -200%;
     }
 }
 // Final page

@@ -55,9 +55,25 @@ define(function(require) {
             })
             .fail(function() {
                 alert('Bad response');
+            });
+        }; 
+
+        this.setStage = function(num) {
+            $.ajax({
+                url: '/setStage',
+                method: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify({stage : num})
             })
-            ;
-        };   
+            .done(function() {
+                /*
+                success 
+                */
+            })
+            .fail(function() {
+                alert('Bad response');
+            });
+        }  
          
     };
     return Stage;   

@@ -17,6 +17,7 @@ define(function(require) {
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
+        stage1.setStage(1)
        
     };
     
@@ -85,6 +86,11 @@ define(function(require) {
     };
 
     function sendWord(event) {
+        /*
+        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
+            stage1.setStage(2)
+        */
+        stage1.setStage(2);
         var wordToSend = $('.makeWord').children().children('span').text();
         stage1.closePopup();
         isWordGameFinished = true;

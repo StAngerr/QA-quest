@@ -11,6 +11,11 @@ define(function(require) {
 
 
     stage4.initEvents = function() {
+    	 /*
+        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
+            stage4.setStage(4)
+        */
+      stage4.setStage(4);
     	stage4.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4', '.detail-5', '.detail-6']);
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
@@ -33,7 +38,7 @@ define(function(require) {
     };
 
     function stageFinished() {
-
+    		stage4.setStage(5);
     };
 /*INSIDE CABIN*/
   function insideCabin() {
@@ -43,9 +48,7 @@ define(function(require) {
 				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
 		});	
 	};
-		function some(){
-			alert("111111")
-		}
+
 	function start404Task() {
 		startTimer();
 		$('.startButton').on('click', function() {

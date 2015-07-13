@@ -23,7 +23,7 @@ define(function (require) {
 				timer = setTimeout(function() {
 					$(hero).removeClass('hideHero');
 					quest.startQuest();
-				}, 7000);
+				}, 36000);
 				return false;
 			}
 		})

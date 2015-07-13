@@ -7,6 +7,11 @@ define(function(require) {
     var isStickGameOpened = false;
 
     stage3.initEvents = function() {
+    	/*
+        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
+            stage3.setStage(3)
+        */
+    	stage3.setStage(3);
     	stage3.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4']);
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
     	$(hero).css ({height:'202px'});
@@ -15,6 +20,7 @@ define(function(require) {
 			$(mainSection).on('inventory:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-6') !== -1) {
 	        if(!stage3.isStageFinished)  finishStage();
+
 	    	}
 			});      
     };
@@ -108,6 +114,9 @@ define(function(require) {
 				}, 200);
 
 				(winner == 'player') ? stage3.sendTaskResults(true) : stage3.sendTaskResults(false);
+				 /*
+        		how avoid this game repetition after page reload
+        */
 			}  
 		};
 

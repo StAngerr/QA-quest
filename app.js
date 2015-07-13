@@ -25,7 +25,15 @@ app.get('/getStage', function(req, res) {
 		changeResult(JSON.stringify(user));
 		res.json({ stage: user.stage })
 	}
-
+});
+app.post('/setStage', function(req, res) {
+	if(req.body.stage == 5) {
+			// quest finish
+	} else {
+		user.stage = req.body.stage;
+		changeResult(JSON.stringify(user));
+	}
+	res.status(200).end();
 });
 
 app.post('/gameResult', function(req, res) {
@@ -54,7 +62,7 @@ fs.readFile('./fakeuser.json', 'utf-8', function(err, data) {
 function changeResult(user) {
 	fs.writeFile('./fakeuser.json', user, function(err, data) {
 			if (err) return err;
-});
+	});
 }
 //----------------------------------
 app
@@ -91,14 +99,14 @@ app
 			user.result -= 10;
 
 		}
-		user.stage = 2;
+		// user.stage = 2;
 		res.status(200).end();
 	});
 
 	app.post('/pictureID', function(req, res) {
 		var id = 'picture4';
 		if(req.body.picture !== id) {
-			user.stage = 2;
+			// user.stage = 2;
 			user.result -=10;
 			
 
@@ -106,7 +114,7 @@ app
 		res.status(200).end();
 	});
 
-	app
+
 
 app.listen('9009');
 
