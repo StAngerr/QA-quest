@@ -5,7 +5,6 @@ var bodyParser = require('body-parser');
 var app = express();
 
 /*    */
-
 app.use(express.static(__dirname + path.normalize('/public')));
 app.use(bodyParser.json());
 
@@ -108,13 +107,34 @@ app
 		if(req.body.picture !== id) {
 			// user.stage = 2;
 			user.result -=10;
-			
-
 		}
 		res.status(200).end();
 	});
 
+app.
+	post('/newUser', function(req, res) {
+		var user = req.body.username;
+		var allUsers = getAllUsers();
+		console.log(allUsers);
+		allUsers.push({username: user});
+		fs.writeFile('users/users.json', JSON.stringify(allUsers), function (err) {
+		  if (err) {
+		  	res.end();
+		  	throw err;
+		  }
+		  console.log('It\'s saved!');
+		  res.end();
+		});
+	});
 
+	function getAllUsers() {
+		fs.readFile('users/users.json', 'utf-8', function(err, data) {
+			if (err) return err;
+			console.log('CLEAR DATA: ' + data);
+			console.log("PARSED DSTA: " + JSON.parse(data))
+			return data;
+		});
+	}
 
 app.listen('9009');
 
