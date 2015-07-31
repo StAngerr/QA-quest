@@ -8,7 +8,7 @@ define(function(require) {
 
     stage3.initEvents = function() {
     	/*
-        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
+        
             stage3.setStage(3)
         */
     	stage3.setStage(3);
@@ -100,11 +100,11 @@ define(function(require) {
 				var timer = setTimeout(function() {
 					resetSticks();
 					currentGame.startGame();
-					attempts--;	
+					attempts--;
 				}, 1500);
 				
 			} else if(attempts == 0 || winner == 'player') {
-				printWhoWon(winner);	    
+				printWhoWon(winner);
 		    	$('#inventory').trigger('inventory:addItem',{name:'.detail-5'});
 		    	bubbleStart();
 		    	$(hero).addClass('hideHero');
@@ -113,7 +113,7 @@ define(function(require) {
 					$('.bubbles-popup').show();
 				}, 200);
 
-				(winner == 'player') ? stage3.sendTaskResults(true) : stage3.sendTaskResults(false);
+				(winner == 'player') ? stage3.sendTaskResults(2, true) : stage3.sendTaskResults(2, false);
 				 /*
         		how avoid this game repetition after page reload
         */

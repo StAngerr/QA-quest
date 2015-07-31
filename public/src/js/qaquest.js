@@ -19,7 +19,6 @@ define(function(require) {
             initInventoryModuleEvents();
             initCharacterModuleEvents(); 
             activateStageInventory (stage);  
-            //quest.nextStage(getStageFromLS());
             quest.nextStage(quest.currentStage);
         };
 
@@ -33,7 +32,6 @@ define(function(require) {
             stageObj.openStage(stageObj); 
         };
          function activateStageInventory (stage) {
-            console.log(stage);
             var inventory = $('.itemIcon');
             var n = 0 ;
             switch(stage) {

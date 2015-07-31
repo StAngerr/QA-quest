@@ -1,0 +1,5 @@
+<div class="results">
+    <h2>Congratulation!</h2>
+    <p class="user-score">You are the <%= title %></p>
+    <img  class="badge" src=<%= 'src/images/badges/'+ src %> alt="badge" />
+</div>

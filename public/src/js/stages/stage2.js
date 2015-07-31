@@ -15,6 +15,11 @@ define(function (require) {
     var tempTime;
 
     stage2.initEvents = function () {
+                 /*
+            rewrite object on the server side
+            stage2.setStage(2)
+        */
+        stage2.setStage(2)
         stage2.activeInventary(['.detail-1', '.detail-2']);
         var mainSection = $('#mainSection'); 
 
@@ -32,11 +37,6 @@ define(function (require) {
     };
 
     function finishStage() {
-         /*
-        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
-            stage2.setStage(3)
-        */
-        stage2.setStage(3)
         stage2.isStageFinished = true;
         removeFlashLightEvents();
         $('#mainSection').trigger('main:stageFinished');

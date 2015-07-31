@@ -11,8 +11,8 @@ define(function(require) {
 
 
     stage4.initEvents = function() {
-    	 /*
-        IF USER PASSED TWO TASKS HE DOESN'T HAVE AN ABILITY TO DO IT AGAIN
+    //insideCabin();
+    	 /* 
             stage4.setStage(4)
         */
       stage4.setStage(4);
@@ -38,15 +38,32 @@ define(function(require) {
     };
 
     function stageFinished() {
-    		stage4.setStage(5);
+    		stage4.isStageFinished = true;
+    	$('#mainSection').trigger('main:stageFinished'); 
     };
 /*INSIDE CABIN*/
+var array;
   function insideCabin() {
-    	$(hero).addClass('hideHero');
+  	
+  		$.ajax({
+            url: '/getCombination',
+            method: 'GET'
+        })
+        .done(function(data) {
+         array = data.combination;
+         $(hero).addClass('hideHero');
 			stage4.getTmpl('popupFrameTmpl.html').then(function() {
 				$('.popupWrap').addClass('dark-bg')
 				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
 		});	
+         
+        })
+        .fail(function(req, res) {
+
+        });
+
+        
+    	
 	};
 
 	function start404Task() {
@@ -55,8 +72,8 @@ define(function(require) {
 			if(!is404Opened) {
 				load404Page();
 			} else { 
-				(checkCombination()) ? alert('Right combination') : alert('Wrong combination');
-				loadFinalStage();
+				(checkCombination()) ? stage4.sendTaskResults(4, true) : stage4.sendTaskResults(4, false);
+				stageFinished();
 			}
 		});
 		$('.panelButton').on('click', function() {
@@ -72,22 +89,39 @@ define(function(require) {
 			$('.panelButton').removeClass('pressed');
 			$('.lamp').removeClass('switch-on')
 			$('.error-page-frame').remove();
+			combination = [];
 			$('.popup > .cabin > *').toggleClass('closeBlock');
 			$('.cabin').toggleClass('hideCabin');
 			$('.panelButton').removeClass('pressed');
 		});
 	};
 
- /* here shoul be GEt from server and badge == some object with name and src*/
-		var badge
-		function loadFinalStage() {
-		  stage4.closePopup();
-		  $('#stage4').remove();
-		  badge = {
-		  	src:"finder_180x180.png",
-		  }
-		  stage4.getTmpl('finalStageTmpl.html','#mainContent', badge);
- }
+ // /* here shoul be GEt from server and badge == some object with name and src*/
+	// 	var badge
+	// 	function loadFinalStage() {
+	// 	  stage4.closePopup();
+	// 	  $('#stage4').remove();
+
+
+	// 	  $.ajax({
+ //            url: '/badge',
+ //            method: 'GET'
+ //        })
+ //        .done(function(data) {
+ //        		console.log(data.badge.src)
+ //        		 badge = {
+	// 	  	src:data.badge.src,
+	// 	  	title:data.badge.title
+	// 	  }
+	// 	  console.log(badge)
+	// 	  stage4.getTmpl('finalStageTmpl.html','#mainContent', badge);
+		  
+ //        });
+        
+        
+
+		 
+ // }
  
 	function switchOnLamp () {
 		var allLamps = $('.lamp');
@@ -123,8 +157,12 @@ define(function(require) {
 
 	function checkCombination() {
 		var someCombination = '0123';
-		if(combination.join('') == someCombination) return true;
-		return false;
+		if(combination.join('') == someCombination) {
+			return true;}
+			else {
+				return false;
+			}
+		
 	};
 // Cabin timer
 	function startTimer() {
@@ -138,7 +176,7 @@ define(function(require) {
 		cabinTimer = setInterval(function() {
 			if(generalTimeMS == 0) {
 				clearInterval(cabinTimer);
-				loadFinalStage();
+				stageFinished();
 			}
 			minutesLeft = (generalTimeMS / 60000).toString()[0];
 			secondsLeft = (generalTimeMS - (minutesLeft * 60000)) / 1000;
@@ -148,13 +186,16 @@ define(function(require) {
 			generalTimeMS -= 1000;
 		}, 1000);
 	};
+
 // load Frame
 	function load404Page() {
 		is404Opened = true;
 		$('.popup > .cabin > *').toggleClass('closeBlock');
 		$('.cabin').toggleClass('hideCabin');
-		stage4.getTmpl('iframeWith404.html', '.popup');
+		stage4.getTmpl('iframeWith404.html', '.popup')
 	};
+
+
 
     function moveToLadder() {
 			if(isDotGameOpened) return;
@@ -240,7 +281,7 @@ define(function(require) {
 		};
 
 		function finishGame() {
-			(points == 30) ? stage4.sendTaskResults(true) : stage4.sendTaskResults(false); 
+			(points == 30) ? stage4.sendTaskResults(3, true) : stage4.sendTaskResults(3, false); 
 			resetVisual();
 			onInfoInterface();
 			clearInterval(gameTime);

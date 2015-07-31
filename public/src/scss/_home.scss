@@ -7,7 +7,7 @@ final stage use the same style so it is also here
     position: relative;
     width: 1200px;
     height: 100%;
-    margin: 1em auto;
+    margin: auto;
     overflow: hidden;
     background: url('../images/Open_Space_Start_fon.jpg') 0 0;
     
@@ -82,6 +82,7 @@ final stage use the same style so it is also here
 // Final page
 .final-stage{
     text-align: center;
+
     .results {
         position: fixed;
         top: 25%;

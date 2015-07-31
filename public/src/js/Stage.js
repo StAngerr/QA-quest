@@ -41,12 +41,12 @@ define(function(require) {
             $('.popupWrap').remove();
         };
         
-        this.sendTaskResults = function(result) {
+        this.sendTaskResults = function(index, result) {
             $.ajax({
                 url: '/gameResult',
                 method: 'POST',
                 contentType: "application/json",
-                data: JSON.stringify({taskDone : result})
+                data: JSON.stringify({task : index, taskDone : result})
             })
             .done(function() {
                 /*

@@ -1,15 +1,27 @@
-<iframe src="src/templates/stage4ErrorPageTmpl.html" class="error-page-frame" onload="some(['blueTriangle','yellowCircle'])"></iframe>
+<iframe id="combination" src="src/templates/stage4ErrorPageTmpl.html" class="error-page-frame" ></iframe>
 <script>
-	var array = ['blueTriangle','yellowCircle'];	
-	var newComments = 'You should press buttons in such way: <br>';
+$.ajax({
+            url: '/getCombination',
+            method: 'GET'
+        })
+        .done(function(data) {
+         	array = data.combination;
+         	appendCombnation(array)
+        
+        })
+        .fail(function(req, res) {
 
-	function some(ar) {
-		for(var i=0; i<ar.length; i++) {
-			newComments += '<p>Press ' + ar[i] + '</p>'
-		}
-		var comment =  document.createComment(newComments);
-		console.log(comment)
-		
-		document.getElementsByTagName("BODY")[0].appendChild (comment);
-	}
+        });
+
+
+
+function appendCombnation(arr) {
+        	var combination = 'You should press buttons in such way: <br>';
+        	var bodyInnerHtml = document.getElementById('combination').innerHTML;
+        	for(var i=0; i<arr.length; i++) {
+				combination += '<p>Press ' + arr[i] + '</p>'
+			}
+			document.getElementById('combination').innerHTML = bodyInnerHtml + combination;
+        }
+
 </script>

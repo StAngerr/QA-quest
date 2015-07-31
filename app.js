@@ -22,22 +22,25 @@ app
 
 app.get('/getStage', function(req, res) {
 	if(user) {
-		changeResult(JSON.stringify(user));
+	
+		//changeResult(JSON.stringify(user));
 		res.json({ stage: user.stage })
 	}
 });
 app.post('/setStage', function(req, res) {
-	if(req.body.stage == 5) {
-			// quest finish
-	} else {
 		user.stage = req.body.stage;
 		changeResult(JSON.stringify(user));
-	}
-	res.status(200).end();
+		res.status(200).end();
 });
 
 app.post('/gameResult', function(req, res) {
 	var result = req.body.taskDone;
+	var index = req.body.task;
+	if(result === false) {
+		user.sceneTasks[index] = false;
+		changeResult(JSON.stringify(user));
+		console.log(result)
+	}
 	/* do something */
 	res.status(200).end();
 });
@@ -67,7 +70,6 @@ function changeResult(user) {
 //----------------------------------
 app
 	.get('/wordGame', function(req, res) {
-		user.stage = 1;
 		// maybe this function should be replaced?
   	function shuffle(array) {
 	    var counter = array.length, temp, index;
@@ -89,14 +91,14 @@ app
   		letters: shuffle((userQuestion.answer).split(''))
   	}
 		res.json({question: sendData});
-	})  
+	})
 	.post('/wordGame', function(req, res) {
 		var word = req.body.word;
 		if(userQuestion.answer.toUpperCase() === word.toUpperCase()) {
-
+			user.sceneTasks[0] = true;
 		} else {
 			// reduce 10%
-			user.result -= 10;
+			user.sceneTasks[0] = false;
 
 		}
 		// user.stage = 2;
@@ -106,15 +108,51 @@ app
 	app.post('/pictureID', function(req, res) {
 		var id = 'picture4';
 		if(req.body.picture !== id) {
-			// user.stage = 2;
-			user.result -=10;
-			
-
+			user.sceneTasks[1] = false;
+		} else {
+			user.sceneTasks[1] = true;
 		}
 		res.status(200).end();
+
 	});
 
+	app.get('/getCombination', function(req, res) {
+		var ar = ['blueSquare','blueTriangle','yellowCircle']
+		res.json({combination: ar});
+	});
 
+	app.get('/badge', function(req, res) {
+		var result = getUserResult(user)
+		var badge;
+		if(result >= 90) {
+			badge = {
+					'title' : 'Sherlock',
+					'src':'sherlock_180x180.png'
+			}
+		} else if(result >= 70 && result < 90) {
+			badge = {
+					'title' : 'Expert',
+					'src':'expert_180x180.png'
+			}
+		} else {
+				badge = {
+					'title' : 'Finder',
+					'src':'finder_180x180.png'
+			}
+		
+		}
+		res.json({badge: badge});
+		
+	});
+
+function getUserResult(user) {
+		var reduce = 0;
+		 user.sceneTasks.map(function(answer) {
+			if (answer == false) reduce ++;
+		});
+		 var result =  user.result - (10*reduce)
+		 return result
+}
 
 app.listen('9009');
 
