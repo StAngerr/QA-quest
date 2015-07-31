@@ -5,6 +5,27 @@ define(function (require) {
 	var hero = $('#hero');
 	var timer;
 
+	$.ajax({
+        url: 'src/templates/logForm.html',
+        method: 'GET',
+        success: function(data) {
+            var target = '#mainContent';
+
+            $('#mainContent').prepend(data);
+            $('.logBtn').on('click', newUser)
+        }
+    });
+
+	function newUser() {
+		var userName = $('.username')[0].value;
+		$.ajax({
+	        url: '/newUser',
+	        method: 'POST',
+            contentType: "application/json",
+			data: JSON.stringify( {username :userName })
+    	});
+	};
+
 	function getStage() {
 		$.ajax({
 			url: '/getStage',
@@ -31,7 +52,7 @@ define(function (require) {
 			alert('Request failed:');
 		});
 	};		
-	getStage();
+	//getStage();
 });
 
 
