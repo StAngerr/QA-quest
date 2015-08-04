@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
+//var fs = require('promised-io/fs');
 var bodyParser = require('body-parser');
 var app = express();
 
@@ -107,20 +108,19 @@ app
 	app.post('/pictureID', function(req, res) {
 		var id = 'picture4';
 		if(req.body.picture !== id) {
-<<<<<<< HEAD
+
 			user.sceneTasks[1] = false;
 		} else {
 			user.sceneTasks[1] = true;
-=======
+
 			// user.stage = 2;
 			user.result -=10;
->>>>>>> 0cb04b21946b956f77ce2f60e928cd54b9c27f29
 		}
 		res.status(200).end();
 
 	});
 
-<<<<<<< HEAD
+
 	app.get('/getCombination', function(req, res) {
 		var ar = ['blueSquare','blueTriangle','yellowCircle']
 		res.json({combination: ar});
@@ -158,32 +158,35 @@ function getUserResult(user) {
 		 var result =  user.result - (10*reduce)
 		 return result
 }
-=======
+
+var Deferred = require("promised-io/promise").Deferred;
 app.
 	post('/newUser', function(req, res) {
 		var user = req.body.username;
-		var allUsers = getAllUsers();
-		console.log(allUsers);
-		allUsers.push({username: user});
-		fs.writeFile('users/users.json', JSON.stringify(allUsers), function (err) {
-		  if (err) {
-		  	res.end();
-		  	throw err;
-		  }
-		  console.log('It\'s saved!');
-		  res.end();
+
+		var a = getAllUsers().then(function(users) {
+			var allUsers = users;
+			allUsers.push({username: user});
+			fs.writeFile('users/users.json', JSON.stringify(allUsers), function (err) {
+			  if (err) {
+			  	res.end();
+			  	throw err;
+			  }
+			  console.log('It\'s saved!');
+			  res.end();
+			});
 		});
 	});
-
 	function getAllUsers() {
+		var deferred = new Deferred();
+
 		fs.readFile('users/users.json', 'utf-8', function(err, data) {
-			if (err) return err;
-			console.log('CLEAR DATA: ' + data);
-			console.log("PARSED DSTA: " + JSON.parse(data))
-			return data;
+			if (err) console.log('error');
+			deferred.resolve(JSON.parse(data));
 		});
-	}
->>>>>>> 0cb04b21946b956f77ce2f60e928cd54b9c27f29
+		return deferred.promise;
+	};
+
 
 app.listen('9009');
 
