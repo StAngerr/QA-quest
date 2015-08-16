@@ -7,22 +7,18 @@ define(function(require) {
     var isStickGameOpened = false;
 
     stage3.initEvents = function() {
-    	/*
-        
-            stage3.setStage(3)
-        */
     	stage3.setStage(3);
     	stage3.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4']);
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 60, y :  456}});
     	$(hero).css ({height:'202px'});
-      $('#inventory').show();
-      $('#stage3').on('click', moveToRiver);
-			$(mainSection).on('inventory:itemAdded', function(event, item) {
+        $('#inventory').show();
+        $('#stage3').on('click', moveToRiver);
+		$(mainSection).on('inventory:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-6') !== -1) {
 	        if(!stage3.isStageFinished)  finishStage();
 
 	    	}
-			});      
+		});      
     };
 
     function finishStage() {
@@ -113,7 +109,7 @@ define(function(require) {
 					$('.bubbles-popup').show();
 				}, 200);
 
-				(winner == 'player') ? stage3.sendTaskResults(2, true) : stage3.sendTaskResults(2, false);
+				(winner == 'player') ? stage3.sendTaskResults(true) : stage3.sendTaskResults(false);
 				 /*
         		how avoid this game repetition after page reload
         */

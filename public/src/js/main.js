@@ -18,11 +18,24 @@ define(function (require) {
 
 	function newUser() {
 		var userName = $('.username')[0].value;
+		var password = $('.password')[0].value;
+
 		$.ajax({
 	        url: '/newUser',
 	        method: 'POST',
             contentType: "application/json",
-			data: JSON.stringify( {username :userName })
+			data: JSON.stringify({username : userName, password : password })
+    	})
+    	.done(function(data) {
+    		var result =data;
+
+    		if(result.isVerified) {
+    			$('.popupWrap').remove();
+    			
+    			getStage();
+    		} else {
+    			$('.loginInfoBlock').html('<p>Username or password is incorrect.</p>');
+    		}
     	});
 	};
 
@@ -52,7 +65,7 @@ define(function (require) {
 			alert('Request failed:');
 		});
 	};		
-	//getStage();
+
 });
 
 

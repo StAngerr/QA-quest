@@ -12,10 +12,8 @@ define(function(require) {
 
     stage4.initEvents = function() {
     //insideCabin();
-    	 /* 
-            stage4.setStage(4)
-        */
-      stage4.setStage(4);
+
+        stage4.setStage(4);
     	stage4.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4', '.detail-5', '.detail-6']);
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
@@ -43,27 +41,22 @@ define(function(require) {
     };
 /*INSIDE CABIN*/
 var array;
-  function insideCabin() {
-  	
+    function insideCabin() {
   		$.ajax({
             url: '/getCombination',
             method: 'GET'
         })
         .done(function(data) {
-         array = data.combination;
-         $(hero).addClass('hideHero');
+			array = data.combination;
+			$(hero).addClass('hideHero');
 			stage4.getTmpl('popupFrameTmpl.html').then(function() {
 				$('.popupWrap').addClass('dark-bg')
 				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
-		});	
-         
+			});	
         })
         .fail(function(req, res) {
 
-        });
-
-        
-    	
+        });	
 	};
 
 	function start404Task() {
@@ -180,13 +173,12 @@ var array;
 			}
 			minutesLeft = (generalTimeMS / 60000).toString()[0];
 			secondsLeft = (generalTimeMS - (minutesLeft * 60000)) / 1000;
-			secondsLeft = (secondsLeft<10)?'0'+secondsLeft: secondsLeft;
+			secondsLeft = (secondsLeft < 10) ? '0' + secondsLeft : secondsLeft;
 			$(minutes).text(minutesLeft);
 			$(seconds).text(secondsLeft);
 			generalTimeMS -= 1000;
 		}, 1000);
 	};
-
 // load Frame
 	function load404Page() {
 		is404Opened = true;
@@ -195,13 +187,11 @@ var array;
 		stage4.getTmpl('iframeWith404.html', '.popup')
 	};
 
-
-
     function moveToLadder() {
-			if(isDotGameOpened) return;
-			isDotGameOpened = true;
-			$(hero).trigger('hero:moveForward', {distance: 625});
-			$(hero).on('hero:heroHasCome', loadDotGame);	
+		if(isDotGameOpened) return;
+		isDotGameOpened = true;
+		$(hero).trigger('hero:moveForward', {distance: 625});
+		$(hero).on('hero:heroHasCome', loadDotGame);	
     };
 
 /*DOT Game start*/
@@ -247,7 +237,7 @@ var array;
 						}
 					}
 				}, 100);
-		};
+			};
 
 		function clearVisualTimer() {
 			$('.visualTimer').removeClass('addAnimation').removeClass('scaleToZero');
@@ -281,7 +271,7 @@ var array;
 		};
 
 		function finishGame() {
-			(points == 30) ? stage4.sendTaskResults(3, true) : stage4.sendTaskResults(3, false); 
+			(points == 30) ? stage4.sendTaskResults(true) : stage4.sendTaskResults(false); 
 			resetVisual();
 			onInfoInterface();
 			clearInterval(gameTime);

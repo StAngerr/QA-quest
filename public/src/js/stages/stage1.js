@@ -98,7 +98,7 @@ define(function(require) {
             url: '/wordGame',
             method: 'POST',
             contentType: "application/json",
-            data: JSON.stringify( {word :wordToSend })
+            data: JSON.stringify({word : wordToSend })
         });
     };
 
