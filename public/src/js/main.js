@@ -12,13 +12,14 @@ define(function (require) {
             var target = '#mainContent';
 
             $('#mainContent').prepend(data);
-            $('.logBtn').on('click', newUser)
+            $('.loginBtn').on('click', newUser)
         }
     });
 
-	function newUser() {
-		var userName = $('.username')[0].value;
-		var password = $('.password')[0].value;
+	function newUser(event) {
+		event.preventDefault();
+		var userName = $('.loginUsername')[0].value;
+		var password = $('.loginPassword')[0].value;
 
 		$.ajax({
 	        url: '/newUser',
@@ -31,10 +32,11 @@ define(function (require) {
 
     		if(result.isVerified) {
     			$('.popupWrap').remove();
-    			
+    			$('.home').removeClass('hideHome');
+				$('.loginPassword, .loginUsername').removeClass('failedValidation');
     			getStage();
     		} else {
-    			$('.loginInfoBlock').html('<p>Username or password is incorrect.</p>');
+  				$('.loginPassword, .loginUsername').addClass('failedValidation');
     		}
     	});
 	};

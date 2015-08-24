@@ -60,6 +60,9 @@ final stage use the same style so it is also here
         background-image: linear-gradient(top, rgba(0, 0, 0, 1) 0%, transparent 100%);
         pointer-events: none;
     }
+    &.hideHome {
+        visibility: hidden;
+    }
 }
 
 @-webkit-keyframes scroll {

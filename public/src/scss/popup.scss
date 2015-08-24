@@ -11,7 +11,9 @@
     z-index: 10;
     margin: 0px auto;
     background: rgba(154,154,154, 0.7); 
-        
+    &.spaceSkyBackground {
+        background: rgba(255,255,255, 1) url('../images/Open_Space_Start_fon.jpg') no-repeat 50% 0;
+    }
     .popup {
         position: relative;
         top: 150px;
@@ -23,6 +25,12 @@
         margin: 0 auto;
         background: rgb(142, 184, 80);
         border: 10px solid rgb(90,74,66);
+        &.logFormPopup {
+            min-width: initial;
+            width: 445px;
+            height: 400px;
+
+        }
     }
 }
 .popup-common {
