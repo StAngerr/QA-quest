@@ -6,7 +6,7 @@ var emailOptions = {
     debug: true,
     auth: {
         user: 'violet.infierno@gmail.com',
-        pass: 'Sb5101EEqE1'
+        pass: ''
     }
 };
 
