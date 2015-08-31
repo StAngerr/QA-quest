@@ -52,17 +52,18 @@ app.post('/setStage', function(req, res) {
 });
 
 app.post('/gameResult', function(req, res) {
-	var result = req.body.taskDone;
-
-	if(!result) {
+	var userTaskDone = req.body.taskDone;
+	console.log(userTaskDone)
+	if(userTaskDone.result) {
 		fs.readFile('users/users.json', 'utf-8', function(err, data) {
 			if (err) console.log('error');		
 			var users = JSON.parse(data);
 			var userName = req.cookies.userName;
 
 			for (var i = 0; i < users.length; i++) {
-				if (users[i].username == userName) {			
-					users[i].totalPoints -= 10;
+				if (users[i].username == userName) {
+					 users[i].gameData[userTaskDone.game].result = true;
+							
 					fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
 						if (err) return err;
 					});
@@ -123,13 +124,13 @@ app	.get('/wordGame', function(req, res) {
 		  		letters: shuffle((userQuestion.answer).split(''))
 		  	};
 		  	fs.readFile('users/users.json', 'utf-8', function(err, data) {
-				if (err) console.log('error');		
+				if (err) console.log('error');
 				var users = JSON.parse(data);
 				var userName = req.cookies.userName;
 
 				for (var i = 0; i < users.length; i++) {
 					if (users[i].username == userName) {
-						users[i].wordGameAnswer = userQuestion.answer.toLowerCase();
+						users[i].gameData.wordGame.data = userQuestion.answer.toLowerCase();
 						fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
 							if (err) return err;
 						});
@@ -149,8 +150,8 @@ app	.get('/wordGame', function(req, res) {
 					console.log(word)
 			for (var i = 0; i < users.length; i++) {
 				if (users[i].username == userName) {
-					if(word.toLowerCase() !== users[i].wordGameAnswer) {						
-						users[i].totalPoints -= 10;
+					if(word.toLowerCase() === users[i].gameData.wordGame.data) {
+						users[i].gameData.wordGame.result = true;
 						fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
 							if (err) return err;
 						});
@@ -163,8 +164,7 @@ app	.get('/wordGame', function(req, res) {
 
 app.post('/pictureID', function(req, res) {
 	var id = 'picture4';
-
-	if(req.body.picture !== id) {
+	if(req.body.picture == id) {
 		fs.readFile('users/users.json', 'utf-8', function(err, data) {
 			if (err) console.log('error');		
 			var users = JSON.parse(data);
@@ -172,7 +172,7 @@ app.post('/pictureID', function(req, res) {
 
 			for (var i = 0; i < users.length; i++) {
 				if (users[i].username == userName) {			
-					users[i].totalPoints -= 10;
+					users[i].gameData.pictureGame.result = true;
 					fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
 						if (err) return err;
 					});
@@ -183,27 +183,46 @@ app.post('/pictureID', function(req, res) {
 	} 
 });
 
+var ar = ['blueSquare','blueTriangle','yellowCircle', 'yellowSquare']
 app.get('/getCombination', function(req, res) {
-	var ar = ['blueSquare','blueTriangle','yellowCircle']
-	res.json({combination: ar});
+		res.json({combination: ar});
 });
+app.post('/combination', function(req, res) {
+	var result = false;
+	var userCombination = req.body.combination;
+	for (var i=0; i<userCombination.length;i++) {
+		if(arr[i] !== userCombination[i]){
+			return false
+		} 
+			result = true;
+		
+		
+	}
+})
 
 app.get('/badge', function(req, res) {
 	fs.readFile('users/users.json', 'utf-8', function(err, data) {
 		if (err) console.log('error');		
 		var users = JSON.parse(data);
 		var userName = req.cookies.userName;
-
+		var userResult = 100;
 		for (var i = 0; i < users.length; i++) {
-			if (users[i].username == userName) {			
-				var result = users[i].totalPoints;
+			if (users[i].username == userName) {
+				 	
+				 for (var key in users[i].gameData) {
+ 					if (key.result == false) {
+ 							userResult -= 10;
+ 					}
+				}
+
+			
 				var badge;
-				if(result >= 90) {
+				if(userResult >= 90) {
 					badge = {
 						'title' : 'Sherlock',
 						'src':'sherlock_180x180.png'
 					}
-				} else if(result >= 70 && result < 90) {
+				} else if(userResult >= 70 && result < 90) {
 					badge = {
 						'title' : 'Expert',
 						'src':'expert_180x180.png'

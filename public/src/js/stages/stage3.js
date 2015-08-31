@@ -109,7 +109,7 @@ define(function(require) {
 					$('.bubbles-popup').show();
 				}, 200);
 
-				(winner == 'player') ? stage3.sendTaskResults(true) : stage3.sendTaskResults(false);
+				(winner == 'player') ? stage3.sendTaskResults({'game':'bashe', 'result':true}) : stage3.sendTaskResults({'game':'bashe', 'result':false});
 				 /*
         		how avoid this game repetition after page reload
         */

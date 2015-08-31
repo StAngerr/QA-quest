@@ -28,7 +28,7 @@ define(function (require) {
 			data: JSON.stringify({username : userName, password : password })
     	})
     	.done(function(data) {
-    		var result =data;
+    		var result = data;
 
     		if(result.isVerified) {
     			$('.popupWrap').remove();
@@ -37,7 +37,9 @@ define(function (require) {
     			getStage();
     		} else {
   				$('.loginPassword, .loginUsername').addClass('failedValidation');
+          return false;
     		}
+        
     	});
 	};
 

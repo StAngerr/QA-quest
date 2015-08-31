@@ -65,7 +65,8 @@ var array;
 			if(!is404Opened) {
 				load404Page();
 			} else { 
-				(checkCombination()) ? stage4.sendTaskResults(4, true) : stage4.sendTaskResults(4, false);
+				sendCombination(combination)
+				// (checkCombination()) ? stage4.sendTaskResults(4, true) : stage4.sendTaskResults(4, false);
 				stageFinished();
 			}
 		});
@@ -89,6 +90,15 @@ var array;
 		});
 	};
 
+function sendCombination(combination) {
+        $('#mainSection').trigger('main:saveTime');
+        $.ajax({
+            url: '/combination',
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({combination : combination })
+        });
+    };
  // /* here shoul be GEt from server and badge == some object with name and src*/
 	// 	var badge
 	// 	function loadFinalStage() {
@@ -148,15 +158,15 @@ var array;
 			switchOffLamp();
 	};
 
-	function checkCombination() {
-		var someCombination = '0123';
-		if(combination.join('') == someCombination) {
-			return true;}
-			else {
-				return false;
-			}
+	// function checkCombination() {
+	// 	var someCombination = '0123';
+	// 	if(combination.join('') == someCombination) {
+	// 		return true;}
+	// 		else {
+	// 			return false;
+	// 		}
 		
-	};
+	// };
 // Cabin timer
 	function startTimer() {
 		var generalTimeMinutes = 3;
@@ -271,7 +281,7 @@ var array;
 		};
 
 		function finishGame() {
-			(points == 30) ? stage4.sendTaskResults(true) : stage4.sendTaskResults(false); 
+			(points == 30) ? stage4.sendTaskResults({'game':'dotGame', 'result':true}) : stage4.sendTaskResults({'game':'dotGame', 'result':false}); 
 			resetVisual();
 			onInfoInterface();
 			clearInterval(gameTime);

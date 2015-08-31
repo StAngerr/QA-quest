@@ -5,7 +5,7 @@ var emailOptions = {
     service: 'Gmail',
     debug: true,
     auth: {
-        user: 'violet.infierno@gmail.com',
+        user: '',
         pass: ''
     }
 };
@@ -26,7 +26,7 @@ function sendEmails(address, users) {
 	var transporter  = nodemailer.createTransport("SMTP", emailOptions);
 	for (var i = 0; i < address.length; i++) {
 		var email = {
-		    from: 'violet.infierno@gmail.com',
+		    from: 'box4alya@gmail.com',
 		    to: address[i],
 		    subject: 'QA quest',
 		    html: '<div style="border: 2px solid #DDD; text-align: center;"><h1>Welcome!</h1>\nBro  :D\n <div>Your credentials:</div>\n <h3>Username: ' + users[i].username + '\n</h3><h3> Password: ' + users[i].password + '\n</h3></div>'
@@ -85,7 +85,28 @@ function createUserInfoData(address) {
 		
 		singleUserObj.username = address[i].split('@')[0].toLowerCase();
 		singleUserObj.currentStage = 0;
-		singleUserObj.totalPoints = 100;
+		singleUserObj.gameData = {
+			wordGame: {
+				data: '',
+				result: false
+			},
+			pictureGame: {
+				data: '4',
+				result: false
+			},
+			bashe: {
+				data: '',
+				result: false
+			},
+			dotGame: {
+				data: '',
+				result: false
+			},
+			combination:{
+				data: '',
+				result: false
+			}
+		};
 
 		users.push(singleUserObj);
 	}

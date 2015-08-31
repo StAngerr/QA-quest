@@ -5,8 +5,8 @@ $.ajax({
             method: 'GET'
         })
         .done(function(data) {
-         	array = data.combination;
-         	appendCombnation(array)
+            array = data.combination;
+            appendCombnation(array)
         
         })
         .fail(function(req, res) {
@@ -16,12 +16,19 @@ $.ajax({
 
 
 function appendCombnation(arr) {
-        	var combination = 'You should press buttons in such way: <br>';
-        	var bodyInnerHtml = document.getElementById('combination').innerHTML;
-        	for(var i=0; i<arr.length; i++) {
-				combination += '<p>Press ' + arr[i] + '</p>'
-			}
-			document.getElementById('combination').innerHTML = bodyInnerHtml + combination;
+            var combination = '<div class="hidden-hint">You should press buttons in such way: <br>';
+            var bodyInnerHtml = document.getElementById('combination').contentWindow.document;
+            console.log(bodyInnerHtml)
+            for(var i=0; i<arr.length; i++) {
+                combination += '<p>Press ' + arr[i] + '</p>'
+            }
+            combination += '</div>'
+             setTimeout( function() {
+                var doc = document.getElementById('combination').contentWindow.document;
+                var $body = $('body',doc);
+                $body.html(combination);
+                return false;
+            }, 0 );
         }
 
 </script>
