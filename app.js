@@ -53,7 +53,7 @@ app.post('/setStage', function(req, res) {
 
 app.post('/gameResult', function(req, res) {
 	var userTaskDone = req.body.taskDone;
-	if(userTaskDone.result) {
+	console.log(userTaskDone.result)
 		fs.readFile('users/users.json', 'utf-8', function(err, data) {
 			if (err) console.log('error');		
 			var users = JSON.parse(data);
@@ -61,7 +61,7 @@ app.post('/gameResult', function(req, res) {
 
 			for (var i = 0; i < users.length; i++) {
 				if (users[i].username == userName) {
-					 users[i].gameData[userTaskDone.game].result = true;
+					 users[i].gameData[userTaskDone.game].result = userTaskDone.result;
 							
 					fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
 						if (err) return err;
@@ -70,8 +70,7 @@ app.post('/gameResult', function(req, res) {
 			}
 			res.status(200).end();	
 		});
-	}
-});
+	});
 
 /*temp place for global values 
 and fs functions

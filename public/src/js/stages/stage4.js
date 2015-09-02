@@ -236,7 +236,7 @@ function sendCombination(combination) {
 		};
 
 		function finishGame() {
-			(points == 30) ? stage4.sendTaskResults({'game':'dotGame', 'result':true}) : stage4.sendTaskResults({'game':'dotGame', 'result':false}); 
+			(points >= 30) ? stage4.sendTaskResults({'game':'dotGame', 'result':true}) : stage4.sendTaskResults({'game':'dotGame', 'result':false}); 
 			resetVisual();
 			onInfoInterface();
 			clearInterval(gameTime);
