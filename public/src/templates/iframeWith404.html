@@ -1,34 +1,28 @@
-<iframe id="combination" src="src/templates/stage4ErrorPageTmpl.html" class="error-page-frame" ></iframe>
+<iframe id="combination" src="" class="error-page-frame" ></iframe>
 <script>
-$.ajax({
+$(document).ready(function() {
+    $.ajax({
             url: '/getCombination',
             method: 'GET'
-        })
-        .done(function(data) {
-            array = data.combination;
-            appendCombnation(array)
-        
-        })
-        .fail(function(req, res) {
+    }).done(function(data) {
+            var array = data.combination;
+            appendCombnation(array);
 
-        });
-
+    }).fail(function(req, res) {
+        res.body = "something works wrong!"
+    });
+});
 
 
 function appendCombnation(arr) {
-            var combination = '<div class="hidden-hint">You should press buttons in such way: <br>';
-            var bodyInnerHtml = document.getElementById('combination').contentWindow.document;
-            console.log(bodyInnerHtml)
-            for(var i=0; i<arr.length; i++) {
-                combination += '<p>Press ' + arr[i] + '</p>'
-            }
-            combination += '</div>'
-             setTimeout( function() {
-                var doc = document.getElementById('combination').contentWindow.document;
-                var $body = $('body',doc);
-                $body.html(combination);
-                return false;
-            }, 0 );
-        }
+    var combination = '<div class="hidden-hint" style="visibility:hidden">You should press buttons in such way: <br>';
+    var bodyInnerHtml = document.getElementById('combination').contentWindow.document;
+
+    for(var i=0; i<arr.length; i++) {
+        combination += '<p>Press ' + arr[i] + '</p>'
+    }
+    combination += '</div>';
+    document.getElementById('combination').src = 'data:text/html,' + combination;
+}
 
 </script>

@@ -7,6 +7,7 @@ define(function(require) {
     var hero = $('#hero');
     var cabinTimer;
     var is404Opened = false;
+    var haveCombination = false;
     var combination = [];
 
 
@@ -40,23 +41,12 @@ define(function(require) {
     	$('#mainSection').trigger('main:stageFinished'); 
     };
 /*INSIDE CABIN*/
-var array;
-    function insideCabin() {
-  		$.ajax({
-            url: '/getCombination',
-            method: 'GET'
-        })
-        .done(function(data) {
-			array = data.combination;
-			$(hero).addClass('hideHero');
-			stage4.getTmpl('popupFrameTmpl.html').then(function() {
-				$('.popupWrap').addClass('dark-bg')
-				stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
-			});	
-        })
-        .fail(function(req, res) {
-
-        });	
+  function insideCabin() {
+					$(hero).addClass('hideHero');
+					stage4.getTmpl('popupFrameTmpl.html').then(function() {
+					$('.popupWrap').addClass('dark-bg')
+					stage4.getTmpl('stage4BotCabinTmpl.html','.popup', null, start404Task);
+			});
 	};
 
 	function start404Task() {
@@ -65,8 +55,7 @@ var array;
 			if(!is404Opened) {
 				load404Page();
 			} else { 
-				sendCombination(combination)
-				// (checkCombination()) ? stage4.sendTaskResults(4, true) : stage4.sendTaskResults(4, false);
+				sendCombination(combination);
 				stageFinished();
 			}
 		});
@@ -99,32 +88,6 @@ function sendCombination(combination) {
             data: JSON.stringify({combination : combination })
         });
     };
- // /* here shoul be GEt from server and badge == some object with name and src*/
-	// 	var badge
-	// 	function loadFinalStage() {
-	// 	  stage4.closePopup();
-	// 	  $('#stage4').remove();
-
-
-	// 	  $.ajax({
- //            url: '/badge',
- //            method: 'GET'
- //        })
- //        .done(function(data) {
- //        		console.log(data.badge.src)
- //        		 badge = {
-	// 	  	src:data.badge.src,
-	// 	  	title:data.badge.title
-	// 	  }
-	// 	  console.log(badge)
-	// 	  stage4.getTmpl('finalStageTmpl.html','#mainContent', badge);
-		  
- //        });
-        
-        
-
-		 
- // }
  
 	function switchOnLamp () {
 		var allLamps = $('.lamp');
@@ -158,15 +121,6 @@ function sendCombination(combination) {
 			switchOffLamp();
 	};
 
-	// function checkCombination() {
-	// 	var someCombination = '0123';
-	// 	if(combination.join('') == someCombination) {
-	// 		return true;}
-	// 		else {
-	// 			return false;
-	// 		}
-		
-	// };
 // Cabin timer
 	function startTimer() {
 		var generalTimeMinutes = 3;
@@ -192,6 +146,7 @@ function sendCombination(combination) {
 // load Frame
 	function load404Page() {
 		is404Opened = true;
+		haveCombination = true;
 		$('.popup > .cabin > *').toggleClass('closeBlock');
 		$('.cabin').toggleClass('hideCabin');
 		stage4.getTmpl('iframeWith404.html', '.popup')
