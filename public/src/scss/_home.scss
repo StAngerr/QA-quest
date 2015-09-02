@@ -5,7 +5,8 @@ final stage use the same style so it is also here
 */
 .home, .final-stage {
     position: relative;
-    width: 1200px;
+    width:100%;
+    max-width: 1200px;
     height: 100%;
     margin: auto;
     overflow: hidden;
