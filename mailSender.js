@@ -91,7 +91,7 @@ function createUserInfoData(address) {
 				result: false
 			},
 			pictureGame: {
-				data: '4',
+				data: 'picture4',
 				result: false
 			},
 			bashe: {
