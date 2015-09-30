@@ -1,13 +1,20 @@
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
+var sync = require('synchronize');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser')
 var app = express();
 
+sync(fs, 'readFile', 'writeFile');
+
 app.use(cookieParser());
 app.use(express.static(__dirname + path.normalize('/public')));
 app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+	sync.fiber(next);
+})
 
 app
 	.post('/time', function(req, res) {
