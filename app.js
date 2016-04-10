@@ -14,7 +14,19 @@ app.use(bodyParser.json());
 
 app.use(function(req, res, next) {
 	sync.fiber(next);
-})
+});
+
+
+app.get('/manageStage', function(req, res) {
+	res.sendfile('dataMngLogin.temp.html', {root: __dirname + path.normalize('/public') });
+});
+
+//dataManageView
+
+app.get('/dataManageView', function(req, res) {
+	res.sendfile('dataManager.temp.html', {root: __dirname + path.normalize('/public') });
+
+});
 
 app
 	.post('/time', function(req, res) {
@@ -309,6 +321,7 @@ app.
 
 		verifyUser(userName, password).then(function(verifyResult) {
 			res.type('json');
+            console.log(verifyResult)
 			verifyResult ? res.cookie('userName', userName) : res.cookie('userName','guest');
 			res.end(JSON.stringify({isVerified : verifyResult}));
 			});
@@ -320,6 +333,8 @@ function verifyUser(login, pass) {
 	fs.readFile('users/userAccounts.json', 'utf-8', function(err, data) {
 		if (err) console.log('error');		
 		var accounts = JSON.parse(data);
+
+        console.log(accounts)
 
 		for (var i = 0; i < accounts.length; i++) {
 			if(accounts[i].username == login && accounts[i].password == pass) {

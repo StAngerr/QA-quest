@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+    <script src="src/js/lib/jquery.js"></script>
+</head>
+<body>
+<div class="popupWrap spaceSkyBackground">
+    <div class="popup logFormPopup">
+        <form action="" class="loginForm">
+            <h3 class="loginFormTitle">Welcome</h3>
+            <input class="loginUsername" type="text" placeholder="User Name">
+            <input class="loginPassword" type="password" placeholder="Password">
+            <button class="loginBtn">start</button>
+        </form>
+    </div>
+</div>
+<script>
+    $('.loginBtn').on('click', newUser);
+
+    function newUser(event) {
+        event.preventDefault();
+        var userName = $('.loginUsername')[0].value;
+        var password = $('.loginPassword')[0].value;
+
+        $.ajax({
+            url: '/newUser',
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({username : userName, password : password })
+        }).done(function(data) {
+            $.ajax({
+                url: '/dataManageView',
+                method: 'get'
+            }).done(function(data) {
+                $('body').html(data);
+
+            })
+        })
+    };
+
+    function setCurrentStage(stage) {
+        $.ajax({
+            url: '/setStage',
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({stage : parseInt(stage)})
+        }).done(function(data) {
+            $('body').prepend('<p>Stage was updated to' + stage +' </p>');
+        });
+    }
+</script>
+</body>
+</html>
