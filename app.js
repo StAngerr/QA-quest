@@ -18,13 +18,13 @@ app.use(function(req, res, next) {
 
 
 app.get('/manageStage', function(req, res) {
-	res.sendfile('dataMngLogin.temp.html', {root: __dirname + path.normalize('/public') });
+	res.sendFile('dataMngLogin.temp.html', {root: __dirname + path.normalize('/public') });
 });
 
 //dataManageView
 
 app.get('/dataManageView', function(req, res) {
-	res.sendfile('dataManager.temp.html', {root: __dirname + path.normalize('/public') });
+	res.sendFile('dataManager.temp.html', {root: __dirname + path.normalize('/public') });
 
 });
 

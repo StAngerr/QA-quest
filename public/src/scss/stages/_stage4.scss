@@ -243,6 +243,7 @@
 /*
        INSIDE CABIN STYLES
 */
+
 .startButton {
     position: absolute;
     top: 434px;
@@ -450,7 +451,7 @@
     outline: none;
     background: Transparent;
     &:before {
-        content: "X";
+        content: "";
         color: #4B4A52;
         font-size: 2em;
         font-weight: bold;

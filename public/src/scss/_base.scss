@@ -21,7 +21,9 @@ html, body, main {
 }
 
 body {
-    font-family: 'Noto Sans', sans-serif;    
+    font-family: 'Noto Sans', sans-serif;
+    min-width: 1180px;
+    overflow: auto;
 }
 
 button {
