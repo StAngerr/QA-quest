@@ -36,11 +36,50 @@
                 method: 'get'
             }).done(function(data) {
                 $('body').html(data);
+                $.ajax({
+                url: '/dataUsers',
+                method: 'get'
+                }).done(function(data) {
+                    if(data && data.length > 0) {
+                        $('#manageStage').append(normalizeJsonForQA(data))
+                    }
+                    console.log(data)
+                });
 
             })
         })
     };
 
+
+    function normalizeJsonForQA(arr) {
+        var table = $('#userData');
+        var tempTableData = '';
+        var temp = '';
+
+        table.html('');
+        temp = '<thead><td>User</td> <td>Curent Stage</td>';
+        for (var key in  arr[0].gameData) {
+                temp += '<td>'+ key +'</td>';
+        }
+        temp += '</thead>';
+        tempTableData += temp; 
+        for(var index = 0; index < arr.length; index++) {
+            var userData = arr[index];
+            var body = '<tbody><td>'+ userData.username + '</td><td>'+ userData.currentStage +'</td>';
+
+            for (var key in  userData.gameData) {
+                body += '<td>'+ userData.gameData[key].result +'</td>'
+            }           
+            body += '</tbody>'
+
+            tempTableData += body;
+            temp = '';
+            body = '';
+        }
+        table.html(tempTableData);
+        return table;
+    }
+    
     function setCurrentStage(stage) {
         $.ajax({
             url: '/setStage',

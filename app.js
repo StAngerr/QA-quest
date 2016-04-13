@@ -27,6 +27,10 @@ app.get('/dataManageView', function(req, res) {
 	res.sendFile('dataManager.temp.html', {root: __dirname + path.normalize('/public') });
 
 });
+app.get('/dataUsers', function(req, res) {
+	res.sendFile('users/users.json', {root: __dirname + path.normalize('/') });
+
+});
 
 app
 	.post('/time', function(req, res) {
