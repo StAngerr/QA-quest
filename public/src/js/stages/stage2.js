@@ -53,6 +53,7 @@ define(function (require) {
             var marginCorrection = parseInt($('#mainSection').css('margin-left'));
             $('#stage2').css({
                 '-webkit-clip-path': 'circle(130px at ' + (e.pageX - marginCorrection) + 'px ' + e.pageY + 'px)',
+                 'clip-path': 'circle(130px at ' + (e.pageX - marginCorrection) + 'px ' + e.pageY + 'px)',
                 'cursor': 'url("../images/flashlight.ico")'
             });
         });

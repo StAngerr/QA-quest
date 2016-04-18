@@ -37,6 +37,7 @@ define(function (require) {
 					return;
 				}
 				$(hero).css('-webkit-transform', 'translate(' + (step) + 'px, ' + positionY + 'px)');	
+				$(hero).css('-moz-transform', 'translate(' + (step) + 'px, ' + positionY + 'px)');	
 			};
 		};
 
@@ -53,6 +54,7 @@ define(function (require) {
 			clearClasses();
 			$(hero).addClass('climb-up');
 			$(hero).css('-webkit-transform','translate(' + positionX + 'px, ' + 100 + 'px)');
+			$(hero).css('-moz-transform','translate(' + positionX + 'px, ' + 100 + 'px)');
 			var timer = setTimeout(function() {
 				hasСome();
 				clearTimeout(timer);
@@ -63,6 +65,7 @@ define(function (require) {
 			positionY = coordinates.y;
 			positionX = coordinates.x;
 			$(hero).addClass('animFix').css('-webkit-transform', 'translate(' + positionX + 'px, ' + positionY + 'px)');
+			$(hero).addClass('animFix').css('-moz-transform', 'translate(' + positionX + 'px, ' + positionY + 'px)');
 			setTimeout(function() {
 				$(hero).removeClass('animFix');	
 			}, 10);	

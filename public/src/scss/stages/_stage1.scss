@@ -17,11 +17,25 @@
 		&.blinkAnimation {
 			display: block;
 			opacity: 1;
-			animation-duration: .8s;
-			animation-name: blicking;
-			animation-iteration-count: infinite;
+			// animation-duration: .8s;
+			// animation-name: blicking;
+			// animation-iteration-count: infinite;
+			animation: blicking .8s infinite;
+			-moz-animation: blicking .8s infinite;
 		}
 		@-webkit-keyframes blicking { 
+			0% {
+				opacity: 0;
+			}
+			50% {
+				opacity: 1;
+			}
+
+			100% {
+				opacity: 0;
+			}
+		}
+		@-moz-keyframes blicking { 
 			0% {
 				opacity: 0;
 			}

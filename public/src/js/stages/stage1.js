@@ -72,7 +72,7 @@ define(function(require) {
          $('#sendWord').on('click', sendWord); 
     };
 
-    function addNewLetter () {
+    function addNewLetter (event) {
         var target = event.target;
         var data = dragNdrop.data; 
 
@@ -89,6 +89,7 @@ define(function(require) {
 
     function sendWord(event) {
         var wordToSend = $('.makeWord').children().children('span').text();
+        if(!wordToSend) return false;
         stage1.closePopup();
         isWordGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  

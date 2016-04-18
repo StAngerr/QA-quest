@@ -3,6 +3,31 @@
      
 */
 
+@mixin animateBot ($positionY, $animation_name, $duration) {
+    $positionX0: - $bot-static-direct-line-x - 90px;
+    $positionX100: - $bot-static-direct-line-width - 90px;
+
+     animation:  $animation_name $duration steps(20) infinite;
+    -webkit-animation:  $animation_name $duration steps(20) infinite; /* Safari 4+ */
+    -moz-animation:    $animation_name $duration steps(20) infinite; /* Fx 5+ */ 
+
+  @keyframes  #{$animation_name} {
+        // 0% { background-position-x: - $bot-static-direct-line-x - 90px;}
+        // 100% { background-position-x: - $bot-static-direct-line-width - 90px;}
+        0% { background-position: $positionX0  $positionY; }
+        100% { background-position: $positionX100  $positionY;}
+    }
+
+    @-webkit-keyframes  #{$animation_name} {
+       0% { background-position: $positionX0  $positionY; }
+        100% { background-position: $positionX100 $positionY;}
+    }
+    @-moz-keyframes  #{$animation_name} {
+        0% { background-position: $positionX0  $positionY; }
+        100% { background-position: $positionX100 $positionY;}
+    }
+}
+
 
 .man {
     display: block;
@@ -24,30 +49,51 @@
         display: none;
     }
     &.stand-right {
-        background-position-y: $bot-static-direct-line-y - 50px;
-        animation: play 2s steps(20) infinite; 
+        // background-position-y: $bot-static-direct-line-y - 50px;
+         background-position:( - $bot-static-direct-line-x - 90px)   ( - $bot-static-direct-line-y - 50px);
+            @include animateBot(- $bot-static-direct-line-y - 50px, standRight, 2s);
+    //     animation: play 2s steps(20) infinite;
+    //     -webkit-animation: play 2s steps(20) infinite; /* Safari 4+ */
+    // -moz-animation:    play 2s steps(20) infinite; /* Fx 5+ */ 
     }
     &.stand-left {
-        background-position-y: - $bot-static-reverse-line-y - 50px;
-        animation: play 2s steps(20) infinite; 
+        // background-position-y: - $bot-static-reverse-line-y - 50px;
+        background-position: (-$bot-static-direct-line-x - 90px  )   (- $bot-static-reverse-line-y - 50px);
+        @include animateBot(-$bot-static-reverse-line-y - 50px, standLeft, 2s);
+    //     $bot-positionY:- $bot-static-reverse-line-y - 50px;
+    //     animation: play 2s steps(20) infinite;
+    //      -webkit-animation: play 2s steps(20) infinite; /* Safari 4+ */
+    // -moz-animation:    play 2s steps(20) infinite; /* Fx 5+ */  
     }
     &.move-right {
-        background-position-y: - $bot-walk-direct-line-y - 50px;
-        animation: play .3s steps(20) infinite; 
+        // background-position-y: - $bot-walk-direct-line-y - 50px;
+        background-position: (-$bot-static-direct-line-x - 90px) (- $bot-walk-direct-line-y - 50px);
+         @include animateBot(- $bot-walk-direct-line-y - 50px, moveRight, 0.3s);
+        // $bot-positionY: - $bot-walk-direct-line-y - 50px;
+        // animation: play .3s steps(20) infinite; 
+        // -webkit-animation: play .3s steps(20) infinite; /* Safari 4+ */
+        // -moz-animation:    play .3s steps(20) infinite; /* Fx 5+ */ 
     }
     &.move-left {
-        background-position-y: - $bot-walk-reverse-line-y - 50px;
-        animation: play .2s steps(20) infinite;
+        // background-position-y: - $bot-walk-reverse-line-y - 50px;
+         background-position:(-$bot-static-direct-line-x - 90px) (- $bot-walk-reverse-line-y - 50px);
+          @include animateBot(- $bot-walk-reverse-line-y - 50px, moveLeft, 0.2s);
+        //  $bot-positionY: - $bot-walk-reverse-line-y - 50px;
+        // animation: play .2s steps(20) infinite;
+        // -webkit-animation: play .2s steps(20) infinite; /* Safari 4+ */
+        // -moz-animation:    play .2s steps(20) infinite; /* Fx 5+ */ 
     }
     &.climb-up {
         width: 80px;          
         transition: transform 3.5s linear;
-        background-position-y: - $bot-up-line-y - 50px;
-        animation: play .7s steps(20) infinite;  
+        // background-position-y: - $bot-up-line-y - 50px;
+        background-position: (-$bot-static-direct-line-x - 90px) (- $bot-up-line-y - 50px);
+         @include animateBot(- $bot-up-line-y - 50px , climbUp, 0.7s);
+        // $bot-positionY: - $bot-up-line-y - 50px;
+        // animation: play .7s steps(20) infinite;
+        // -webkit-animation: play .7s steps(20) infinite; /* Safari 4+ */
+        // -moz-animation:    play .7s steps(20) infinite; /* Fx 5+ */ 
     }
   
-    @keyframes play {
-        0% { background-position-x: - $bot-static-direct-line-x - 90px;}
-        100% { background-position-x: - $bot-static-direct-line-width - 90px;}
-    }
+    
 } 

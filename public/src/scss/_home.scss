@@ -36,8 +36,10 @@ final stage use the same style so it is also here
         font-size: 280%;
         overflow: hidden;
         -webkit-transform-origin: 50% 100%;
+        -moz-transform-origin: 50% 100%;
         transform-origin: 50% 100%;
         -webkit-transform: perspective(350px) rotateX(25deg);
+        -moz-transform: perspective(350px) rotateX(25deg);
         transform: perspective(350px) rotateX(25deg);
         color: #eee;
         text-indent: 30px;
@@ -47,6 +49,7 @@ final stage use the same style so it is also here
             position: absolute;
             top: 100%;
             -webkit-animation: scroll 50s linear 1s infinite;
+            -moz-animation: scroll 50s linear 1s infinite;
             animation: scroll 50s linear 1s infinite;
         }
     }
@@ -67,6 +70,14 @@ final stage use the same style so it is also here
 }
 
 @-webkit-keyframes scroll {
+    0% {
+        top: 100%;
+    }
+    100% {
+        top: -200%;
+    }
+}
+@-moz-keyframes scroll {
     0% {
         top: 100%;
     }
