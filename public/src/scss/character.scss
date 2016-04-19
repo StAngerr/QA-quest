@@ -51,7 +51,7 @@
     &.stand-right {
         // background-position-y: $bot-static-direct-line-y - 50px;
          background-position:( - $bot-static-direct-line-x - 90px)   ( - $bot-static-direct-line-y - 50px);
-            @include animateBot(- $bot-static-direct-line-y - 50px, standRight, 2s);
+        @include animateBot(- $bot-static-direct-line-y - 50px, standRight, 2s);
     //     animation: play 2s steps(20) infinite;
     //     -webkit-animation: play 2s steps(20) infinite; /* Safari 4+ */
     // -moz-animation:    play 2s steps(20) infinite; /* Fx 5+ */ 

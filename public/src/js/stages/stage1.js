@@ -20,7 +20,8 @@ define(function(require) {
         stage1.setStage(1);
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
         $('#inventory').show();
-        $('.door').on('click', moveToDoor);      
+        $('.door').on('click', moveToDoor);
+        
     };
     
      function finishStage() {
@@ -70,6 +71,28 @@ define(function(require) {
         dragNdrop.makeDragabble($('.letters'));
         dragNdrop.makeDroppable([fieldToDrop, wordSpot], addNewLetter);
          $('#sendWord').on('click', sendWord); 
+        
+        // create an observer instance
+            var observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                console.log(mutation.type);
+                console.log(mutation)
+                if(mutation.type === 'childList') {
+                    if(mutation.addedNodes.length > 0) {
+                        $('#sendWord').prop('disabled', false)
+                    }else {
+                        $('#sendWord').prop('disabled', true)
+                    }
+                }
+              });    
+            });
+             
+            // configuration of the observer:
+            var config = { childList: true };             
+            // pass in the target node, as well as the observer options
+            observer.observe(wordSpot, config);             
+            // later, you can stop observing
+            // observer.disconnect();
     };
 
     function addNewLetter (event) {
@@ -89,7 +112,10 @@ define(function(require) {
 
     function sendWord(event) {
         var wordToSend = $('.makeWord').children().children('span').text();
-        if(!wordToSend) return false;
+        if(!wordToSend) {
+            $('#sendWord').attr('disabled', true)
+            return false;
+        }
         stage1.closePopup();
         isWordGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-1'});  

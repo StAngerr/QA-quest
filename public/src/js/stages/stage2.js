@@ -88,6 +88,46 @@ define(function (require) {
         dragNdrop.makeDroppable([fieldToDrop], dropPicture);
         dragNdrop.makeDroppable([fieldToReturn], returnPictureBack);
         $('#sendPicture').on('click', finishPictureGame);
+
+                    // select the target node
+            
+             
+            // create an observer instance
+            var observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                console.log(mutation.type);
+                console.log(mutation)
+                if(mutation.type === 'childList') {
+                    if(mutation.addedNodes.length > 0) {
+                        $('#sendPicture').prop('disabled', false)
+                    }else {
+                        $('#sendPicture').prop('disabled', true)
+                    }
+                }
+              });    
+            });
+             
+            // configuration of the observer:
+            var config = { attributes: true, childList: true, characterData: true };
+             
+            // pass in the target node, as well as the observer options
+            observer.observe(fieldToDrop, config);
+             
+            // later, you can stop observing
+            // observer.disconnect();
+        // $(fieldToDrop).on("DOMSubtreeModified", function(e){
+        //     console.log($(e.currentTarget))
+        //     console.log($(e.currentTarget).context.innerHTML)
+        //     var that = this
+          
+        //         if($(e.currentTarget).children().length >0 ) {
+        //         $('#sendPicture').prop('disabled', false)
+        //     }else {
+        //         $('#sendPicture').prop('disabled', true)
+        //     }
+           
+            
+        // });
     };
     // callback to drop choosen picture to empty field
     function dropPicture () {
@@ -111,7 +151,7 @@ define(function (require) {
 
     function finishPictureGame() {
         var pictureID = $('.field-to-drop').children().children().attr('id');
-
+        if(!pictureID) return false;
         $.ajax({
             url: '/pictureID',
             method: 'POST',
