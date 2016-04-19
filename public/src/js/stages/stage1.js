@@ -78,15 +78,14 @@ define(function(require) {
                 console.log(mutation.type);
                 console.log(mutation)
                 if(mutation.type === 'childList') {
-                    if(mutation.addedNodes.length > 0) {
+                    if(mutation.addedNodes.length > 0 || mutation.previousSibling) {
                         $('#sendWord').prop('disabled', false)
                     }else {
                         $('#sendWord').prop('disabled', true)
                     }
                 }
               });    
-            });
-             
+            });             
             // configuration of the observer:
             var config = { childList: true };             
             // pass in the target node, as well as the observer options
