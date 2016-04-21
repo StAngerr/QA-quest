@@ -20,6 +20,7 @@
 <script>
     $('.loginBtn').on('click', newUser);
 
+
     function newUser(event) {
         event.preventDefault();
         var userName = $('.loginUsername')[0].value;
@@ -85,11 +86,18 @@
             url: '/setStage',
             method: 'POST',
             contentType: "application/json",
-            data: JSON.stringify({stage : parseInt(stage)})
+            data: JSON.stringify({stage : parseInt(stage), refresh: true})
         }).done(function(data) {
             $('body').prepend('<p>Stage was updated to' + stage +' </p>');
+            setTimeout(function(){
+                location.reload();
+            }, 500);
         });
+
     }
+
+
+    
 </script>
 </body>
 </html>

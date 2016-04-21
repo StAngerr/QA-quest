@@ -75,8 +75,6 @@ define(function(require) {
         // create an observer instance
             var observer = new MutationObserver(function(mutations) {
               mutations.forEach(function(mutation) {
-                console.log(mutation.type);
-                console.log(mutation)
                 if(mutation.type === 'childList') {
                     if(mutation.addedNodes.length > 0 || mutation.previousSibling) {
                         $('#sendWord').prop('disabled', false)
