@@ -39,7 +39,7 @@
     }
 
     .tic {
-        background: url('../images/x.png') no-repeat 0 0;        
+        background: url('../images/x.png') no-repeat 0 0; 
     }
 
     .toe {
@@ -128,36 +128,44 @@
             display: inline-block;
 
             &.static1{
-                background-position-x: - $brown1-x;
-                background-position-y: - $brown1-y;
+                background-position: (- $brown1-x) (- $brown1-y);
+                // background-position-x: - $brown1-x;
+                // background-position-y: - $brown1-y;
             }
              &.static2{
-                background-position-x: -$brown2-x;
-                background-position-y: -$brown2-y;
+                background-position: (- $brown2-x) (- $brown2-y);
+                // background-position-x: -$brown2-x;
+                // background-position-y: -$brown2-y;
             }
              &.static3{
-                background-position-x: - $brown3-x;
-                background-position-y: - $brown3-y;
+                background-position: (- $brown3-x) (- $brown3-y);
+                // background-position-x: - $brown3-x;
+                // background-position-y: - $brown3-y;
             }
              &.static4{
-                background-position-x: - $brown4-x;
-                background-position-y: - $brown4-y;
+                background-position: (- $brown4-x) (- $brown4-y);
+                // background-position-x: - $brown4-x;
+                // background-position-y: - $brown4-y;
             }
              &.static5{
-                background-position-x: - $brown5-x;
-                background-position-y: - $brown5-y;
+                background-position: (- $brown5-x) (- $brown5-y);
+                // background-position-x: - $brown5-x;
+                // background-position-y: - $brown5-y;
             }
              &.static6{
-                background-position-x: - $brown6-x;
-                background-position-y: - $brown6-y;
+                background-position: (- $brown6-x) (- $brown6-y);
+                // background-position-x: - $brown6-x;
+                // background-position-y: - $brown6-y;
             }
              &.static7{
-                background-position-x: - $brown7-x;
-                background-position-y: - $brown7-y;
+                background-position: (- $brown7-x) (- $brown7-y);
+                // background-position-x: - $brown7-x;
+                // background-position-y: - $brown7-y;
             }
              &.static8{
-                background-position-x: - $brown8-x;
-                background-position-y: - $brown8-y;
+                background-position: (- $brown8-x) (- $brown8-y);
+                // background-position-x: - $brown8-x;
+                // background-position-y: - $brown8-y;
             }
             &.field-to-drop{
                 background: none;

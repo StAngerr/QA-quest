@@ -17,9 +17,6 @@
 		&.blinkAnimation {
 			display: block;
 			opacity: 1;
-			// animation-duration: .8s;
-			// animation-name: blicking;
-			// animation-iteration-count: infinite;
 			animation: blicking .8s infinite;
 			-moz-animation: blicking .8s infinite;
 		}

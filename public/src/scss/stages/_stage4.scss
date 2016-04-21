@@ -1,5 +1,5 @@
 /*
-     STYLES FOR STAGE 3
+     STYLES FOR STAGE 4
      
 */
 #stage4 {
@@ -289,134 +289,86 @@
     }
     &.btn-1 {
         background-position: (- $green-circle-x) (- $green-circle-y);
-        // background-position-x: - $green-circle-x;
-        // background-position-y:  - $green-circle-y;
         right: 393px;
         &.pressed {
             background-position: (- $green-circle-pressed-x) (- $green-circle-pressed-y);
-            // background-position-x: - $green-circle-pressed-x;
-            // background-position-y: - $green-circle-pressed-y;
         }
     }
     &.btn-2 {
         background-position: (- $orange-circle-x) (- $orange-circle-y);
-        // background-position-x: - $orange-circle-x;
-        // background-position-y:  - $orange-circle-y;
         right: 342px;
         &.pressed {
-            background-position: (- $orange-circle-pressed-x) (- $orange-circle-pressed-y);
-            // background-position-x: - $orange-circle-pressed-x;
-            // background-position-y: - $orange-circle-pressed-y;
+            background-position: (- $orange-circle-pressed-x) (- $orange-circle-pressed-y); 
         }
     }
     &.btn-3 {
         background-position: (- $blue-circle-x) (- $blue-circle-y);
-        // background-position-x: - $blue-circle-x;
-        // background-position-y:  - $blue-circle-y;
         right: 288px;
         &.pressed {
             background-position: (- $blue-circle-pressed-x) (- $blue-circle-pressed-y);
-            // background-position-x: - $blue-circle-pressed-x;
-            // background-position-y: - $blue-circle-pressed-y 
         }
     }
     &.btn-4 {
          background-position: (- $yellow-circle-x) (- $yellow-circle-y);
-        // background-position-x: - $yellow-circle-x;
-        // background-position-y:  - $yellow-circle-y;
         right: 234px;
         &.pressed {
             background-position: (- $yellow-circle-pressed-x) (- $yellow-circle-pressed-y);
-            // background-position-x: - $yellow-circle-pressed-x;
-            // background-position-y: - $yellow-circle-pressed-y;
         }
     }
     &.btn-5 {
-         background-position: (- $green-triangle-x) (- $green-triangle-y);
-        // background-position-x: - $green-triangle-x;
-        // background-position-y:  - $green-triangle-y;
+        background-position: (- $green-triangle-x) (- $green-triangle-y); 
         right: 398px;
         &.pressed {
             background-position: (- $green-triangle-pressed-x) (- $green-triangle-pressed-y);
-            // background-position-x: - $green-triangle-pressed-x;
-            // background-position-y: - $green-triangle-pressed-y;
         }
     } 
     &.btn-6 {
         background-position: (- $orange-triangle-x) (- $orange-triangle-y);
-        // background-position-x: - $orange-triangle-x;
-        // background-position-y:  - $orange-triangle-y;
         right: 341px;
         &.pressed {
              background-position: (- $orange-triangle-pressed-x) (- $orange-triangle-pressed-y);
-            // background-position-x: - $orange-triangle-pressed-x;
-            // background-position-y: - $orange-triangle-pressed-y;
         }
     }
     &.btn-7 {
         background-position: (- $blue-triangle-x) (- $blue-triangle-y);
-        // background-position-x: - $blue-triangle-x;
-        // background-position-y:  - $blue-triangle-y;
         right: 284px;
         &.pressed {
-             background-position: (- $blue-triangle-pressed-x) (- $blue-triangle-pressed-y);
-            // background-position-x: - $blue-triangle-pressed-x;
-            // background-position-y: - $blue-triangle-pressed-y;
+             background-position: (- $blue-triangle-pressed-x) (- $blue-triangle-pressed-y);     
         }
     }
     &.btn-8 {
         background-position: (- $yellow-triangle-x) (- $yellow-triangle-y);
-        // background-position-x: - $yellow-triangle-x;
-        // background-position-y:  - $yellow-triangle-y;
         right: 230px;
         &.pressed {
-             background-position: (- $yellow-triangle-pressed-x) (- $yellow-triangle-pressed-y);
-            // background-position-x: - $yellow-triangle-pressed-x;
-            // background-position-y: - $yellow-triangle-pressed-y;
+             background-position: (- $yellow-triangle-pressed-x) (- $yellow-triangle-pressed-y);  
         }
     }
      &.btn-9 {
-         background-position: (- $green-square-x) (- $green-square-y);
-        // background-position-x: - $green-square-x;
-        // background-position-y:  - $green-square-y;
+        background-position: (- $green-square-x) (- $green-square-y);
         right: 404px;
         &.pressed {
              background-position: (- $green-square-pressed-x) (- $green-square-pressed-y);
-            // background-position-x: - $green-square-pressed-x;
-            // background-position-y:  - $green-square-pressed-y;
         }
     } 
     &.btn-10 {
         background-position: (- $orange-square-x) (- $orange-square-y);
-        // background-position-x: - $orange-square-x;
-        // background-position-y:  - $orange-square-y;
         right: 344px;
         &.pressed {
              background-position: (- $orange-square-pressed-x) (- $orange-square-pressed-y);
-            // background-position-x: - $orange-square-pressed-x;
-            // background-position-y:  - $orange-square-pressed-y;
         }
     }
     &.btn-11 {
         background-position: (- $blue-square-x) (- $blue-square-y);
-        // background-position-x: - $blue-square-x;
-        // background-position-y:  - $blue-square-y;
         right: 285px;
         &.pressed {
             background-position: (- $blue-square-pressed-x) (- $blue-square-pressed-y);
-            // background-position-x: - $blue-square-pressed-x;
-            // background-position-y:  - $blue-square-pressed-y;
         }
     }
     &.btn-12 {
-        // background-position-x: - $yellow-square-x;
-        // background-position-y:  - $yellow-square-y;
         background-position: (- $yellow-square-x) (- $yellow-square-y);
         right: 226px;
         &.pressed {
-             background-position:( - $yellow-square-pressed-x) (- $yellow-square-pressed-y);
-            // background-position-x: - $yellow-square-pressed-x;
-            // background-position-y:  - $yellow-square-pressed-y;
+            background-position:( - $yellow-square-pressed-x) (- $yellow-square-pressed-y);
         }
     }
 }
@@ -433,52 +385,36 @@
         left: 25px;
         top: 48px;
         background-position: (- $lamp-closure-left-off-x) (- $lamp-closure-left-off-y);
-        // background-position-x: - $lamp-closure-left-off-x;
-        // background-position-y:  - $lamp-closure-left-off-y;
         &.switch-on {
             background-position: (- $lamp-closure-left-on-x) (- $lamp-closure-left-on-y);
-            // background-position-x: - $lamp-closure-left-on-x;
-            // background-position-y:  - $lamp-closure-left-on-y;
         }
     }
      &.lamp2 {
         left: 83px;
         top: 76px;
         background-position: (- $lamp-far-left-off-x) (- $lamp-far-left-off-y);
-        // background-position-x: - $lamp-far-left-off-x;
-        // background-position-y:  - $lamp-far-left-off-y;
         width: $lamp-far-left-off-width;
         height:$lamp-far-left-off-height;
         &.switch-on{
              background-position: (- $lamp-far-left-on-x) (- $lamp-far-left-on-y);
-            // background-position-x: - $lamp-far-left-on-x;
-            // background-position-y:  - $lamp-far-left-on-y;
         }
     }
     &.lamp3 {
         left: 697px;
         top: 48px;
          background-position: (- $lamp-closure-right-off-x) (- $lamp-closure-right-off-y);
-        // background-position-x: - $lamp-closure-right-off-x;
-        // background-position-y:  - $lamp-closure-right-off-y;
         &.switch-on{
             background-position: (- $lamp-closure-right-on-x) (- $lamp-closure-right-on-y);
-            // background-position-x: - $lamp-closure-right-on-x;
-            // background-position-y:  - $lamp-closure-right-on-y;
         }
     }
     &.lamp4 {
         left: 647px;
         top: 76px;
         background-position: (- $lamp-far-right-off-x) (- $lamp-far-right-off-y);
-        // background-position-x: - $lamp-far-right-off-x;
-        // background-position-y:  - $lamp-far-right-off-y;
         width: $lamp-far-right-off-width;
         height:$lamp-far-right-off-height;
         &.switch-on{
             background-position: (- $lamp-far-right-on-x) (- $lamp-far-right-on-y);
-            // background-position-x: - $lamp-far-right-on-x;
-            // background-position-y:  - $lamp-far-right-on-y;
         }
     }
 

@@ -85,9 +85,9 @@ define(function(require) {
               });    
             });             
             // configuration of the observer:
-            var config = { childList: true };             
+            var config = { childList: true };
             // pass in the target node, as well as the observer options
-            observer.observe(wordSpot, config);             
+            observer.observe(wordSpot, config);   
             // later, you can stop observing
             // observer.disconnect();
     };
@@ -126,10 +126,9 @@ define(function(require) {
         });
     };
 
-    function moveToBox() {        
-        var stage_content = {};/*{
-            letters : ['e', 'm', 'i', 'c', 'a', 't', 's', 'p', 'c', 'r']
-        };  */     
+    function moveToBox() {
+        var stage_content = {};
+   
         $.ajax({
             url: '/wordGame',
             method: 'GET'

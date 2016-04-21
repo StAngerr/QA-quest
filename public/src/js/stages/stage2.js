@@ -91,8 +91,6 @@ define(function (require) {
             // create an observer instance
             var observer = new MutationObserver(function(mutations) {
               mutations.forEach(function(mutation) {
-                console.log(mutation.type);
-                console.log(mutation)
                 if(mutation.type === 'childList') {
                     if(mutation.addedNodes.length > 0) {
                         $('#sendPicture').prop('disabled', false)
@@ -111,19 +109,7 @@ define(function (require) {
              
             // later, you can stop observing
             // observer.disconnect();
-        // $(fieldToDrop).on("DOMSubtreeModified", function(e){
-        //     console.log($(e.currentTarget))
-        //     console.log($(e.currentTarget).context.innerHTML)
-        //     var that = this
-          
-        //         if($(e.currentTarget).children().length >0 ) {
-        //         $('#sendPicture').prop('disabled', false)
-        //     }else {
-        //         $('#sendPicture').prop('disabled', true)
-        //     }
-           
-            
-        // });
+
     };
     // callback to drop choosen picture to empty field
     function dropPicture () {

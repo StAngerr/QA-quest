@@ -22,24 +22,24 @@ app.get('/manageStage', function(req, res) {
 	res.sendFile('dataMngLogin.temp.html', {root: __dirname + path.normalize('/public') });
 });
 
+// make xls report
+// it'll be downloaded automatically
+
 app.use(jsonToXls.middleware);
-
-
 app.get('/report', function(req, res) {
 	var json;
-
 	fs.readFile('users/users.json', 'utf-8', function(err, data) {
 		if (err) console.log('error');
 		json = JSON.parse(data);
 		var xls = jsonToXls(json2(json));
-		fs.writeFileSync('qaQuestReport.xlsx', xls, 'binary');
-	
+		fs.writeFileSync('qaQuestReport.xlsx', xls, 'binary');	
 		res.xls('qaQuestReport.xlsx', json2(json))
 		});
+
 	var json2 = function(arr){
 			var datatoReturn = [];
 			var res;
-				for (var i=0; i<arr.length; i++) {
+				for (var i = 0; i < arr.length; i++) {
 					var userData = arr[i];
 					res = 100;
 					var tempObj = {};
@@ -58,11 +58,8 @@ app.get('/report', function(req, res) {
 					tempObj['points'] = res;
 					datatoReturn.push(tempObj)
 				}
-
 				return datatoReturn;
 	}
-	
-	
 });
 
 //dataManageView
@@ -147,18 +144,18 @@ app.post('/gameResult', function(req, res) {
 /*temp place for global values 
 and fs functions
 */
-var user;
+// var user;
 
-fs.readFile('./fakeuser.json', 'utf-8', function(err, data) {
-	if (err) return err;
-	user = JSON.parse(data);
-});
+// fs.readFile('./fakeuser.json', 'utf-8', function(err, data) {
+// 	if (err) return err;
+// 	user = JSON.parse(data);
+// });
 
-function changeResult(user) {
-	fs.writeFile('./fakeuser.json', user, function(err, data) {
-		if (err) return err;
-	});
-}
+// function changeResult(user) {
+// 	fs.writeFile('./fakeuser.json', user, function(err, data) {
+// 		if (err) return err;
+// 	});
+// }
 //----------------------------------
 
 
