@@ -88,10 +88,6 @@ define(function (require) {
         dragNdrop.makeDroppable([fieldToDrop], dropPicture);
         dragNdrop.makeDroppable([fieldToReturn], returnPictureBack);
         $('#sendPicture').on('click', finishPictureGame);
-
-                    // select the target node
-            
-             
             // create an observer instance
             var observer = new MutationObserver(function(mutations) {
               mutations.forEach(function(mutation) {
@@ -108,7 +104,7 @@ define(function (require) {
             });
              
             // configuration of the observer:
-            var config = { attributes: true, childList: true, characterData: true };
+            var config = {  childList: true };
              
             // pass in the target node, as well as the observer options
             observer.observe(fieldToDrop, config);
