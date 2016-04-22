@@ -26,10 +26,7 @@ app.use(function(req, res, next) {
 
 
 
-// make xls report
-// it'll be downloaded automatically
 
-app.use(jsonToXls.middleware);
 app
 	.post('/time', function(req, res) {
 		console.log(req.body.seconds);

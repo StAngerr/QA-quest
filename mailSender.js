@@ -26,7 +26,7 @@ function sendEmails(address, users) {
 	var transporter  = nodemailer.createTransport("SMTP", emailOptions);
 	for (var i = 0; i < address.length; i++) {
 		var email = {
-		    from: 'fenomenseed1@gamail.com',
+		    from: 'questtestepam@gmail.com',
 		    to: address[i],
 		    subject: 'QA quest',
 		    html : '<table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0"><tr><td style="border: 5px solid rgb(90,74,66); bgcolor: rgb(140,172,79); background: rgb(140,172,79); padding:50px"><center style="max-width: 550px; width: 100%;">'+

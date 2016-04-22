@@ -11,7 +11,10 @@
     router.get('/manageStage', function(req, res) {
         res.sendFile('/dataMngLogin.temp.html', {root: __dirname + '../../public' });
     });
+    // make xls report
+// it'll be downloaded automatically
 
+router.use(jsonToXls.middleware);
     router.get('/report', function(req, res) {
         var json;
         fs.readFile('users/users.json', 'utf-8', function(err, data) {
@@ -52,6 +55,24 @@
     router.get('/dataManageView', function(req, res) {
         res.sendFile('dataManager.temp.html', {root: __dirname + path.normalize('../../public') });
 
+    });
+    router.get('/resetResults', function(req, res) {
+       fs.readFile('users/users.json', 'utf-8', function(err, data) {
+                if (err) console.log('error');
+                var users = JSON.parse(data);
+                var userName = req.cookies.userName;
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].username == userName) {
+                        for ( var key in users[i].gameData){
+                            users[i].gameData[key].result = false;
+                        }
+                    }
+                }
+                fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                        if (err) return err;
+                });
+                res.status(200).end();
+            });
     });
 
     router.get('/dataUsers', function(req, res) {
