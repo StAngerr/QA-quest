@@ -4,6 +4,8 @@
     var router = require('express').Router(),
         fs = require('fs'),
         path = require('path'),
+        url = require('url'),
+        querystring = require('querystring'),
         jsonToXls = require('json2xls');
 
     router.get('/manageStage', function(req, res) {
@@ -55,6 +57,16 @@
     router.get('/dataUsers', function(req, res) {
         res.sendFile('users/users.json', {root: __dirname + path.normalize('../../') });
 
+    });
+
+    router.get('/generateAccounts', function(req, res) {
+        var params = querystring.parse((url).parse(req.url).query);
+
+        if (params.count && Number(params.count) && Number(params.count) > 0 ) {
+
+        } else {
+            res.end();
+        }
     });
     module.exports = router;
 })();

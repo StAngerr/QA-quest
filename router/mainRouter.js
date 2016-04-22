@@ -38,7 +38,7 @@
 
     router.post('/gameResult', function(req, res) {
         var userTaskDone = req.body.taskDone;
-        console.log(userTaskDone.result)
+
         fs.readFile('users/users.json', 'utf-8', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
