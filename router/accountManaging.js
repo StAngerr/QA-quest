@@ -5,6 +5,7 @@
         fs = require('fs'),
         path = require('path'),
         url = require('url'),
+        accGenerator = require('../src/accGenerator.js'),
         querystring = require('querystring'),
         jsonToXls = require('json2xls');
 

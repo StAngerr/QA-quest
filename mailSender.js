@@ -1,5 +1,6 @@
 var nodemailer = require('nodemailer');
 var fs = require('fs');
+var accGenerator = require('./src/accGenerator.js');
 
 var emailOptions = {
     service: 'Gmail',
@@ -13,17 +14,26 @@ var emailOptions = {
 function getAddress() {
 	fs.readFile('emails/emails.txt', 'utf-8', function(err, data) {
 		if (err) return err;
-		var addressArray = data.split(/\r?\n/); 
-		createAccounts(addressArray);
-		createUserInfoData(addressArray);
+		var addressArray = data.split(/\r?\n/);
+
+		accGenerator.createAccounts(addressArray)
+			.then(accGenerator.createUserInfoData)
+			.then(function() {
+				sendEmails(addressArray, accGenerator.getAccounts());
+			});
+
+		/*
+			createAccounts(addressArray);
+			createUserInfoData(addressArray);
+		*/
 	});
 }
 
 getAddress();
 
-
 function sendEmails(address, users) {
 	var transporter  = nodemailer.createTransport("SMTP", emailOptions);
+
 	for (var i = 0; i < address.length; i++) {
 		var email = {
 		    from: 'questtestepam@gmail.com',
@@ -47,7 +57,7 @@ function sendEmails(address, users) {
 	}
 	transporter.close();
 }
-
+/*
 function createAccounts(address) {
 	var accounts = [];
 
@@ -62,6 +72,9 @@ function createAccounts(address) {
 	fs.writeFile('users/userAccounts.json', JSON.stringify(accounts), function(err, data) {
 		if (err) return err;
 
+		/!*
+		* wrong
+		* *!/
 		sendEmails(address, accounts);
 	});
 }
@@ -81,7 +94,7 @@ function generatePassword() {
 	}
 
 	return password;
-};
+}
 
 function createUserInfoData(address) {
 	var users = [];
@@ -120,4 +133,4 @@ function createUserInfoData(address) {
 	fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
 		if (err) return err;
 	});
-}
+}*/
