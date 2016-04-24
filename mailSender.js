@@ -6,12 +6,14 @@ var emailOptions = {
     service: 'Gmail',
     debug: true,
     auth: {
-        user: 'questtestepam@gmail.com',
-        pass: 'questTest123'
+        user: '',
+        pass: ''
     }
 };
 
-function getAddress() {
+runNewSession();
+
+function runNewSession() {
 	fs.readFile('emails/emails.txt', 'utf-8', function(err, data) {
 		if (err) return err;
 		var addressArray = data.split(/\r?\n/);
@@ -21,22 +23,17 @@ function getAddress() {
 			.then(function() {
 				sendEmails(addressArray, accGenerator.getAccounts());
 			});
-
-		/*
-			createAccounts(addressArray);
-			createUserInfoData(addressArray);
-		*/
 	});
 }
-
-getAddress();
 
 function sendEmails(address, users) {
 	var transporter  = nodemailer.createTransport("SMTP", emailOptions);
 
+	console.log(address, users)
+
 	for (var i = 0; i < address.length; i++) {
 		var email = {
-		    from: 'questtestepam@gmail.com',
+		    from: 'fenomenseed1@gmail.com',
 		    to: address[i],
 		    subject: 'QA quest',
 		    html : '<table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0"><tr><td style="border: 5px solid rgb(90,74,66); bgcolor: rgb(140,172,79); background: rgb(140,172,79); padding:50px"><center style="max-width: 550px; width: 100%;">'+
@@ -57,80 +54,3 @@ function sendEmails(address, users) {
 	}
 	transporter.close();
 }
-/*
-function createAccounts(address) {
-	var accounts = [];
-
-	for (var i = 0; i < address.length; i++) {
-		var singleAccount = {};
-
-		singleAccount.username = address[i].split('@')[0].toLowerCase();
-		singleAccount.password = generatePassword();
-
-		accounts.push(singleAccount);
-	}
-	fs.writeFile('users/userAccounts.json', JSON.stringify(accounts), function(err, data) {
-		if (err) return err;
-
-		/!*
-		* wrong
-		* *!/
-		sendEmails(address, accounts);
-	});
-}
-
-function generatePassword() {
-	var password = '';
-	var passLength = Math.floor((Math.random() * (17 - 10)) + 10);
-	var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	var numbers = '0123456789';
-	
-	for (var i = 0; i < passLength; i++) {
-		if((Math.floor((Math.random() * 100) + 1)) <= 70) {
-			password += numbers.charAt(Math.floor((Math.random() * 10)));
-		} else {
-			password += letters.charAt(Math.floor((Math.random() * 52)));
-		}
-	}
-
-	return password;
-}
-
-function createUserInfoData(address) {
-	var users = [];
-
-	for (var i = 0; i < address.length; i++) {
-		var singleUserObj = {};
-		
-		singleUserObj.username = address[i].split('@')[0].toLowerCase();
-		singleUserObj.currentStage = 0;
-		singleUserObj.gameData = {
-			wordGame: {
-				data: '',
-				result: false
-			},
-			pictureGame: {
-				data: 'picture4',
-				result: false
-			},
-			bashe: {
-				data: '',
-				result: false
-			},
-			dotGame: {
-				data: '',
-				result: false
-			},
-			combination:{
-				data: '',
-				result: false
-			}
-		};
-
-		users.push(singleUserObj);
-	}
-
-	fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
-		if (err) return err;
-	});
-}*/

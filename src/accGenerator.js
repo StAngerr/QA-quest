@@ -1,8 +1,7 @@
 (function() {
     'use strict';
 
-    var fsp  = require('fs-promise');
-
+    var fsp  = require("q-io/fs");
 
     var accGenerator = {
             createUserInfoData: createUserInfoData,
@@ -36,10 +35,7 @@
 
             accounts.push(singleAccount);
         }
-        return fsp.writeFile('users/userAccounts.json', JSON.stringify(accounts), function(err, data) {
-            if (err) return err;
-
-        });
+        return fsp.write('users/userAccounts.json', JSON.stringify(accounts));
     }
 
     function generatePassword() {
@@ -59,13 +55,18 @@
         return password;
     }
 
-    function createUserInfoData(address) {
+    function createUserInfoData() {
         var users = [];
 
-        for (var i = 0; i < address.length; i++) {
+        if (!accounts || !accounts.length) {
+            console.error('No accounts.');
+            return;
+        }
+
+        for (var i = 0; i < accounts.length; i++) {
             var singleUserObj = {};
 
-            singleUserObj.username = address[i].split('@')[0].toLowerCase();
+            singleUserObj.username = accounts[i].username;
             singleUserObj.currentStage = 0;
             singleUserObj.gameData = {
                 wordGame: {
@@ -93,9 +94,7 @@
             users.push(singleUserObj);
         }
 
-        return fsp.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
-            if (err) return err;
-        });
+        return fsp.write('users/users.json', JSON.stringify(users));
     }
 
     module.exports = accGenerator;
