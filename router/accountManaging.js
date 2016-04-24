@@ -13,9 +13,9 @@
         res.sendFile('/dataMngLogin.temp.html', {root: __dirname + '../../public' });
     });
     // make xls report
-// it'll be downloaded automatically
+    // it'll be downloaded automatically
 
-router.use(jsonToXls.middleware);
+    router.use(jsonToXls.middleware);
     router.get('/report', function(req, res) {
         var json;
         fs.readFile('users/users.json', 'utf-8', function(err, data) {
@@ -82,12 +82,37 @@ router.use(jsonToXls.middleware);
     });
 
     router.get('/generateAccounts', function(req, res) {
-        var params = querystring.parse((url).parse(req.url).query);
+        var params = querystring.parse((url).parse(req.url).query),
+            accounts = '',
+            sufix = '@example.com';
 
-        if (params.count && Number(params.count) && Number(params.count) > 0 ) {
+        if ( params.count && Number(params.count) && (Number(params.count) > 0  && params.count < 10e2 ) ) {
+            for (var i = 0; i < params.count; i++) {
+                accounts += generateRandomString() + sufix + '\r\n';
+            }
+            fs.writeFile('emails/emails.txt', accounts, function(err) {
+                if( !err ) {
+                    accGenerator.createAccounts(accounts.split(/\r?\n/))
+                        .then(accGenerator.createUserInfoData);
+                    res.end(params.count + ' accounts created');
+                }
+                res.end(err);
+            });
 
         } else {
             res.end();
+        }
+
+        function generateRandomString() {
+            var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                min = 4,
+                max = 16,
+                str = '';
+
+            for( var i =  0; i < Math.floor(Math.random() * (max - min) + min); i++ ) {
+                str += letters.charAt(Math.floor(Math.random() * letters.length));
+            }
+            return str;
         }
     });
     module.exports = router;

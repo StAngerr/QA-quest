@@ -1,31 +1,20 @@
 (function() {
     'use strict';
 
-    var fsp  = require("q-io/fs");
-
-    var accGenerator = {
+    var fsp  = require("q-io/fs"),
+        accGenerator = {
             createUserInfoData: createUserInfoData,
             createAccounts: createAccounts,
             getAccounts: getAccounts
         },
         accounts = [];
 
-
     function getAccounts() {
         return accounts;
     }
 
-/*    function getAddress() {
-        fs.readFile('emails/emails.txt', 'utf-8', function(err, data) {
-            if (err) return err;
-            var addressArray = data.split(/\r?\n/);
-            createAccounts(addressArray);
-            createUserInfoData(addressArray);
-        });
-    }*/
-
     function createAccounts(address) {
-       /* var accounts = [];*/
+        if(!address.length) return;
 
         for (var i = 0; i < address.length; i++) {
             var singleAccount = {};
