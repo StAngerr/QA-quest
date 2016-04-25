@@ -26,7 +26,7 @@ define(function(require) {
     	$('#mainSection').trigger('main:stageFinished'); 
     };
 
-    function moveToRiver() {
+    function moveToRiver(event) {
     	if(isStickGameOpened) return;
     	isStickGameOpened = true;
         if (x <= 611 ) return false;
