@@ -1,7 +1,7 @@
 {
-  "name": "bookstore",
-  "version": "0.0.1",
-  "description": "Book web store",
+  "name": "qaQuest",
+  "version": "1.0.0",
+  "description": "qa quest for epam",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,5 +18,11 @@
     "path": "^0.11.14",
     "promised-io": "^0.3.5",
     "synchronize": "^0.9.14"
+  },
+  "dependencies": {
+    "grunt-contrib-connect": "^1.0.1",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-spritesmith": "^6.3.1"
   }
 }

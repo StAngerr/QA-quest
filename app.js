@@ -13,7 +13,7 @@ var accountManaging = require('./router/accountManaging.js');
 sync(fs, 'readFile', 'writeFile');
 
 app.use(cookieParser());
-app.use(express.static(__dirname + path.normalize('/public')));
+app.use(express.static(__dirname + path.normalize('/ui-app')));
 app.use(bodyParser.json());
 
 app.use(mainRouter);

@@ -240,6 +240,14 @@
     router.get('/badge', function(req, res) {
         fs.readFile('users/users.json', 'utf-8', function(err, data) {
             if (err) console.log('error');
+            if(data){
+                console.log(data)
+            }
+            try{
+                var users = JSON.parse(data);
+            }catch(err){
+                console.log(err)
+            }
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
             var userResult = 100;
