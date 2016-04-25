@@ -24,9 +24,6 @@ app.use(function(req, res, next) {
 	sync.fiber(next);
 });
 
-
-
-
 app
 	.post('/time', function(req, res) {
 		console.log(req.body.seconds);

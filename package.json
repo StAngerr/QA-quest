@@ -17,6 +17,7 @@
     "nodemailer": "0.7.*",
     "path": "^0.11.14",
     "promised-io": "^0.3.5",
+    "q-io": "^1.13.2",
     "synchronize": "^0.9.14"
   },
   "dependencies": {

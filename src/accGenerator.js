@@ -1,6 +1,31 @@
 (function() {
     'use strict';
 
+    var fsp  = require("q-io/fs"),
+        accGenerator = {
+            createUserInfoData: createUserInfoData,
+            createAccounts: createAccounts,
+            getAccounts: getAccounts
+        },
+        accounts = [];
+
+    function getAccounts() {
+        return accounts;
+    }
+
+    function createAccounts(address) {
+        if(!address.length) return;
+
+        for (var i = 0; i < address.length; i++) {
+            var singleAccount = {};
+
+            singleAccount.username = address[i].split('@')[0].toLowerCase();
+            singleAccount.password = generatePassword();
+
+            accounts.push(singleAccount);
+        }
+        return fsp.write('users/userAccounts.json', JSON.stringify(accounts));
+    }
 
     function generatePassword() {
         var password = '';
@@ -19,15 +44,18 @@
         return password;
     }
 
-
-
-    function createUserInfoData(address) {
+    function createUserInfoData() {
         var users = [];
 
-        for (var i = 0; i < address.length; i++) {
+        if (!accounts || !accounts.length) {
+            console.error('No accounts.');
+            return;
+        }
+
+        for (var i = 0; i < accounts.length; i++) {
             var singleUserObj = {};
 
-            singleUserObj.username = address[i].split('@')[0].toLowerCase();
+            singleUserObj.username = accounts[i].username;
             singleUserObj.currentStage = 0;
             singleUserObj.gameData = {
                 wordGame: {
@@ -55,9 +83,8 @@
             users.push(singleUserObj);
         }
 
-        fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
-            if (err) return err;
-        });
+        return fsp.write('users/users.json', JSON.stringify(users));
     }
 
+    module.exports = accGenerator;
 })();
