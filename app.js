@@ -13,7 +13,7 @@ var accountManaging = require('./router/accountManaging.js');
 sync(fs, 'readFile', 'writeFile');
 
 app.use(cookieParser());
-app.use(express.static(__dirname + path.normalize('/public')));
+app.use(express.static(__dirname + path.normalize('/ui-app')));
 app.use(bodyParser.json());
 
 app.use(mainRouter);
@@ -24,12 +24,6 @@ app.use(function(req, res, next) {
 	sync.fiber(next);
 });
 
-
-
-// make xls report
-// it'll be downloaded automatically
-
-app.use(jsonToXls.middleware);
 app
 	.post('/time', function(req, res) {
 		console.log(req.body.seconds);

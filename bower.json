@@ -1,0 +1,25 @@
+{
+  "name": "QAquest",
+  "description": "Book web store",
+  "main": "",
+  "authors": [
+    "Taras Stekhnovych",
+    "Albina Kremlovska"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/StAngerr/QA-quest",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "jquery-ui": "^1.11.4",
+    "r.js": "^2.2.0",
+    "underscore": "^1.8.3"
+  },
+  "appPath": "ui-app"
+}

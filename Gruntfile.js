@@ -5,8 +5,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-connect');
     
-
+        
     grunt.initConfig({
+        appPath: {
+            app: require('./bower.json').appPath || 'ui-app'
+        },
        sass: {
             dist: {
                 options: {
@@ -14,25 +17,25 @@ module.exports = function(grunt) {
                     sourcemap: 'none'
                 },
                 files: {
-                    'src/styles/main.css': 'src/scss/main.scss'
+                    '<%= appPath.app %>/src/styles/main.css': '<%= appPath.app %>/src/scss/main.scss'
                 }
             }
         },
         sprite:{
             bot: {
-                src: 'src/images/bot/*.png',
-                dest: 'src/images/botAnimationSprite.png',
-                destCss: 'src/scss/sprite_bot_movement.scss'
+                src: '<%= appPath.app %>/src/images/bot/*.png',
+                dest: '<%= appPath.app %>/src/images/botAnimationSprite.png',
+                destCss: '<%= appPath.app %>/src/scss/sprite_bot_movement.scss'
             },
             buttons: {
-                src: 'src/images/cabin_buttons/*.png',
-                dest: 'src/images/itemsInsidecabin.png',
-                destCss: 'src/scss/sprite_inside_cabin.scss'
+                src: '<%= appPath.app %>/src/images/cabin_buttons/*.png',
+                dest: '<%= appPath.app %>/src/images/itemsInsidecabin.png',
+                destCss: '<%= appPath.app %>/src/scss/sprite_inside_cabin.scss'
             },
             pictures: {
-                src: 'src/images/pop_up_figures/pictures_brown/*.png',
-                dest: 'src/images/pop_up_figures_static.png',
-                destCss: 'src/scss/sprite_pop_up_figures.scss'
+                src: '<%= appPath.app %>/src/images/pop_up_figures/pictures_brown/*.png',
+                dest: '<%= appPath.app %>/src/images/pop_up_figures_static.png',
+                destCss: '<%= appPath.app %>/src/scss/sprite_pop_up_figures.scss'
             }
         }, 
          watch: {
@@ -47,7 +50,7 @@ module.exports = function(grunt) {
                 tasks: ['sass']
             },
            files: {
-                files: ['src/js/*/*.js', 'src/js/lib/wade_src/*.*']               
+                files: ['<%= appPath.app %>/src/js/*/*.js', '<%= appPath.app %>/src/js/lib/wade_src/*.*']
             }
 
         },
