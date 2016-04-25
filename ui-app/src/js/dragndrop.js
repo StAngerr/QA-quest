@@ -26,7 +26,7 @@ define(function() {
 		 	return false;
 		};
 
-		this.drag = function(event) { 
+		this.drag = function(event) {
 			event.dataTransfer.setData('text/html', $(event.target).html()); 
 			if ($(event.target)[0].nodeName !== 'FIGURE') {
 				that.data = $(event.target).parent(); 
@@ -47,13 +47,16 @@ define(function() {
 		};
 
 		this.drop = function(event, callback) {
-			event.preventDefault();			
-			if ($(event.target)[0].nodeName === 'DIV' && $(event.target).html() == '') {
-				$(event.target).html(that.data);
-			} else {
-				callback(event,that.data );
-				return false;		
-			}       
+			event.preventDefault();
+			var name = event.target.className;
+			if (name === "field-to-drop" || name === "pictures-to-choose" || name === "makeWord" || name === "all-letters") {
+				if ($(event.target)[0].nodeName === 'DIV' && $(event.target).html() == '') {
+					$(event.target).html(that.data);
+				} else {
+					callback(event,that.data );
+					return false;
+				}
+			}
 		};
 	}
 	return DragNDrop;
