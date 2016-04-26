@@ -7,7 +7,7 @@ You should have npm, grunt, bower and Ruby in your system.
 For production <br>
 Run:<br>
 1)  npm install, bower install<br>
-2)  <b>grunt mkstyles</b> to get all stylesheets<br>
+2)  <b>grunt build</b> to get all stylesheets<br>
 3)  run <b>node app</b><br>
 4)  navigate browser to localhost:9009<br>
 
