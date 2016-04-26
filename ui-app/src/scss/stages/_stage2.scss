@@ -186,10 +186,20 @@
         border: 1px solid rgb(90, 74, 66);
         overflow: hidden;
     }
+    .field-to-drop {
+        .pic-to-drag {
+            border: none;
+        }
+    }
     .pic-to-drag {
         background-color: rgb(113,102,88);
-        
+        display: block;
+        float: left;
+        margin-bottom: 7px;
+        &:nth-child(even) {
+            margin-left: 7px;
         }
+    }
     .pictures-to-choose .pic-to-drag {
         background-color: #eee;
         &:hover {
