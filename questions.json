@@ -8,7 +8,7 @@
     "answer": "Complexity"
   },
   {
-    "question":"The degree, expressed as a percentage, to which a specified coverage item has been exercised by a test suite",
+    "question":"The degree, expressed as a percentage, to which a specified diapason item has been exercised by a test suite",
     "answer": "Coverage"
   },
   {
