@@ -30,7 +30,7 @@ define(function(require) {
     	if(isStickGameOpened) return;
     	isStickGameOpened = true;
         if (x <= 611 ) return false;
-    	var x = event.pageX;
+    		var x = event.pageX;
         var y = event.pageY;
 
 		$(hero).trigger('hero:moveForward', {distance: 285});
@@ -42,10 +42,8 @@ define(function(require) {
     };
 
     function initBubblesGame() {
-    	setTimeout(function(){
     		$('.bubbles-popup').hide();
       	wade.init('src/js/lib/wade_src/bubbles.js');
-    	})
     };
     
 /* start STICK GAME*/
