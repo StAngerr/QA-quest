@@ -42,8 +42,10 @@ define(function(require) {
     };
 
     function initBubblesGame() {
-      $('.bubbles-popup').hide();
-      wade.init('src/js/lib/wade_src/bubbles.js');
+    	setTimeout(function(){
+    		$('.bubbles-popup').hide();
+      	wade.init('src/js/lib/wade_src/bubbles.js');
+    	})
     };
     
 /* start STICK GAME*/
