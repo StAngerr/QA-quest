@@ -11,6 +11,7 @@ define(function(require) {
     var isWordGameOpened = false;
     var isFlowGameOpened = false;
     var isFlowGameFinished = false;
+    var timerCtrl = require('src/js/timerController.js');
 
 
     stage1.initEvents = function() {
@@ -28,6 +29,7 @@ define(function(require) {
         stage1.isStageFinished = true;
         $(hero).trigger('hero:clearHasComeEvent');
         $('#mainSection').trigger('main:stageFinished');
+        timerCtrl.updateTimer();
     };
 
     function moveToDoor() {
@@ -124,6 +126,7 @@ define(function(require) {
             contentType: "application/json",
             data: JSON.stringify({word : wordToSend })
         });
+        timerCtrl.updateTimer();
     };
 
     function moveToBox() {
@@ -148,6 +151,7 @@ define(function(require) {
         .fail(function(req, res) {
 
         });
+        timerCtrl.updateTimer();
        /* $(hero).trigger('hero:moveBack', {distance: 450});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', function() {

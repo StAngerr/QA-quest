@@ -9,6 +9,7 @@ var app = express();
 var mainRouter = require('./router/mainRouter.js');
 var loginRouter = require('./router/loginRouter.js');
 var accountManaging = require('./router/accountManaging.js');
+var timerRouter = require('./router/timerRouter.js');
 
 sync(fs, 'readFile', 'writeFile');
 
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use(mainRouter);
 app.use(loginRouter);
 app.use(accountManaging);
+app.use(timerRouter);
 
 app.use(function(req, res, next) {
 	sync.fiber(next);

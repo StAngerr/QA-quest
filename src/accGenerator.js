@@ -57,6 +57,7 @@
 
             singleUserObj.username = accounts[i].username;
             singleUserObj.currentStage = 0;
+            singleUserObj.timeSpent = 0;
             singleUserObj.gameData = {
                 wordGame: {
                     data: '',

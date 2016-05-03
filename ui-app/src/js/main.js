@@ -1,9 +1,10 @@
 define(function (require) {
-	var $ = require('jquery');
-	var Quest = require('src/js/Qaquest.js');
-	var quest = new Quest();
-	var hero = $('#hero');
-	var timer;
+	var $ = require('jquery'),
+		timerCtrl = require('src/js/timerController.js'),
+		Quest = require('src/js/Qaquest.js'),
+		quest = new Quest(),
+		hero = $('#hero'),
+		timer;
 
 	$.ajax({
         url: 'src/templates/logForm.html',
@@ -35,6 +36,13 @@ define(function (require) {
     			$('.home').removeClass('hideHome');
 				$('.loginPassword, .loginUsername').removeClass('failedValidation');
     			getStage();
+				timerCtrl.getTimer().then(timerCtrl.startTimer);
+				timerCtrl.pauseMode();
+				// saves time value when the page is unload
+				window.onbeforeunload = function(e) {
+					timerCtrl.updateTimer();
+				};
+
     		} else {
   				$('.loginPassword, .loginUsername').addClass('failedValidation');
           return false;
@@ -66,7 +74,6 @@ define(function (require) {
 			}
 		})
 		.fail(function(jqXHR, textStatus) {
-			alert('Request failed:');
 		});
 	};		
 

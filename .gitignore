@@ -9,5 +9,5 @@ main.css
 .sass-cache
 node_modules
 users
-emails
+emails/emails.txt
 vendors

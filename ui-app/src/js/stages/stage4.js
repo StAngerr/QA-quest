@@ -9,7 +9,7 @@ define(function(require) {
     var is404Opened = false;
     var haveCombination = false;
     var combination = [];
-
+	var timerCtrl = require('src/js/timerController.js');
 
     stage4.initEvents = function() {
     //insideCabin();

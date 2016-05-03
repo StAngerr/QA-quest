@@ -13,6 +13,7 @@ define(function (require) {
     var isPictureGameOpened = false;
     var isTicTacToeGameOpened = false;
     var tempTime;
+    var timerCtrl = require('src/js/timerController.js');
 
     stage2.initEvents = function () {
                  /*
@@ -40,6 +41,7 @@ define(function (require) {
         stage2.isStageFinished = true;
         removeFlashLightEvents();
         $('#mainSection').trigger('main:stageFinished');
+        timerCtrl.updateTimer();
     };
 /* TURN OFF THE LIGHT*/
     function turnOffTheLight() {
@@ -71,7 +73,8 @@ define(function (require) {
         if(isPictureGameOpened) return;
         isPictureGameOpened = true;
         $(hero).trigger('hero:moveForward', {distance: 450}); 
-        $(hero).on('hero:heroHasCome', findRightPicture);         
+        $(hero).on('hero:heroHasCome', findRightPicture);
+        timerCtrl.updateTimer();
     };
 
     function findRightPicture () {    
@@ -100,7 +103,7 @@ define(function (require) {
                 }
               });    
             });
-             
+        timerCtrl.updateTimer();
             // configuration of the observer:
             var config = {  childList: true };
              
@@ -144,6 +147,7 @@ define(function (require) {
         stage2.closePopup();
         $('#inventory').trigger('inventory:addItem', {name:'.detail-3'});      
         $('.stone').on('click', startTicTacToe);
+        timerCtrl.updateTimer();
     };
 
     function startTicTacToe() {
@@ -495,6 +499,7 @@ define(function (require) {
                 return false;
             } 
             reset();
+            timerCtrl.updateTimer();
         };
             // clean game field
         function reset() {
@@ -538,7 +543,9 @@ define(function (require) {
     function finishTicTacToe() {
         $('.newGameB').removeClass('show-item')
         $('#inventory').trigger('inventory:addItem', {name:'.detail-4'}); 
-        $('#ticTacToe').removeClass('show-item');       
+        $('#ticTacToe').removeClass('show-item');
+        timerCtrl.updateTimer();
+
     };
     return stage2;
 });

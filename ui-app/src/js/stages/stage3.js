@@ -5,6 +5,7 @@ define(function(require) {
     var wade = require('wade');
     var hero = $('#hero');
     var isStickGameOpened = false;
+	var timerCtrl = require('src/js/timerController.js');
 
     stage3.initEvents = function() {
     	stage3.setStage(3);
