@@ -47,7 +47,7 @@ define([], function() {
 
     function pauseMode() {
         var pauseBtn = document.createElement('button'),
-            btnName = 'pause';
+            btnName = '||';
         pauseBtn.addEventListener('click', function() {
             //pauseGame();
             var div,
@@ -78,6 +78,7 @@ define([], function() {
         pauseBtn.style.top = 0;
         pauseBtn.style.right = 0;
         pauseBtn.style.zIndex = '9999';
+        pauseBtn.id = 'pauseBtn';
         pauseBtn.appendChild(document.createTextNode(btnName));
         document.body.appendChild(pauseBtn);
     }
