@@ -67,10 +67,12 @@ define([], function() {
                 document.body.appendChild(div);
                 stopTimer();
                 isPaused = true;
+                $('body').addClass('disabledScene')
             } else {
                 div = document.getElementById(blockId);
                 div.parentNode.removeChild(div);
                 isPaused = false;
+                $('body').removeClass('disabledScene')
                 startTimer();
             }
         });
@@ -81,6 +83,7 @@ define([], function() {
         pauseBtn.id = 'pauseBtn';
         pauseBtn.appendChild(document.createTextNode(btnName));
         document.body.appendChild(pauseBtn);
+
     }
 
     return {

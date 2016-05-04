@@ -16,6 +16,11 @@ define(function (require) {
             $('.loginBtn').on('click', newUser)
         }
     });
+      $(window).on('click', function(e) {
+        if($('body').hasClass('disabledScene') && $('#coverBlock').length < 1) {
+          location.reload();
+        }
+      });
 
 	function newUser(event) {
 		event.preventDefault();
