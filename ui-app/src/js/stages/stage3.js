@@ -46,7 +46,6 @@ define(function(require) {
     function initBubblesGame() {
     		$('.bubbles-popup').hide();
       	wade.init('src/js/lib/wade_src/bubbles.js');
-      	timerCtrl.updateTimer();
     };
     
 /* start STICK GAME*/

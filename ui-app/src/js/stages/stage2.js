@@ -497,14 +497,14 @@ define(function (require) {
             } else {
                 counter = 0;
             }
-            console.log(counter)
+
             if (counter == 2) { 
                 $('#ticTacToe').removeClass('show-item');
                 finishTicTacToe()
                 return false;
             } 
             reset();
-            // timerCtrl.updateTimer();
+           
         };
             // clean game field
         function reset() {

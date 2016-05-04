@@ -126,7 +126,6 @@ define(function(require) {
             contentType: "application/json",
             data: JSON.stringify({word : wordToSend })
         });
-        timerCtrl.updateTimer();
     };
 
     function moveToBox() {
