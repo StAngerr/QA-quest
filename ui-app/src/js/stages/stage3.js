@@ -5,7 +5,7 @@ define(function(require) {
     var wade = require('wade');
     var hero = $('#hero');
     var isStickGameOpened = false;
-	var timerCtrl = require('src/js/timerController.js');
+		var timerCtrl = require('src/js/timerController.js');
 
     stage3.initEvents = function() {
     	stage3.setStage(3);
@@ -24,7 +24,8 @@ define(function(require) {
 
     function finishStage() {
     	stage3.isStageFinished = true;
-    	$('#mainSection').trigger('main:stageFinished'); 
+    	$('#mainSection').trigger('main:stageFinished');
+    	timerCtrl.updateTimer();
     };
 
     function moveToRiver(event) {
@@ -114,6 +115,7 @@ define(function(require) {
 				 /*
         		how avoid this game repetition after page reload
         */
+        timerCtrl.updateTimer();
 			}  
 		};
 

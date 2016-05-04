@@ -74,7 +74,7 @@ define(function (require) {
         isPictureGameOpened = true;
         $(hero).trigger('hero:moveForward', {distance: 450}); 
         $(hero).on('hero:heroHasCome', findRightPicture);
-        timerCtrl.updateTimer();
+        // timerCtrl.updateTimer();
     };
 
     function findRightPicture () {    
@@ -103,7 +103,7 @@ define(function (require) {
                 }
               });    
             });
-        timerCtrl.updateTimer();
+        // timerCtrl.updateTimer();
             // configuration of the observer:
             var config = {  childList: true };
              
@@ -147,7 +147,7 @@ define(function (require) {
         stage2.closePopup();
         $('#inventory').trigger('inventory:addItem', {name:'.detail-3'});      
         $('.stone').on('click', startTicTacToe);
-        timerCtrl.updateTimer();
+         timerCtrl.updateTimer();
     };
 
     function startTicTacToe() {
@@ -492,14 +492,19 @@ define(function (require) {
             // play again function (2 draws and level will finish)
         function playAgain() {
             $('.newGameB').removeClass('show-item');
-            counter++;
+            if (all === 3) {
+                counter++;
+            } else {
+                counter = 0;
+            }
+
             if (counter == 2) { 
                 $('#ticTacToe').removeClass('show-item');
                 finishTicTacToe()
                 return false;
             } 
             reset();
-            timerCtrl.updateTimer();
+           
         };
             // clean game field
         function reset() {
@@ -544,8 +549,6 @@ define(function (require) {
         $('.newGameB').removeClass('show-item')
         $('#inventory').trigger('inventory:addItem', {name:'.detail-4'}); 
         $('#ticTacToe').removeClass('show-item');
-        timerCtrl.updateTimer();
-
     };
     return stage2;
 });

@@ -13,8 +13,7 @@ define(function(require) {
 
     stage4.initEvents = function() {
     //insideCabin();
-
-        stage4.setStage(4);
+    	stage4.setStage(4);
     	stage4.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4', '.detail-5', '.detail-6']);
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
@@ -39,6 +38,7 @@ define(function(require) {
     function stageFinished() {
     		stage4.isStageFinished = true;
     	$('#mainSection').trigger('main:stageFinished'); 
+    	timerCtrl.updateTimer();
     };
 /*INSIDE CABIN*/
   function insideCabin() {
@@ -77,6 +77,7 @@ define(function(require) {
 			$('.cabin').toggleClass('hideCabin');
 			$('.panelButton').removeClass('pressed');
 		});
+		timerCtrl.updateTimer();
 	};
 
 function sendCombination(combination) {
@@ -149,7 +150,8 @@ function sendCombination(combination) {
 		haveCombination = true;
 		$('.popup > .cabin > *').toggleClass('closeBlock');
 		$('.cabin').toggleClass('hideCabin');
-		stage4.getTmpl('iframeWith404.html', '.popup')
+		stage4.getTmpl('iframeWith404.html', '.popup');
+		timerCtrl.updateTimer();
 	};
 
     function moveToLadder() {
@@ -242,6 +244,7 @@ function sendCombination(combination) {
 			clearInterval(gameTime);
 			resetTimerAndPoints();
 			stage4.closePopup();
+			timerCtrl.updateTimer();
 			$('#inventory').trigger('inventory:addItem', {name:'.detail-7'});
 		};
 

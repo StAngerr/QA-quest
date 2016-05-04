@@ -126,7 +126,6 @@ define(function(require) {
             contentType: "application/json",
             data: JSON.stringify({word : wordToSend })
         });
-        timerCtrl.updateTimer();
     };
 
     function moveToBox() {
@@ -151,7 +150,7 @@ define(function(require) {
         .fail(function(req, res) {
 
         });
-        timerCtrl.updateTimer();
+        // timerCtrl.updateTimer();
        /* $(hero).trigger('hero:moveBack', {distance: 450});
         $(hero).trigger('hero:clearHasComeEvent');
         $(hero).on('hero:heroHasCome', function() {
@@ -184,7 +183,8 @@ define(function(require) {
             $(totalLevel).removeClass('blinkAnimation');
             if(isFlowGameFinished) moveToBox();
         });    
-        stage1.closePopup();       
+        stage1.closePopup();
+        timerCtrl.updateTimer();
     };
     return stage1;
 });
