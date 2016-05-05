@@ -70,6 +70,7 @@
                 var userName = req.cookies.userName;
                 for (var i = 0; i < users.length; i++) {
                     if (users[i].username == userName) {
+                        users[i].timeSpent = 0;
                         for ( var key in users[i].gameData){
                             users[i].gameData[key].result = false;
                         }
