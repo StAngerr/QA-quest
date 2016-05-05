@@ -150,16 +150,6 @@ define(function(require) {
         .fail(function(req, res) {
 
         });
-        // timerCtrl.updateTimer();
-       /* $(hero).trigger('hero:moveBack', {distance: 450});
-        $(hero).trigger('hero:clearHasComeEvent');
-        $(hero).on('hero:heroHasCome', function() {
-            if (isWordGameFinished ) return;
-            stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
-                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame); 
-                $('.totalLevel').remove(); 
-            });
-        });        */
     };
         /* init FLOW GAME*/
     function addFlowGame() {

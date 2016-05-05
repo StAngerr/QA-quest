@@ -35,7 +35,12 @@
                 var tempObj = {};
                 for (var key in userData) {
                     if( typeof(userData[key]) !== 'object') {
-                        tempObj[key] = userData[key]
+                        if(key === 'timeSpent') {
+                            tempObj[key + ', s'] = parseInt(userData[key],10)/ 1000;
+                        }else {
+                            tempObj[key] = userData[key]
+                        }
+                        
                     }else {
                         for(var k in userData[key]) {
                             tempObj[k] = userData[key][k]['result'];
@@ -46,6 +51,7 @@
                     }
                 }
                 tempObj['points'] = res;
+
                 dataToReturn.push(tempObj)
             }
             return dataToReturn;
