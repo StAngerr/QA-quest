@@ -6,10 +6,10 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var jsonToXls = require('json2xls');
 var app = express();
-var mainRouter = require('./router/mainRouter.js');
-var loginRouter = require('./router/loginRouter.js');
-var accountManaging = require('./router/accountManaging.js');
-var timerRouter = require('./router/timerRouter.js');
+var mainRouter = require('./src/router/mainRouter.js');
+var loginRouter = require('./src/router/loginRouter.js');
+var accountManaging = require('./src/router/accountManaging.js');
+var timerRouter = require('./src/router/timerRouter.js');
 
 sync(fs, 'readFile', 'writeFile');
 
