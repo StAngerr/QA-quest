@@ -47,7 +47,8 @@ define([], function() {
 
     function pauseMode() {
         var pauseBtn = document.createElement('button'),
-            btnName = '||';
+            btnName = '';
+            pauseBtn.id = 'pauseBtn';
         pauseBtn.addEventListener('click', function() {
             //pauseGame();
             var div,
@@ -67,8 +68,10 @@ define([], function() {
                 document.body.appendChild(div);
                 stopTimer();
                 isPaused = true;
-                $('body').addClass('disabledScene')
+                $('body').addClass('disabledScene');
+                $('#pauseBtn').addClass('play')
             } else {
+                $('#pauseBtn').removeClass('play');
                 div = document.getElementById(blockId);
                 div.parentNode.removeChild(div);
                 isPaused = false;
@@ -80,8 +83,8 @@ define([], function() {
         pauseBtn.style.top = 0;
         pauseBtn.style.right = 0;
         pauseBtn.style.zIndex = '9999';
-        pauseBtn.id = 'pauseBtn';
-        pauseBtn.appendChild(document.createTextNode(btnName));
+        
+        
         document.body.appendChild(pauseBtn);
 
     }
