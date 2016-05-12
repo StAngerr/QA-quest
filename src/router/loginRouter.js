@@ -3,7 +3,8 @@
 
     var router = require('express').Router(),
         Deferred = require("promised-io/promise").Deferred,
-        fs = require('fs');
+        fs = require('fs'),
+        fsService = require('../services/fsService.js');
 
     router.
         post('/newUser', function(req, res) {
@@ -20,7 +21,7 @@
         function verifyUser(login, pass) {
             var deferred = new Deferred();
 
-            fs.readFile('users/userAccounts.json', 'utf-8', function(err, data) {
+            fsService.readFile('users/userAccounts.json', function(err, data) {
                 if (err) console.log('error');
                 var accounts = JSON.parse(data);
 

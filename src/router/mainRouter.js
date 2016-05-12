@@ -2,10 +2,10 @@
     'use strict';
 
     var router = require('express').Router(),
-        fs = require('fs');
+        fsService = require('../services/fsService.js');
 
     router.get('/getStage', function(req, res) {
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
@@ -19,7 +19,7 @@
     });
 
     router.post('/setStage', function(req, res) {
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
@@ -27,9 +27,10 @@
             for (var i = 0; i < users.length; i++) {
                 if (users[i].username == userName) {
                     users[i].currentStage  = req.body.stage;
-                    fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                    fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                         if (err) return err;
                     });
+
                 }
             }
         });
@@ -39,7 +40,7 @@
     router.post('/gameResult', function(req, res) {
         var userTaskDone = req.body.taskDone;
 
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
@@ -48,7 +49,7 @@
                 if (users[i].username == userName) {
                     users[i].gameData[userTaskDone.game].result = userTaskDone.result;
 
-                    fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                    fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                         if (err) return err;
                     });
                 }
@@ -59,8 +60,7 @@
 
     router.post('/gameResult', function(req, res) {
         var userTaskDone = req.body.taskDone;
-        console.log(userTaskDone.result)
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
@@ -69,13 +69,13 @@
                 if (users[i].username == userName) {
                     users[i].gameData[userTaskDone.game].result = userTaskDone.result;
 
-                    fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                    fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                         if (err) return err;
                     });
                 }
             }
             res.status(200).end();
-        });
+        })
     });
 
     router
@@ -98,8 +98,7 @@
                 return array;
             }
             var userQuestion = {};
-
-            fs.readFile('./questions.json', 'utf-8', function(err, data) {
+            fsService.readFile('./questions.json', function(err, data) {
                 if (err) return err;
                 var question = JSON.parse(data);
                 var index = Math.round(Math.min(question.length-1, Math.random() * 10));
@@ -109,7 +108,7 @@
                     question: userQuestion.question,
                     letters: shuffle((userQuestion.answer).split(''))
                 };
-                fs.readFile('users/users.json', 'utf-8', function(err, data) {
+                fsService.readFile('users/users.json', function(err, data) {
                     if (err) console.log('error');
                     var users = JSON.parse(data);
                     var userName = req.cookies.userName;
@@ -117,7 +116,7 @@
                     for (var i = 0; i < users.length; i++) {
                         if (users[i].username == userName) {
                             users[i].gameData.wordGame.data = userQuestion.answer.toLowerCase();
-                            fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                            fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                                 if (err) return err;
                             });
                         }
@@ -128,8 +127,7 @@
         })
         .post('/wordGame', function(req, res) {
             var word = req.body.word;
-
-            fs.readFile('users/users.json', 'utf-8', function(err, data) {
+            fsService.readFile('users/users.json', function(err, data) {
                 if (err) console.log('error');
                 var users = JSON.parse(data);
                 var userName = req.cookies.userName;
@@ -137,9 +135,9 @@
                     if (users[i].username == userName) {
                         if(word.toLowerCase() === users[i].gameData.wordGame.data) {
                             users[i].gameData.wordGame.result = true;
-                            fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                            fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                                 if (err) return err;
-                            });
+                            })
                         }
                     }
                 }
@@ -150,7 +148,7 @@
     router.post('/pictureID', function(req, res) {
         var id = 'picture4';
         if(req.body.picture == id) {
-            fs.readFile('users/users.json', 'utf-8', function(err, data) {
+            fsService.readFile('users/users.json', function(err, data) {
                 if (err) console.log('error');
                 var users = JSON.parse(data);
                 var userName = req.cookies.userName;
@@ -158,7 +156,7 @@
                 for (var i = 0; i < users.length; i++) {
                     if (users[i].username == userName) {
                         users[i].gameData.pictureGame.result = true;
-                        fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                        fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                             if (err) return err;
                         });
                     }
@@ -188,7 +186,7 @@
             getUniqCombination(buttonsToClick, userUniqCombination);
         }
 
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
@@ -196,20 +194,20 @@
             for (var i = 0; i < users.length; i++) {
                 if (users[i].username == userName) {
                     users[i].gameData.combination.data = userUniqCombination;
-                    fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                    fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                         if (err) return err;
                     });
                 }
             }
         });
+
         res.json({combination: userUniqCombination});
     });
 
     router.post('/combination', function(req, res) {
         var result = false;
         var userCombination = req.body.combination;
-
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
@@ -227,7 +225,7 @@
                         }
                     }
                     users[i].gameData.combination.result = result;
-                    fs.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
+                    fsService.writeFile('users/users.json', JSON.stringify(users), function(err, data) {
                         if (err) return err;
                     });
                     return true;
@@ -238,7 +236,7 @@
     });
 
     router.get('/badge', function(req, res) {
-        fs.readFile('users/users.json', 'utf-8', function(err, data) {
+        fsService.readFile('users/users.json', function(err, data) {
             if (err) console.log('error');
             var users = JSON.parse(data);
             var userName = req.cookies.userName;
