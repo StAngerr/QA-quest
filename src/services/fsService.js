@@ -11,18 +11,19 @@
     };
 
     function writeFile(path, content, cb) {
-        queue.push(fsSyncWrite, arguments);
+        queue.push(fsSyncWrite.apply(this, arguments));
+        nextCall();
     }
 
     function readFile(path, cb) {
-        queue.push(fsSyncRead, arguments);
+        queue.push(fsSyncRead.apply(this, arguments));
+        nextCall();
     }
 
-    function func(fsFunc, argsArray) {
-        if ( !processing && queue.length) {
+    function nextCall() {
+        if ( queue.length > 0) {
             queue.shift()();
         }
-       // queue.push(fsFunc.apply(this, argsArray));
     }
 
     function fsSyncWrite(path, content, cb) {
@@ -33,7 +34,6 @@
                     data = fs.writeFileSync(path, content, 'utf8');
                     cb(null, data);
                 } catch (e) {
-                    console.log(e);
                     cb(e, null);
                 }
             }
@@ -55,4 +55,5 @@
         }
     }
 
+    module.exports = fsService;
 })();
