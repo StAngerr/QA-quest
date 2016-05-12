@@ -2,6 +2,7 @@
     'use strict';
 
     var fsp  = require("q-io/fs"),
+        fs = require('fs'),
         accGenerator = {
             createUserInfoData: createUserInfoData,
             createAccounts: createAccounts,
@@ -11,6 +12,13 @@
 
     function getAccounts() {
         return accounts;
+    }
+    function folderExist(folder){
+        var dir = folder;
+
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
     }
 
     function createAccounts(address) {
@@ -24,6 +32,8 @@
 
             accounts.push(singleAccount);
         }
+
+        folderExist('users')
         return fsp.write('users/userAccounts.json', JSON.stringify(accounts));
     }
 
@@ -83,7 +93,7 @@
 
             users.push(singleUserObj);
         }
-
+        folderExist('users')
         return fsp.write('users/users.json', JSON.stringify(users));
     }
 
