@@ -10,7 +10,7 @@
         jsonToXls = require('json2xls');
 
     router.get('/manageStage', function(req, res) {
-        res.sendFile('/dataMngLogin.temp.html', {root: __dirname + '../../ui-app' });
+        res.sendFile('/dataMngLogin.temp.html', {root: __dirname + '../../../ui-app' });
     });
     // make xls report
     // it'll be downloaded automatically
