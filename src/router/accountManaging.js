@@ -10,7 +10,7 @@
         jsonToXls = require('json2xls');
 
     router.get('/manageStage', function(req, res) {
-        res.sendFile('/dataMngLogin.temp.html', {root: __dirname + '../../../ui-app' });
+        res.sendFile('/dataMngLogin.temp.html', {root: path.normalize(__dirname + '../../../ui-app')});
     });
     // make xls report
     // it'll be downloaded automatically
@@ -60,7 +60,7 @@
 
     //dataManageView
     router.get('/dataManageView', function(req, res) {
-        res.sendFile('dataManager.temp.html', {root: __dirname + '../../../ui-app' });
+        res.sendFile('dataManager.temp.html', {root: path.normalize(__dirname + '../../../ui-app') });
 
     });
     router.get('/resetResults', function(req, res) {
