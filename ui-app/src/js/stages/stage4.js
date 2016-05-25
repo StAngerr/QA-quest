@@ -6,6 +6,7 @@ define(function(require) {
     var isDotGameOpened = false;
     var hero = $('#hero');
     var cabinTimer;
+    var timerInsideCabin = 3  * 60 * 1000;
     var is404Opened = false;
     var haveCombination = false;
     var combination = [];
@@ -50,7 +51,14 @@ define(function(require) {
 	};
 
 	function start404Task() {
-		startTimer();
+		$('#pauseBtn').on('click', function(){
+			if($(this).hasClass('play')) {
+				clearInterval(cabinTimer)
+			} else {
+				startTimer(timerInsideCabin);
+			}
+		})
+		startTimer(timerInsideCabin);
 		$('.startButton').on('click', function() {
 			if(!is404Opened) {
 				load404Page();
@@ -123,15 +131,19 @@ function sendCombination(combination) {
 	};
 
 // Cabin timer
-	function startTimer() {
-		var generalTimeMinutes = 3;
-		var generalTimeMS = generalTimeMinutes * 60 * 1000;
+	function startTimer(time) {
+		// var generalTimeMinutes = time;
+		var generalTimeMS = time;
+
 		var minutes = $('.timer > .minutes');
 		var seconds = $('.timer > .seconds');
 		var minutesLeftvar;
 		var secondsLeft;
 
 		cabinTimer = setInterval(function() {
+			if($('#pauseBtn').hasClass('play')) {
+				cabinTimer.clearInterval()
+			}
 			if(generalTimeMS == 0) {
 				clearInterval(cabinTimer);
 				stageFinished();
@@ -142,8 +154,10 @@ function sendCombination(combination) {
 			$(minutes).text(minutesLeft);
 			$(seconds).text(secondsLeft);
 			generalTimeMS -= 1000;
+			timerInsideCabin = generalTimeMS;
 		}, 1000);
 	};
+
 // load Frame
 	function load404Page() {
 		is404Opened = true;

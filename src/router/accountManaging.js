@@ -60,7 +60,7 @@
 
     //dataManageView
     router.get('/dataManageView', function(req, res) {
-        res.sendFile('dataManager.temp.html', {root: __dirname + path.normalize('../../ui-app') });
+        res.sendFile('dataManager.temp.html', {root: __dirname + '../../../ui-app' });
 
     });
     router.get('/resetResults', function(req, res) {
@@ -84,7 +84,7 @@
     });
 
     router.get('/dataUsers', function(req, res) {
-        res.sendFile('users/users.json', {root: __dirname + path.normalize('../../') });
+        res.sendFile('users/users.json', {root: path.normalize( __dirname + '../../../') });
 
     });
 

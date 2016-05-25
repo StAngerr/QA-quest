@@ -45,7 +45,7 @@ define([], function() {
             });
     }
 
-    function pauseMode() {
+    function pauseMode(cb) {
         var pauseBtn = document.createElement('button'),
             btnName = '';
             pauseBtn.id = 'pauseBtn';
@@ -86,6 +86,7 @@ define([], function() {
         
         
         document.body.appendChild(pauseBtn);
+        if(cb) cb()
 
     }
 
