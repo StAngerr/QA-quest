@@ -15,7 +15,11 @@ define(function(require) {
 			wade.stop();
 			$('.bubbles-popup').remove();
 			$('#inventory').trigger('inventory:addItem',{name:'.detail-6'}); 
-		}	
+		}
+		this.reload = function(){
+			wade.stop();
+			$('.bubbles-popup').remove();
+		}
 	};
 	return App;
 });

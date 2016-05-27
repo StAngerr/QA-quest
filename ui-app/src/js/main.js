@@ -21,6 +21,13 @@ define(function (require) {
           location.reload();
         }
       });
+      $(document).keypress(function(e){
+      	e.preventDefault();
+      	e.stopPropagation();
+ 		if($('body').hasClass('disabledScene') ) {
+          return false;
+      	}  
+});
 
 	function newUser(event) {
 		event.preventDefault();

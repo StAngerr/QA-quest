@@ -200,14 +200,40 @@ function sendCombination(combination) {
 			/*intervals*/
 			var gameTime;
 			var attempts = 3;
+			var tempTime;
 
 			this.startClickGame = function() {
+				var self = this;
 				onGameInterface();
 				createNewDot();
 				showVisualization();
 				attempts--;
+				$('#pauseBtn').on('click', function(){
+					if($(this).hasClass('play')) {
+						clearInterval(gameTime);
+						resetVisual()
+					} else {
+						seconds = tempTime;
+						
+				showVisualization();
+						gameTime = setInterval(function() {
+					seconds -= 0.1;
+					tempTime =seconds;
+					if( seconds <= 0) { 
+						clearInterval(gameTime);
+						if((points >= 30) || (attempts == 0)) {
+							finishGame();
+						} else {
+							onInfoInterface();
+							resetTimerAndPoints();
+						}
+					}
+				}, 100);
+					}
+		})
 				gameTime = setInterval(function() {
 					seconds -= 0.1;
+					tempTime =seconds;
 					if( seconds <= 0) { 
 						clearInterval(gameTime);
 						if((points >= 30) || (attempts == 0)) {

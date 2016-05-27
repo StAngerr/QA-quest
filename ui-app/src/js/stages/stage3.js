@@ -5,6 +5,7 @@ define(function(require) {
     var wade = require('wade');
     var hero = $('#hero');
     var isStickGameOpened = false;
+    var isBubbleOpened = false;
 		var timerCtrl = require('src/js/timerController.js');
 
     stage3.initEvents = function() {
@@ -19,7 +20,20 @@ define(function(require) {
 	        if(!stage3.isStageFinished)  finishStage();
 
 	    	}
-		});      
+		});  
+		$('#pauseBtn').click(function(e){ 
+		 	if(isBubbleOpened) {
+		 		if($('body').hasClass('disabledScene')) {
+	        	   $('.bubbles-popup').hide();
+	           } else {
+	           	/*TO DO
+	           	find approach to handle this issue
+	           	*/
+	      			$('.bubbles-popup').show();
+	      		} 
+		 	}  	
+ 		
+      });
     };
 
     function finishStage() {
@@ -41,6 +55,7 @@ define(function(require) {
 /* start BUBBLES GAME*/
     function bubbleStart() {
       stage3.getTmpl('stage3Bubblestmpl.html','#stage3', null, initBubblesGame);
+      isBubbleOpened = true;
     };
 
     function initBubblesGame() {

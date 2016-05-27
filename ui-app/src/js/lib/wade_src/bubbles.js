@@ -7,13 +7,13 @@ App1 = function() {
 
 	this.init = function() {
         // load a scene
-		wade.loadScene('lib/wade_src/scene1.wsc', true,  function()
-        {
-            // the scene has been loaded, do something here
-           
+		wade.loadScene('lib/wade_src/scene1.wsc', true,  function() {
+            // the scene has been loaded, do something here          
 
         });
+        
 	};
 }
+
 	return App1;
 });
