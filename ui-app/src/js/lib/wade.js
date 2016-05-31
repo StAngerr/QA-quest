@@ -3,6 +3,7 @@
  * @version 2.1
  * @constructor
  */
+ /*need be updated*/
 
  define(function(require) {
     var AssetLoader = require('lib/wade_src/assetLoader');
