@@ -137,33 +137,29 @@
 div.popup.fixForFlowGame {
 	#wade_main_div {
 	    position: absolute;
-	    max-width: 1270px;
-	    max-height: 730px;
-	    min-width: 730px; 
-	    width: 330px;
-	    height: 330px;
+	   width: 477px!important;
+    height: 402px!important;
 	    z-index: 13;
 	    margin: 0 auto;
 	    padding: 0;
-	    left: 330px;
-	    top: 60px;
+	    left: 31%;
+	    top: 214px;
 	    outline: none;
 
 	    canvas#wade_layer_5 {
 		    position: absolute;
-		    max-width: 320px;
-		    max-height: 320px;
-		    width: 320px;
-		    height: 320px;
+		   
+		    width: 440px !important;
+		    height: 369px !important;
 		    border: 2px solid rgb(113, 104, 89);
 	    }
 
 	    canvas#wade_layer_1 {
 		    position: absolute;
-		    max-width: 1230px;
-		    max-height: 626px;
-		    top: 0;
- 		}
+		    height: 354px !important;
+    		width: 492px!important;
+    		top: 0;
+ 			}
     }
 }
 
