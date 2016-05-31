@@ -133,6 +133,7 @@
 			They must be unchangable for good view
 			@media  used only here to prevent game crash!
 */
+
 div.popup.fixForFlowGame {
 	#wade_main_div {
 	    position: absolute;
@@ -165,6 +166,9 @@ div.popup.fixForFlowGame {
  		}
     }
 }
+
+/*
+
 // @media screen and (max-width: 1720px) and (min-width: 1305px) {
 	@media screen and (max-width: 1440px) and (min-width: 1281px) {
 	div.popup.fixForFlowGame {
@@ -230,3 +234,4 @@ div.popup.fixForFlowGame {
 	}
 }
 
+*/
