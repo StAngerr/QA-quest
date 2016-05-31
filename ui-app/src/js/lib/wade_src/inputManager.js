@@ -152,14 +152,7 @@ function InputManager()
                 wade.recreateCanvases();
             };
         }
-        if (window.DeviceOrientationEvent)
-        {
-            window.addEventListener('deviceorientation', this.event_deviceOrientation, false);
-        }
-        if (window.DeviceMotionEvent)
-        {
-            window.addEventListener('devicemotion', this.event_deviceMotion, false);
-        }
+        
         initialized = true;
 	};
 
@@ -198,14 +191,7 @@ function InputManager()
             window.removeEventListener('tizenhwkey');
             window.onblur = window.onfocus = null;
         }
-        if (window.DeviceOrientationEvent)
-        {
-            window.removeEventListener('deviceorientation', this.event_deviceOrientation);
-        }
-        if (window.DeviceMotionEvent)
-        {
-            window.removeEventListener('deviceorientation', this.event_deviceMotion);
-        }
+        
         initialized = false;
     };
 
