@@ -10,8 +10,11 @@ define(function(require) {
         this.isStageFinished = false;
 
         this.openStage = function(stage) {
-            this.getTmpl(this.templateUrl);
+            var that = this;
+            setTimeout(function(){
+                that.getTmpl(that.templateUrl);
             currentStage = stage;
+        },50)            
         };    
 
         this.getTmpl = function(tmplName, direction, dataToTempl, doAfterUpload) {
