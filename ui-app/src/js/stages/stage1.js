@@ -153,13 +153,13 @@ define(function(require) {
     };
         /* init FLOW GAME*/
     function addFlowGame() {
-        setTimeout(function(){
+     
             isFlowGameOpened = true;
         $(hero).off('hero:heroHasCome');
         wade.init('src/js/flow.js');
         $('.popup').on('flowGameFinished', finishFlowGame); 
         $('.popup').addClass('fixForFlowGame');
-        },100)
+       
                
     };
 

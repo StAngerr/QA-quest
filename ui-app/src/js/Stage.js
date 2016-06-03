@@ -14,7 +14,7 @@ define(function(require) {
             setTimeout(function(){
                 that.getTmpl(that.templateUrl);
             currentStage = stage;
-        },50)            
+        }, 100)            
         };    
 
         this.getTmpl = function(tmplName, direction, dataToTempl, doAfterUpload) {
