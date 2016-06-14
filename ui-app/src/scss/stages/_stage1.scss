@@ -81,14 +81,14 @@
 // Custom styles for popups
 .popupWrap {
 	.popup {
-		&.fixForFlowGame {
+/*		&.fixForFlowGame {
 			position: static;
 			margin-top: 110px;
 			max-width: 570px;
 			max-height: 570px;
 			min-width: 570px;
 			min-height: 570px;
-		}	
+		}	*/
 
 		.rules {
 			padding: 10px 0 0 10px;
@@ -134,6 +134,12 @@
 			@media  used only here to prevent game crash!
 */
 
+
+
+
+
+/*
+
 div.popup.fixForFlowGame {
 	#wade_main_div {
 	    position: absolute;
@@ -162,7 +168,12 @@ div.popup.fixForFlowGame {
  			}
     }
 }
-
+*/
+#wade_main_div {
+	canvas#wade_layer_2 {
+		top: -522px !important;
+	}
+}
 /*
 
 // @media screen and (max-width: 1720px) and (min-width: 1305px) {

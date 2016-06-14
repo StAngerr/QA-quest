@@ -22,11 +22,11 @@ define(function (require) {
         }
       });
       $(document).keypress(function(e){
-      	e.preventDefault();
+      	//e.preventDefault();
       	e.stopPropagation();
  		if($('body').hasClass('disabledScene') ) {
           return false;
-      	}  
+      	}
 });
 
 	function newUser(event) {

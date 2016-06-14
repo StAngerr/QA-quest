@@ -22,7 +22,7 @@ define(function(require) {
         $(hero).trigger('hero:initialPosition', {coordinates: {x : 30, y :  426}});
         $('#inventory').show();
         $('.door').on('click', moveToDoor);
-        
+
     };
     
      function finishStage() {
@@ -53,9 +53,10 @@ define(function(require) {
 /* start FLOW GAME*/
     function openFlowGame() {
         if(!isFlowGameFinished) {
-            stage1.getTmpl('popupFrameTmpl.html').then(function() {
+/*            stage1.getTmpl('popupFrameTmpl.html').then(function() {
                 stage1.getTmpl('stage1FlowGameTmpl.html', '.popup', null, addFlowGame);
-            });
+            });*/
+            addFlowGame();
         } else {
             if(isWordGameFinished){
                 if(!stage1.isStageFinished) finishStage();
@@ -142,7 +143,7 @@ define(function(require) {
             $(hero).on('hero:heroHasCome', function() {
             if (isWordGameFinished ) return;
             stage1.getTmpl('popupFrameTmpl.html').then(function(n) {
-                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame); 
+                stage1.getTmpl('stage1WordGameTmpl.html','.popup', stage_content, startWordGame);
                 $('.totalLevel').remove(); 
             });
         });
@@ -154,16 +155,17 @@ define(function(require) {
         /* init FLOW GAME*/
     function addFlowGame() {
      
-            isFlowGameOpened = true;
+        isFlowGameOpened = true;
         $(hero).off('hero:heroHasCome');
         wade.init('src/js/flow.js');
-        $('.popup').on('flowGameFinished', finishFlowGame); 
+        $('body').on('flowGameFinished', finishFlowGame);
         $('.popup').addClass('fixForFlowGame');
        
                
     };
 
     function finishFlowGame() {
+        $('#wade_main_div').remove();
         isFlowGameFinished = true;
         $('#inventory').trigger('inventory:addItem', {name:'.detail-2'}); 
         if($('.leafes')) $('.leafes').remove();

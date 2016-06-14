@@ -19,13 +19,16 @@ define(function(require) {
         	gameState = 'loading';
         	 /*clear scene from level grid */
         	wade.clearScene();
-            wade.setScreenSize(700, 500);
+            wade.setScreenSize(wade.getScreenWidth(), wade.getScreenHeight());
+            wade.setMinScreenSize(0, 0);
             var screenWidth = wade.getScreenWidth();
-            var screenHeight = wade.getScreenHeight();   
-          
+            var screenHeight = wade.getScreenHeight();
+
+
+
             var backSprite = new Sprite(null, 5);
             backSprite.setSize(screenWidth, screenHeight);
-            backSprite.setDrawFunction(wade.drawFunctions.gradientFill_({x: 0, y: 1}, ['#eee', '#fff']));
+            backSprite.setDrawFunction(wade.drawFunctions.solidFill_('#cce5a7'));
             var backObject = new SceneObject(backSprite);
             wade.addSceneObject(backObject);
             // create loading text
@@ -33,15 +36,15 @@ define(function(require) {
             var loading = new SceneObject(loadingText);
             wade.addSceneObject(loading);
     /* Event handlers for loading content when resizing */
-        	backObject.onResize = function(eventData) {
+ /*       	backObject.onResize = function(eventData) {
     	        this.getSprite().setSize(eventData.width, eventData.height);
-    	    };
-    	    wade.addEventListener(backObject, 'onResize');
+    	    };*/
+    	   /* wade.addEventListener(backObject, 'onResize');*/
     	   /*changes font size */
-            loading.onResize = function(eventData) {
+           /* loading.onResize = function(eventData) {
     	        this.getSprite().setFont((Math.min(screenWidth, screenHeight) / 10) + 'px Arial');
-    	    };
-    	    wade.addEventListener(loading, 'onResize');
+    	    };*/
+    	  /*  wade.addEventListener(loading, 'onResize');*/
     	    /*Uploading  level data */
     	    var levelFile = 'levels/' + levelId + '.json';
     	    var level = {};
@@ -54,23 +57,30 @@ define(function(require) {
 
         this.startLevel = function(levelData) {
         	/*level data = 2d array. imitation  of game field with dots*/
-        	var numCells = levelData.length;
 
+        	var numCells = levelData.length;
             this.levelData = levelData;
             gameState = 'playing';
-            var minSize = Math.min(wade.getScreenWidth(), wade.getScreenHeight());
+            console.log(
+                wade.getScreenWidth(),
+                wade.getScreenHeight(),
+                Math.min(wade.getScreenWidth(), wade.getScreenHeight()),
+                Math.min(wade.getScreenWidth(), wade.getScreenHeight())  / 1.6
+            )
+            var minSize = 450; //Math.min(wade.getScreenWidth(), wade.getScreenHeight()) * (wade.getScreenHeight() / wade.getScreenWidth());
+        	console.log(minSize)
+            var cellSize = minSize / numCells;
 
-        	var cellSize = minSize / numCells;
-        	/*when resizeng*/
-        	wade.setMinScreenSize(minSize, minSize);
-        	/*paint grid*/
     	    var gridSprite = new Sprite();
-    	    gridSprite.setSize(minSize, minSize);
+    	    gridSprite.setSize(minSize , minSize  );
     	    gridSprite.setDrawFunction(wade.drawFunctions.grid_(numCells, numCells, 'rgb(113, 104, 89)', 3));
     	    var grid = new SceneObject(gridSprite);
     	    grid.numCells = numCells;
     	    grid.setName('grid');
     	    wade.addSceneObject(grid);
+            var text = new TextSprite('You have to connect bubbles with the same color \n Connect all the bubbles. Don\'t criss-cross the connections!', 18 + 'px Arial', '#000', 'center', 2);
+            var loading = new SceneObject(text);
+            wade.addSceneObject(loading);
     	     // add dots
     	    for (var i=0; i < numCells; i++) {
     	        for (var j=0; j < numCells; j++) {
@@ -152,7 +162,6 @@ define(function(require) {
             var size = grid.getSprite().getSize();
             var gridX = Math.floor((x - (pos.x - size.x / 2)) / (size.x / grid.numCells));
             var gridY = Math.floor((y - (pos.y - size.y / 2)) / (size.y / grid.numCells));
-
             return {x: gridX, y: gridY, valid: (gridX >=0 && gridY >=0 && gridX < grid.numCells && gridY < grid.numCells)};
         };
     /* this function returns coordinates in gred in should be a dot*/
@@ -296,7 +305,7 @@ define(function(require) {
                     setTimeout(function() {
                         wade.clearScene();
                         wade.stop();
-                        $('.popup').trigger('flowGameFinished');
+                        $('body').trigger('flowGameFinished');
                     }, 1000);
                 }
             }
