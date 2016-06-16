@@ -59,8 +59,8 @@ define(function(require) {
     };
 
     function initBubblesGame() {
-    		$('.bubbles-popup').hide();
-      	wade.init('src/js/lib/wade_src/bubbles.js');
+    		 $('.bubbles-popup').hide();
+      	wade.init('src/js/lib/wade_src/bubbles.js', null, {container:"bubbles-popup-wade"});
     };
     
 /* start STICK GAME*/

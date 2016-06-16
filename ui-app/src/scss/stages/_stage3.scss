@@ -16,13 +16,13 @@
 			They must be unchangable for good view
 			@media  used only here to prevent game crash!
 */
-		div#wade_main_div {
+		#bubbles-popup-wade {
 			margin: 0 !important;
 			position: relative;
 			top: 87px;
 			left: -150px;
 			max-width: 901px;
-			width: 901px;
+			width: 955px;
 			max-height: 700px;
 			z-index: 15;
 			
