@@ -8,8 +8,9 @@ define(function(require) {
         stage5.setStage(5);
         $(hero).addClass('hideHero');
         loadFinalStage()
-    };
-
+        $('body').removeClass('disabledScene');
+        $('#pauseBtn').remove();
+    }
     function loadFinalStage() {
         $.ajax({
               url: '/badge',

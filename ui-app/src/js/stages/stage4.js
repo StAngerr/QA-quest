@@ -4,22 +4,39 @@ define(function(require) {
     var $ = require('jquery');
     require('jqueryUi');
     var isDotGameOpened = false;
+    var isDotGameFinished = false;
     var hero = $('#hero');
+    var heroStop = false;
+    var heroClimbUp = false;
     var cabinTimer;
     var timerInsideCabin = 3  * 60 * 1000;
     var is404Opened = false;
     var haveCombination = false;
     var combination = [];
+    var isPauseBtnClick = false;
+    var insideCabinOpen =false;
 	var timerCtrl = require('src/js/timerController.js');
 
     stage4.initEvents = function() {
-    //insideCabin();
     	stage4.setStage(4);
     	stage4.activeInventary(['.detail-1', '.detail-2', '.detail-3', '.detail-4', '.detail-5', '.detail-6']);
     	$(hero).removeClass('hideHero');
     	$(hero).trigger('hero:initialPosition', {coordinates: {x : 50, y :  530}});
     	$('#inventory').show();
     	$('.ladder').on('click', moveToLadder);
+    	$('#pauseBtn').on('click.pauseHero', function(){
+			if($(this).hasClass('play')) {
+				isPauseBtnClick = true;
+			} else {
+				isPauseBtnClick = false;
+				if(!isDotGameOpened  && !isDotGameFinished){
+					loadDotGame();
+				} else if(!is404Opened && heroClimbUp && isDotGameFinished){
+					insideCabin()
+				}
+			}
+
+		})
     	$(mainSection).on('inventory:itemAdded', function(event, item) {
 	    	if(item.name.indexOf('detail-7') !== -1) {
 	    	$('#inventory').trigger('inventory:addAllItems'); 
@@ -33,6 +50,7 @@ define(function(require) {
 
     function climbUpToShip() {
     	$(hero).trigger('hero:climbUp');
+    	heroClimbUp = true;
     	$(hero).on('hero:heroHasCome', insideCabin);
     };
 
@@ -43,6 +61,7 @@ define(function(require) {
     };
 /*INSIDE CABIN*/
   function insideCabin() {
+  		if(!heroClimbUp || isPauseBtnClick || insideCabinOpen) return
 					$(hero).addClass('hideHero');
 					stage4.getTmpl('popupFrameTmpl.html').then(function() {
 					$('.popupWrap').addClass('dark-bg')
@@ -51,6 +70,7 @@ define(function(require) {
 	};
 
 	function start404Task() {
+		insideCabinOpen=true;
 		$('#pauseBtn').on('click', function(){
 			if($(this).hasClass('play')) {
 				clearInterval(cabinTimer)
@@ -170,22 +190,25 @@ function sendCombination(combination) {
 
     function moveToLadder() {
 		if(isDotGameOpened) return;
-		isDotGameOpened = true;
 		$(hero).trigger('hero:moveForward', {distance: 625});
-		$(hero).on('hero:heroHasCome', loadDotGame);	
+		$(hero).on('hero:heroHasCome', loadDotGame);
     };
 
 /*DOT Game start*/
     function loadDotGame() {
-    	$(hero).trigger('hero:clearHasComeEvent');
-			stage4.getTmpl('popupFrameTmpl.html').then(function() {
-			stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
+			if($('#pauseBtn').hasClass('play') || isDotGameOpened) {
+				return;
+			}else {
+				isDotGameOpened = true;
+				$(hero).trigger('hero:clearHasComeEvent');
+				stage4.getTmpl('popupFrameTmpl.html').then(function() {
+				stage4.getTmpl('stage4DotGameTmpl.html','.popup', null, startDotGame);
 		});
+			}
     };
 
     function startDotGame() {
     	var dotGame = new ClickOnDotGame();
-
     	$('.startGameBtn, .retryBtn').on('click', dotGame.startClickGame); 
     };
 
@@ -209,6 +232,7 @@ function sendCombination(combination) {
 				showVisualization();
 				attempts--;
 				$('#pauseBtn').on('click', function(){
+					if(isDotGameFinished) return;
 					if($(this).hasClass('play')) {
 						clearInterval(gameTime);
 						resetVisual()
@@ -222,7 +246,7 @@ function sendCombination(combination) {
 					if( seconds <= 0) { 
 						clearInterval(gameTime);
 						if((points >= 30) || (attempts == 0)) {
-							finishGame();
+								finishGame();
 						} else {
 							onInfoInterface();
 							resetTimerAndPoints();
@@ -279,6 +303,7 @@ function sendCombination(combination) {
 
 		function finishGame() {
 			(points >= 30) ? stage4.sendTaskResults({'game':'dotGame', 'result':true}) : stage4.sendTaskResults({'game':'dotGame', 'result':false}); 
+			isDotGameFinished = true;
 			resetVisual();
 			onInfoInterface();
 			clearInterval(gameTime);
