@@ -6,8 +6,8 @@ var emailOptions = {
     service: 'Gmail',
     debug: true,
     auth: {
-        user: 'questtestepam@gmail.com',
-        pass: 'questTest123'
+        user: '',
+        pass: ''
     }
 };
 
