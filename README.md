@@ -21,6 +21,7 @@ Run:<br>
 
 
 If you need to make the email sending - create dir users and then switch to main directory and run <b>node smtpSetup</b><br>
-File mailSender should contain you credentials (email and password)<br>
+File smtpSetup should contain youк credentials (email and password)<br>
+
 
 

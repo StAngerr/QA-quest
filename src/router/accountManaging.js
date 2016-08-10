@@ -51,6 +51,17 @@
                     }
                 }
                 tempObj['points'] = res;
+                if(tempObj.currentStage < 5){
+                    tempObj.badge = "Not completed";
+                }else {
+                    if(res >= 90) {
+                        tempObj.badge =  'Sherlock';
+                    } else if(res >= 70 && res < 90) {
+                        tempObj.badge =  'Expert';
+                    } else {
+                        tempObj.badge ='Finder';
+                    }
+                }
 
                 dataToReturn.push(tempObj)
             }
