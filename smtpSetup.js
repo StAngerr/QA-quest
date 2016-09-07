@@ -33,7 +33,7 @@ function sendEmails(address, users) {
 
 	for (var i = 0; i < address.length; i++) {
 		var email = {
-		    from: 'fenomenseed1@gmail.com',
+		    from: 'QAQuest Team',
 		    to: address[i],
 		    subject: 'QA quest',
 		    html : '<table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0; font-size:12px; font-family: \'Noto Sans\', sans-serif;"><tr><td style="border: 5px solid \nrgb(90,74,66); bgcolor: rgb(140,172,79); background: rgb(140,172,79); padding:50px"><center style="max-width: 550px; width: 100%;">'+
@@ -45,10 +45,13 @@ function sendEmails(address, users) {
       '</center></td></tr></table>'
 		};
 		//transporter
-		transporter.sendMail(email, function(error, info){
-		    if(error){
-		        return console.log(error);
-		    }
+		setTimeout(function(){
+			transporter.sendMail(email, function(error, info){
+				if(error){
+					return console.log(error);
+				}
+		},1000)
+
 			
 		});	 
 	}
