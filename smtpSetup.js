@@ -20,34 +20,7 @@ function runNewSession() {
 		accGenerator.createAccounts(addressArray)
 			.then(accGenerator.createUserInfoData)
 			.then(function() {
-				var start = 0;
-				var point = 25;
-				var indexer = (Math.round(addressArray.length /2) > point)? point: Math.round(addressArray.length /2);
-				var divide =  (Math.round(addressArray.length /2) > point)? point: Math.round(addressArray.length /2);
-				var addr = [];
-				var accounts = accGenerator.getAccounts();
-				var users = [];
-				if(addressArray.length <= point) {
-					sendEmails(addressArray, accounts);
-				} else{
-					if(divide > point)  divide = point;
-					while(divide < addressArray.length ) {
-						addr.push(addressArray.slice(start,divide ));
-						users.push(accounts.slice(start,divide ));
-						start = divide;
-						divide += indexer;
-						if(addressArray.length - start <= point){
-							addr.push(addressArray.slice(start,addressArray.length ));
-							users.push(accounts.slice(start,accounts.length ));
-						}
-					}
-					addr.forEach(function(arr,i){
-						setTimeout(function(){
-							sendEmails(arr, users[i]);
-						},2000);
-					});
-				}
-
+				sendEmails(addressArray, accGenerator.getAccounts());
 
 			});
 	});
