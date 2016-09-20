@@ -17,20 +17,44 @@ function runNewSession() {
 	fs.readFile('emails/emails.txt', 'utf-8', function(err, data) {
 		if (err) return err;
 		var addressArray = data.split(/\r?\n/);
-
 		accGenerator.createAccounts(addressArray)
 			.then(accGenerator.createUserInfoData)
 			.then(function() {
-				sendEmails(addressArray, accGenerator.getAccounts());
+				var start = 0;
+				var point = 25;
+				var indexer = (Math.round(addressArray.length /2) > point)? point: Math.round(addressArray.length /2);
+				var divide =  (Math.round(addressArray.length /2) > point)? point: Math.round(addressArray.length /2);
+				var addr = [];
+				var accounts = accGenerator.getAccounts();
+				var users = [];
+				if(addressArray.length <= point) {
+					sendEmails(addressArray, accounts);
+				} else{
+					if(divide > point)  divide = point;
+					while(divide < addressArray.length ) {
+						addr.push(addressArray.slice(start,divide ));
+						users.push(accounts.slice(start,divide ));
+						start = divide;
+						divide += indexer;
+						if(addressArray.length - start <= point){
+							addr.push(addressArray.slice(start,addressArray.length ));
+							users.push(accounts.slice(start,accounts.length ));
+						}
+					}
+					addr.forEach(function(arr,i){
+						setTimeout(function(){
+							sendEmails(arr, users[i]);
+						},2000);
+					});
+				}
+
+
 			});
 	});
 }
 
 function sendEmails(address, users) {
 	var transporter  = nodemailer.createTransport("SMTP", emailOptions);
-
-	console.log(address, users)
-
 	for (var i = 0; i < address.length; i++) {
 		var email = {
 		    from: 'QAQuest Team',
@@ -45,15 +69,11 @@ function sendEmails(address, users) {
       '</center></td></tr></table>'
 		};
 		//transporter
-		setTimeout(function(){
 			transporter.sendMail(email, function(error, info){
 				if(error){
 					return console.log(error);
 				}
-		},1000)
-
-			
-		});	 
+			});
 	}
 	transporter.close();
 }
