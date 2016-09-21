@@ -8,7 +8,10 @@ var emailOptions = {
     auth: {
         user: 'questtestepam@gmail.com',
         pass: 'questTest123'
-    }
+    },
+	headers: {
+		'Precedence': 'bulk'
+	}
 };
 
 runNewSession();
