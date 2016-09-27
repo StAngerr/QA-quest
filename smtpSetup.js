@@ -41,15 +41,12 @@ function runNewSession() {
 				var accounts =  accGenerator.getAccounts();
 				var point = 0;
 				for (var x = 0; x < options.length; x++) {
-					var tempAcc = accounts.slice(point, point+75);
-					var tempAddr = addressArray.slice(point, point+75);
-					point =  point+75;
-					//console.log(x ,point, tempAcc, tempAddr, options[x]);
+					var tempAcc = accounts.slice(point, point+80);
+					var tempAddr = addressArray.slice(point, point+80);
+					point =  point + 80;
 					sendEmails(tempAddr, tempAcc, options[x])
 
 				}
-				//sendEmails(addressArray, accGenerator.getAccounts());
-
 			});
 	});
 }
