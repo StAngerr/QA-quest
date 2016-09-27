@@ -2,17 +2,32 @@ var nodemailer = require('nodemailer');
 var fs = require('fs');
 var accGenerator = require('./src/accGenerator.js');
 
-var emailOptions = {
-    service: 'Gmail',
-    debug: true,
-    auth: {
-        user: 'questtestepam@gmail.com',
-        pass: 'questTest123'
-    },
-	headers: {
-		'Precedence': 'bulk'
+
+var options = [
+	{
+		service: 'Gmail',
+		debug: true,
+		auth: {
+			user: 'questtestepam@gmail.com',
+			pass: 'questTest123'
+		},
+		headers: {
+			'Precedence': 'bulk'
+		}
+	},
+	{
+		service: 'Gmail',
+		debug: true,
+		auth: {
+			user: 'drudyak@gmail.com',
+			pass: 'kuqhurwybnqcrsec'
+		},
+		headers: {
+			'Precedence': 'bulk'
+		}
 	}
-};
+];
+
 
 runNewSession();
 
@@ -23,14 +38,25 @@ function runNewSession() {
 		accGenerator.createAccounts(addressArray)
 			.then(accGenerator.createUserInfoData)
 			.then(function() {
-				sendEmails(addressArray, accGenerator.getAccounts());
+				var accounts =  accGenerator.getAccounts();
+				var point = 0;
+				for (var x = 0; x < options.length; x++) {
+					var tempAcc = accounts.slice(point, point+75);
+					var tempAddr = addressArray.slice(point, point+75);
+					point =  point+75;
+					//console.log(x ,point, tempAcc, tempAddr, options[x]);
+					sendEmails(tempAddr, tempAcc, options[x])
+
+				}
+				//sendEmails(addressArray, accGenerator.getAccounts());
 
 			});
 	});
 }
 
-function sendEmails(address, users) {
-	var transporter  = nodemailer.createTransport("SMTP", emailOptions);
+function sendEmails(address, users, opt) {
+	if(address.length === 0)return false;
+	var transporter  = nodemailer.createTransport("SMTP", opt);
 	for (var i = 0; i < address.length; i++) {
 		var email = {
 		    from: 'QAQuest Team',
